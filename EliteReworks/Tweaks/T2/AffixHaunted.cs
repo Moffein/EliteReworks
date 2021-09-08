@@ -3,6 +3,7 @@ using UnityEngine.Networking;
 using RoR2;
 using R2API;
 using EliteReworks.Tweaks.T2.Components;
+using System;
 
 namespace EliteReworks.Tweaks.T2
 {
@@ -12,8 +13,31 @@ namespace EliteReworks.Tweaks.T2
         public static BuffDef reviveBuff;
         public static void Setup()
         {
-            reviveBuff = CreateReviveBuff();
+            //Pause invis on stun
+            On.RoR2.CharacterBody.AffixHauntedBehavior.FixedUpdate += (orig, self) =>
+            {
+                if (self.body && self.body.healthComponent && self.body.healthComponent.isInFrozenState)
+                {
+                    return;
+                }
+                else
+                {
+                    SetStateOnHurt ssoh = self.body.gameObject.GetComponent<SetStateOnHurt>();
+                    if (ssoh)
+                    {
+                        Type state = ssoh.targetStateMachine.state.GetType();
+                        if (state == typeof(EntityStates.StunState) || state == typeof(EntityStates.ShockState))
+                        {
+                            return;
+                        }
+                    }
+                }
+                orig(self);
+            };
 
+            #region disabled reviving
+            //reviveBuff = CreateReviveBuff();
+            /*
             //Marked enemies become ghosts on death
             On.RoR2.CharacterBody.OnDeathStart += (orig, self) =>
             {
@@ -48,12 +72,6 @@ namespace EliteReworks.Tweaks.T2
                 orig(self);
             };
 
-            //Disable vanilla behavior
-            On.RoR2.CharacterBody.AffixHauntedBehavior.FixedUpdate += (orig, self) =>
-            {
-                return;
-            };
-
             //Celestines can't revive each other
             On.RoR2.CharacterBody.AddBuff_BuffIndex += (On.RoR2.CharacterBody.orig_AddBuff_BuffIndex orig, CharacterBody self, BuffIndex buffType) =>
             {
@@ -63,6 +81,9 @@ namespace EliteReworks.Tweaks.T2
                 }
                 orig(self, buffType);
             };
+
+            */
+            #endregion
         }
 
         private static BuffDef CreateReviveBuff()

@@ -26,7 +26,7 @@ namespace EliteReworks
         public static bool affixBlueRemoveShield = true;
         public static bool affixWhiteEnabled = true;
         public static bool affixRedEnabled = true;
-        public static bool affixHauntedEnabled = false;
+        public static bool affixHauntedEnabled = true;
         public static bool affixPoisonEnabled = true;
 
 
@@ -46,10 +46,10 @@ namespace EliteReworks
             {
                 AffixRed.Setup();
             }
-            /*if (affixHauntedEnabled)
+            if (affixHauntedEnabled)
             {
                 AffixHaunted.Setup();
-            }*/
+            }
             if (affixPoisonEnabled)
             {
                 AffixPoison.Setup();
@@ -83,7 +83,7 @@ namespace EliteReworks
 
             affixRedEnabled = base.Config.Bind<bool>(new ConfigDefinition("T1 - Blazing", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
 
-            //affixHauntedEnabled = base.Config.Bind<bool>(new ConfigDefinition("T2 - Celestine", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
+            affixHauntedEnabled = base.Config.Bind<bool>(new ConfigDefinition("T2 - Celestine", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
 
             affixPoisonEnabled = base.Config.Bind<bool>(new ConfigDefinition("T2 - Malachite", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
         }

@@ -20,10 +20,10 @@ namespace EliteReworks.Tweaks.SharedHooks
 				{
 					self.gameObject.AddComponent<AffixPoisonAura>();
 				}
-				if (EliteReworksPlugin.affixHauntedEnabled && self.HasBuff(RoR2Content.Buffs.AffixHaunted.buffIndex) && !self.gameObject.GetComponent<AffixHauntedReviver>())
+				/*if (EliteReworksPlugin.affixHauntedEnabled && self.HasBuff(RoR2Content.Buffs.AffixHaunted.buffIndex) && !self.gameObject.GetComponent<AffixHauntedReviver>())
 				{
 					self.gameObject.AddComponent<AffixHauntedReviver>();
-				}
+				}*/
 			}
 		}
 	}

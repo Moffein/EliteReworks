@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 
 namespace EliteReworks.Tweaks.T2.Components
 {
+    //Disabled for now, wasn't fun.
     public class AffixHauntedReviver : MonoBehaviour
     {
         public static float wardRadius = 22f;

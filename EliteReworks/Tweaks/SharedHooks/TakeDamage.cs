@@ -29,6 +29,7 @@ namespace EliteReworks.Tweaks.SharedHooks
             }
 
             orig(self, damageInfo);
+
             if (!damageInfo.rejected)
             {
                 if (isPoison)
