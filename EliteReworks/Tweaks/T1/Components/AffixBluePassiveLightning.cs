@@ -63,7 +63,7 @@ namespace EliteReworks.Tweaks.T1.Components
                 int meatballCount = baseMeatballCount + (int)(ownerBody.radius * baseMeatballCount/3f);
                 AffixBlue.FireMeatballs(ownerBody.gameObject, ownerBody.damage * damageCoefficient, ownerBody.RollCrit(),
                                 Vector3.up, ownerBody.corePosition + Vector3.up, ownerBody.transform.forward,
-                                meatballCount, 17f, 300f, 18f);
+                                meatballCount, 20f, 300f, 18f);
             }
         }
     }

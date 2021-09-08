@@ -26,8 +26,8 @@ namespace EliteReworks.Tweaks.SharedHooks
                 {
                     if (EliteReworksPlugin.affixWhiteEnabled && attackerBody.teamComponent && attackerBody.HasBuff(RoR2Content.Buffs.AffixWhite))
                     {
-                        float radius = Mathf.Max(1f, AffixWhite.baseRadius * damageInfo.procCoefficient);
-                        float slow = Mathf.Max(0.375f, AffixWhite.slowDuration * damageInfo.procCoefficient);
+                        float radius = AffixWhite.baseRadius;
+                        float slow = AffixWhite.slowDuration;
                         EliteReworksUtil.DebuffSphere(RoR2Content.Buffs.Slow80.buffIndex, attackerBody.teamComponent.teamIndex, damageInfo.position, radius, slow, AffixWhite.explosionEffect, false);
                     }
                     if (EliteReworksPlugin.affixBlueEnabled && attackerBody.HasBuff(RoR2Content.Buffs.AffixBlue))
@@ -36,7 +36,7 @@ namespace EliteReworks.Tweaks.SharedHooks
                         {
                             AffixBlue.FireMeatballs(damageInfo.attacker, damageInfo.damage * AffixBlue.lightningDamageCoefficient, damageInfo.crit,
                                 Vector3.up, damageInfo.position + Vector3.up, attackerBody.transform.forward,
-                                Mathf.CeilToInt(AffixBlue.baseMeatballCount * Mathf.Max(1f, damageInfo.procCoefficient)), 17f, 300f, 18f);
+                                Mathf.CeilToInt(AffixBlue.baseMeatballCount * Mathf.Max(1f, damageInfo.procCoefficient)), 20f, 300f, 18f);
                         }
                     }
                 }

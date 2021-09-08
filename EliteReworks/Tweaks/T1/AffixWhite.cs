@@ -1,4 +1,5 @@
-﻿using R2API;
+﻿using EliteReworks.Tweaks.T1.Components;
+using R2API;
 using RoR2;
 using RoR2.Projectile;
 using System;
@@ -12,27 +13,40 @@ namespace EliteReworks.Tweaks.T1
 {
     public static class AffixWhite
     {
-        public static float baseRadius = 5f;
+        public static float baseRadius = 4f;
         public static float slowDuration = 1.5f;
         public static void Setup()
         {
             explosionEffect = CreateEffect();
-            //On-Hit handled in shared hooks
         }
 
         public static GameObject CreateEffect()
         {
-            GameObject effect = Resources.Load<GameObject>("prefabs/effects/impacteffects/AffixWhiteExplosion").InstantiateClone("MoffeinEliteReworkGlacialExplosion", false);
+            //prefabs/effects/impacteffects/AffixWhiteExplosion
+            //prefabs/effects/muzzleflashes/MuzzleflashMageIceLarge
+            GameObject effect = Resources.Load<GameObject>("prefabs/effects/impacteffects/IceRingExplosion").InstantiateClone("MoffeinEliteReworksGlacialExplosion", false);
             UnityEngine.Object.Destroy(effect.GetComponent<ShakeEmitter>());
             EffectComponent ec = effect.GetComponent<EffectComponent>();
             ec.soundName = "";
-            ec.applyScale = true;
+            //ec.applyScale = true;
+            ec.applyScale = false;
 
-            /*ParticleSystem[] ps = effect.GetComponentsInChildren<ParticleSystem>();
-            foreach (ParticleSystem p in ps)
+            ParticleSystemRenderer[] ps = effect.GetComponentsInChildren<ParticleSystemRenderer>();
+            foreach (ParticleSystemRenderer p in ps)
             {
-                p.playbackSpeed *= 2f;
-            }*/
+                switch (p.name)
+                {
+                    case "IceMesh":
+                        UnityEngine.Object.Destroy(p);
+                        break;
+                    default:
+                        break;
+                }
+                /*if (p.name == "Chunks")
+                {
+                    p.enabled = false;
+                }*/
+            }
 
             //effect.AddComponent<DestroyOnTimer>().duration = 0.5f;
 

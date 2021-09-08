@@ -7,7 +7,7 @@ namespace EliteReworks.Tweaks.T2.Components
 {
     public class AffixPoisonAura : NetworkBehaviour
     {
-        public static float wardRadius = 22f;
+        public static float wardRadius = 30f;
         public static float buffDuration = 1f;
         public static float refreshTime = 0.5f;
         public static GameObject indicatorPrefab = Resources.Load<GameObject>("Prefabs/NetworkedObjects/NearbyDamageBonusIndicator");
