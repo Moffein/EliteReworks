@@ -14,7 +14,7 @@ namespace EliteReworks.Tweaks.T1
     public static class AffixWhite
     {
         public static float baseRadius = 4f;
-        public static float slowDuration = 1.5f;
+        public static float slowDuration = 3f;
         public static void Setup()
         {
             explosionEffect = CreateEffect();
