@@ -1,4 +1,5 @@
-﻿using EliteReworks.Tweaks.T2;
+﻿using EliteReworks.Tweaks.T1;
+using EliteReworks.Tweaks.T2;
 using R2API;
 using RoR2;
 using UnityEngine;
@@ -19,6 +20,14 @@ namespace EliteReworks.Tweaks.SharedHooks
                 damageInfo.procCoefficient = 0f;
                 damageInfo.damageType = DamageType.NonLethal;
             }
+
+            if (EliteReworksPlugin.affixRedEnabled && damageInfo.inflictor && damageInfo.inflictor.name == "FireTrail(Clone)")
+            {
+                damageInfo.crit = false;
+                damageInfo.procCoefficient = 0f;
+                damageInfo.damage = self.fullCombinedHealth * AffixRed.fireTrailDamageCap;
+            }
+
             orig(self, damageInfo);
             if (!damageInfo.rejected)
             {
