@@ -16,9 +16,10 @@ namespace EliteReworks.Tweaks.T2
             //Pause invis on stun
             On.RoR2.CharacterBody.AffixHauntedBehavior.FixedUpdate += (orig, self) =>
             {
+                bool stunned = false;
                 if (self.body && self.body.healthComponent && self.body.healthComponent.isInFrozenState)
                 {
-                    return;
+                    stunned = true;
                 }
                 else
                 {
@@ -28,9 +29,17 @@ namespace EliteReworks.Tweaks.T2
                         Type state = ssoh.targetStateMachine.state.GetType();
                         if (state == typeof(EntityStates.StunState) || state == typeof(EntityStates.ShockState))
                         {
-                            return;
+                            stunned = true;
                         }
                     }
+                }
+
+                //Ward gets automatically remade once stun ends.
+                if (stunned)
+                {
+                    UnityEngine.Object.Destroy(self.affixHauntedWard);
+                    self.affixHauntedWard = null;
+                    return;
                 }
                 orig(self);
             };

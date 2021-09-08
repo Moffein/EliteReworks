@@ -71,7 +71,7 @@ namespace EliteReworks.Tweaks.T2.Components
                     if (ownerBody.teamComponent)
                     {
                         EliteReworksUtil.DebuffSphere(RoR2Content.Buffs.HealingDisabled.buffIndex, ownerBody.teamComponent.teamIndex,
-                            ownerBody.corePosition, AffixPoisonAura.wardRadius, AffixPoisonAura.buffDuration, null, true);
+                            ownerBody.corePosition, AffixPoisonAura.wardRadius + ownerBody.radius, AffixPoisonAura.buffDuration, null, true);
                     }
                 }
             }
