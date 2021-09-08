@@ -21,7 +21,6 @@ namespace EliteReworks
     {
         public static BuffDef EmptyBuff; //This is a buff that is never used. This is used to stop vanilla elite affix checks from working.
         public static bool modifyStats = true;
-        public static bool resizeElites = false;
         public static bool affixBlueEnabled = true;
         public static bool affixBlueRemoveShield = true;
         public static bool affixWhiteEnabled = true;
@@ -65,11 +64,6 @@ namespace EliteReworks
             On.RoR2.CharacterBody.OnClientBuffsChanged += OnClientBuffsChanged.AddEliteComponents;
             On.RoR2.GlobalEventManager.OnHitAll += OnHitAll.TriggerOnHitAllEffects;
             On.RoR2.HealthComponent.TakeDamage += TakeDamage.HealthComponent_TakeDamage;
-
-            if (resizeElites)
-            {
-                On.RoR2.CharacterBody.Start += ResizeElites.CharacterBody_Start;
-            }
         }
 
         public void ReadConfig()

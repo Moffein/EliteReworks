@@ -16,9 +16,9 @@ namespace EliteReworks.Tweaks.SharedHooks
 				{
 					self.gameObject.AddComponent<AffixBluePassiveLightning>();
 				}
-				if (EliteReworksPlugin.affixPoisonEnabled && self.HasBuff(RoR2Content.Buffs.AffixPoison.buffIndex) && !self.gameObject.GetComponent<AffixPoisonAura>())
+				if (EliteReworksPlugin.affixPoisonEnabled && self.HasBuff(RoR2Content.Buffs.AffixPoison.buffIndex) && !self.gameObject.GetComponent<AffixPoisonDebuffAura>())
 				{
-					self.gameObject.AddComponent<AffixPoisonAura>();
+					self.gameObject.AddComponent<AffixPoisonDebuffAura>();
 				}
 				/*if (EliteReworksPlugin.affixHauntedEnabled && self.HasBuff(RoR2Content.Buffs.AffixHaunted.buffIndex) && !self.gameObject.GetComponent<AffixHauntedReviver>())
 				{
