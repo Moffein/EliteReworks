@@ -1,12 +1,10 @@
 ﻿using BepInEx;
 using RoR2;
-using RoR2.Projectile;
 using R2API.Utils;
 using EliteReworks.Tweaks.T1;
 using R2API;
-using System;
 using UnityEngine;
-using EliteReworks.Tweaks.SharedHooks;
+using EliteReworks.SharedHooks;
 using BepInEx.Configuration;
 using EliteReworks.Tweaks;
 using EliteReworks.Tweaks.T2;
@@ -15,7 +13,7 @@ namespace EliteReworks
 {
     [BepInDependency("com.bepis.r2api")]
     [R2API.Utils.R2APISubmoduleDependency(nameof(PrefabAPI), nameof(EffectAPI), nameof(ProjectileAPI), nameof(BuffAPI), nameof(DamageAPI))]
-    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.0.0")]
+    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "0.0.1")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class EliteReworksPlugin : BaseUnityPlugin
     {

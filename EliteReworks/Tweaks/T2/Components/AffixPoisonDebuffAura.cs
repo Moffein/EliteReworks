@@ -35,7 +35,7 @@ namespace EliteReworks.Tweaks.T2.Components
         {
 
             wardActive = true;
-            if (ownerBody && ownerBody.HasBuff(RoR2Content.Buffs.AffixPoison))
+            if (ownerBody && ownerBody.HasBuff(RoR2Content.Buffs.AffixPoison) && ownerBody.healthComponent && ownerBody.healthComponent.alive)
             {
                 if (ownerBody.healthComponent && ownerBody.healthComponent.isInFrozenState)
                 {
@@ -78,8 +78,8 @@ namespace EliteReworks.Tweaks.T2.Components
                         stopwatch -= refreshTime;
                         if (ownerBody.teamComponent)
                         {
-                            EliteReworksUtil.DebuffSphere(RoR2Content.Buffs.HealingDisabled.buffIndex, ownerBody.teamComponent.teamIndex,
-                                ownerBody.corePosition, AffixPoisonDebuffAura.wardRadius + ownerBody.radius, AffixPoisonDebuffAura.buffDuration, null, true);
+                            Util.DebuffSphere(RoR2Content.Buffs.HealingDisabled.buffIndex, ownerBody.teamComponent.teamIndex,
+                                ownerBody.corePosition, AffixPoisonDebuffAura.wardRadius + ownerBody.radius, AffixPoisonDebuffAura.buffDuration, null, null, true);
                         }
                     }
                 }

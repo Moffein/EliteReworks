@@ -54,7 +54,7 @@ namespace EliteReworks.Tweaks.T2
 						for (int i = 0; i < num; i++)
 						{
 							Vector3 forward = Quaternion.AngleAxis(num2 * (float)i, up) * point;
-							ProjectileManager.instance.FireProjectile(spikeOrbProjectile, self.corePosition, Util.QuaternionSafeLookRotation(forward), self.gameObject, self.damage * 1f, 0f, Util.CheckRoll(self.crit, self.master), DamageColorIndex.Default, null, -1f);
+                            ProjectileManager.instance.FireProjectile(spikeOrbProjectile, self.corePosition, RoR2.Util.QuaternionSafeLookRotation(forward), self.gameObject, self.damage * 1f, 0f, RoR2.Util.CheckRoll(self.crit, self.master), DamageColorIndex.Default, null, -1f);
 						}
 					}
 				}

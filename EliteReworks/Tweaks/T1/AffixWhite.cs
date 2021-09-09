@@ -15,12 +15,28 @@ namespace EliteReworks.Tweaks.T1
     {
         public static float baseRadius = 4f;
         public static float slowDuration = 3f;
+
+        public static GameObject explosionEffectPrefab;
+        public static GameObject hitEffectPrefab;
+
         public static void Setup()
         {
-            explosionEffect = CreateEffect();
+            explosionEffectPrefab = CreateExplosionEffect();
+            hitEffectPrefab = CreateHitEffect();
         }
 
-        public static GameObject CreateEffect()
+        public static GameObject CreateHitEffect()
+        {
+            GameObject effect = Resources.Load<GameObject>("prefabs/effects/muzzleflashes/MuzzleflashMageIceLarge").InstantiateClone("MoffeinEliteReworksGlacialHit", false);
+            UnityEngine.Object.Destroy(effect.GetComponent<ShakeEmitter>());
+            EffectComponent ec = effect.GetComponent<EffectComponent>();
+            ec.soundName = "Play_mage_m2_iceSpear_shoot";
+            ec.applyScale = false;
+            EffectAPI.AddEffect(effect);
+            return effect;
+        }
+
+        public static GameObject CreateExplosionEffect()
         {
             //prefabs/effects/impacteffects/AffixWhiteExplosion
             //prefabs/effects/muzzleflashes/MuzzleflashMageIceLarge
@@ -53,7 +69,5 @@ namespace EliteReworks.Tweaks.T1
             EffectAPI.AddEffect(effect);
             return effect;
         }
-
-        public static GameObject explosionEffect;
     }
 }

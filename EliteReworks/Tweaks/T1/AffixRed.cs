@@ -11,7 +11,7 @@ namespace EliteReworks.Tweaks.T1
 {
     public static class AffixRed
     {
-		public static float fireTrailDamageCap = 0.05f;	//Max HP% damage that fire trails can deal
+		public static float fireTrailBaseDamage = 18f * 0.2f;	//18f is same as lemurian
 
 		public static void Setup()
         {

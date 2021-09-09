@@ -7,7 +7,7 @@ using RoR2.Projectile;
 using UnityEngine.Networking;
 using EliteReworks.Tweaks.T1;
 
-namespace EliteReworks.Tweaks.SharedHooks
+namespace EliteReworks.SharedHooks
 {
     public static class OnHitAll
     {
@@ -28,16 +28,16 @@ namespace EliteReworks.Tweaks.SharedHooks
                     {
                         float radius = AffixWhite.baseRadius;
                         float slow = AffixWhite.slowDuration;
-                        EliteReworksUtil.DebuffSphere(RoR2Content.Buffs.Slow80.buffIndex, attackerBody.teamComponent.teamIndex, damageInfo.position, radius, slow, AffixWhite.explosionEffect, false);
+                        Util.DebuffSphere(RoR2Content.Buffs.Slow80.buffIndex, attackerBody.teamComponent.teamIndex,
+                            damageInfo.position, radius, slow,
+                            AffixWhite.explosionEffectPrefab, AffixWhite.hitEffectPrefab, false);
                     }
                     if (EliteReworksPlugin.affixBlueEnabled && attackerBody.HasBuff(RoR2Content.Buffs.AffixBlue))
                     {
-                        if (damageInfo.procCoefficient >= 1f || Util.CheckRoll(100f * damageInfo.procCoefficient, attackerBody.master))
-                        {
-                            AffixBlue.FireMeatballs(damageInfo.attacker, damageInfo.damage * AffixBlue.lightningDamageCoefficient, damageInfo.crit,
+                        int meatballCount = (int)Mathf.Max(1f, AffixBlue.baseMeatballCount * damageInfo.procCoefficient);
+                        AffixBlue.FireMeatballs(damageInfo.attacker, attackerBody.isChampion, damageInfo.damage * AffixBlue.lightningDamageCoefficient, damageInfo.crit,
                                 Vector3.up, damageInfo.position + Vector3.up, attackerBody.transform.forward,
-                                Mathf.CeilToInt(AffixBlue.baseMeatballCount * Mathf.Max(1f, damageInfo.procCoefficient)), 20f, 300f, 18f);
-                        }
+                                meatballCount, 20f, 400f, 20f);
                     }
                 }
             }

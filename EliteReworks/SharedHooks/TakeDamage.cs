@@ -5,13 +5,14 @@ using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace EliteReworks.Tweaks.SharedHooks
+namespace EliteReworks.SharedHooks
 {
     public static class TakeDamage
     {
         public static void HealthComponent_TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
         {
             bool isPoison = false;
+
             if (EliteReworksPlugin.affixPoisonEnabled && damageInfo.HasModdedDamageType(AffixPoison.malachiteDamage))
             {
                 isPoison = true;
@@ -23,9 +24,15 @@ namespace EliteReworks.Tweaks.SharedHooks
 
             if (EliteReworksPlugin.affixRedEnabled && damageInfo.inflictor && damageInfo.inflictor.name == "FireTrail(Clone)")
             {
+                CharacterBody attackerBody = null;
+                if (damageInfo.attacker)
+                {
+                    attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
+                }
                 damageInfo.crit = false;
                 damageInfo.procCoefficient = 0f;
-                damageInfo.damage = self.fullCombinedHealth * AffixRed.fireTrailDamageCap;
+
+                damageInfo.damage = AffixRed.fireTrailBaseDamage + 0.2f * AffixRed.fireTrailBaseDamage * Mathf.Max(0f, (attackerBody ? attackerBody.level : Run.instance.ambientLevel) - 1f);
             }
 
             orig(self, damageInfo);

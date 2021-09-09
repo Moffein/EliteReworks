@@ -15,7 +15,7 @@ namespace EliteReworks.Tweaks.T1.Components
         public static float baseLightningTimer = 6f;
         public static CharacterBody ownerBody;
         public static int baseMeatballCount = 5;
-        public static float damageCoefficient = 3f;
+        public static float baseDamage = 24f;
 
         public float lightningStopwatch;
 
@@ -37,7 +37,7 @@ namespace EliteReworks.Tweaks.T1.Components
             {
                 return;
             }
-            if (!ownerBody || !ownerBody.HasBuff(RoR2Content.Buffs.AffixBlue.buffIndex))
+            if (!ownerBody || !ownerBody.HasBuff(RoR2Content.Buffs.AffixBlue.buffIndex) || !ownerBody.healthComponent || !ownerBody.healthComponent.alive)
             {
                 Destroy(this);
                 return;
@@ -61,9 +61,13 @@ namespace EliteReworks.Tweaks.T1.Components
             {
                 lightningStopwatch -= baseLightningTimer;
                 int meatballCount = baseMeatballCount + (int)(ownerBody.radius * baseMeatballCount/3f);
-                AffixBlue.FireMeatballs(ownerBody.gameObject, ownerBody.damage * damageCoefficient, ownerBody.RollCrit(),
+
+                //float scaledDamage = ownerBody.damage * damageCoefficient;
+                float scaledDamage = (baseDamage + Mathf.Max(0f, ownerBody.level - 1f) * baseDamage * 0.2f);
+
+                AffixBlue.FireMeatballs(ownerBody.gameObject, ownerBody.isChampion, scaledDamage, ownerBody.RollCrit(),
                                 Vector3.up, ownerBody.corePosition + Vector3.up, ownerBody.transform.forward,
-                                meatballCount, 20f, 300f, 18f);
+                                meatballCount, 20f, 400f, 20f);
             }
         }
     }

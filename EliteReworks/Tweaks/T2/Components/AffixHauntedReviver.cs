@@ -81,7 +81,7 @@ namespace EliteReworks.Tweaks.T2.Components
                     stopwatch -= refreshTime;
                     if (ownerBody.teamComponent)
                     {
-                        EliteReworksUtil.BuffSphere(AffixHaunted.reviveBuff.buffIndex, ownerBody.teamComponent.teamIndex,
+                        Util.BuffSphere(AffixHaunted.reviveBuff.buffIndex, ownerBody.teamComponent.teamIndex,
                             ownerBody.corePosition, AffixHauntedReviver.wardRadius, AffixHauntedReviver.buffDuration, null);
                     }
                 }

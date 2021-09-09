@@ -6,9 +6,9 @@ using UnityEngine.Networking;
 
 namespace EliteReworks
 {
-    public static class EliteReworksUtil
+    public static class Util
     {
-        public static void DebuffSphere(BuffIndex buff, TeamIndex team, Vector3 position, float radius, float debuffDuration, GameObject effect, bool ignoreImmunity)
+        public static void DebuffSphere(BuffIndex buff, TeamIndex team, Vector3 position, float radius, float debuffDuration, GameObject effect, GameObject hitEffect, bool ignoreImmunity)
         {
             if (!NetworkServer.active)
             {
@@ -42,6 +42,13 @@ namespace EliteReworks
                                 && (ignoreImmunity|| (!healthComponent.body.HasBuff(RoR2Content.Buffs.Immune) && !healthComponent.body.HasBuff(RoR2Content.Buffs.HiddenInvincibility))))
                             {
                                 healthComponent.body.AddTimedBuff(buff, debuffDuration);
+                                if (hitEffect != null)
+                                {
+                                    EffectManager.SpawnEffect(hitEffect, new EffectData
+                                    {
+                                        origin = healthComponent.body.corePosition
+                                    }, true);
+                                }
                             }
                         }
                     }

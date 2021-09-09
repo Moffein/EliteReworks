@@ -3,7 +3,7 @@ using RoR2;
 using EliteReworks.Tweaks.T1.Components;
 using EliteReworks.Tweaks.T2.Components;
 
-namespace EliteReworks.Tweaks.SharedHooks
+namespace EliteReworks.SharedHooks
 {
     public static class OnClientBuffsChanged
     {
