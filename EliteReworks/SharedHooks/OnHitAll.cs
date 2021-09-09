@@ -6,6 +6,7 @@ using RoR2;
 using RoR2.Projectile;
 using UnityEngine.Networking;
 using EliteReworks.Tweaks.T1;
+using EliteReworks.Tweaks.T1.Components;
 
 namespace EliteReworks.SharedHooks
 {
@@ -34,10 +35,15 @@ namespace EliteReworks.SharedHooks
                     }
                     if (EliteReworksPlugin.affixBlueEnabled && attackerBody.HasBuff(RoR2Content.Buffs.AffixBlue))
                     {
-                        int meatballCount = (int)Mathf.Max(1f, AffixBlue.baseMeatballCount * damageInfo.procCoefficient);
-                        AffixBlue.FireMeatballs(damageInfo.attacker, attackerBody.isChampion, damageInfo.damage * AffixBlue.lightningDamageCoefficient, damageInfo.crit,
-                                Vector3.up, damageInfo.position + Vector3.up, attackerBody.transform.forward,
-                                meatballCount, 20f, 400f, 20f);
+                        AffixBluePassiveLightning ab = attackerBody.GetComponent<AffixBluePassiveLightning>();
+                        if (ab && ab.onHitReady)
+                        {
+                            ab.TriggerOnHit();
+                            int meatballCount = (int)Mathf.Max(AffixBlue.baseMeatballCount, AffixBlue.baseMeatballCount * damageInfo.procCoefficient);
+                            AffixBlue.FireMeatballs(damageInfo.attacker, attackerBody.isChampion, damageInfo.damage * AffixBlue.lightningDamageCoefficient, damageInfo.crit,
+                                    Vector3.up, damageInfo.position + Vector3.up, attackerBody.transform.forward,
+                                    meatballCount, 20f, 400f, 20f);
+                        }
                     }
                 }
             }

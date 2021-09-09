@@ -5,10 +5,10 @@ using UnityEngine.Networking;
 
 namespace EliteReworks.Tweaks.T2.Components
 {
-    public class AffixPoisonDebuffAura : MonoBehaviour
+    public class AffixHauntedAura : MonoBehaviour
     {
-        public static float wardRadius = 22f;
-        public static float buffDuration = 0.6f;
+        public static float wardRadius = 30f;
+        public static float buffDuration = 1f;
         public static float refreshTime = 0.2f;
         public static GameObject indicatorPrefab;
 
@@ -33,8 +33,10 @@ namespace EliteReworks.Tweaks.T2.Components
 
         public void FixedUpdate()
         {
+
             wardActive = true;
-            if (ownerBody && ownerBody.HasBuff(RoR2Content.Buffs.AffixPoison) && ownerBody.healthComponent && ownerBody.healthComponent.alive)
+            //Stun checks disabled because it doesn't do much for Celestine.
+            /*if (ownerBody && ownerBody.HasBuff(RoR2Content.Buffs.AffixHaunted) && ownerBody.healthComponent && ownerBody.healthComponent.alive)
             {
                 if (ownerBody.healthComponent && ownerBody.healthComponent.isInFrozenState)
                 {
@@ -64,7 +66,7 @@ namespace EliteReworks.Tweaks.T2.Components
                     }
                 }
                 return;
-            }
+            }*/
 
             if (NetworkServer.active)
             {
@@ -76,8 +78,8 @@ namespace EliteReworks.Tweaks.T2.Components
                         stopwatch -= refreshTime;
                         if (ownerBody.teamComponent)
                         {
-                            Util.DebuffSphere(RoR2Content.Buffs.HealingDisabled.buffIndex, ownerBody.teamComponent.teamIndex,
-                                ownerBody.corePosition, AffixPoisonDebuffAura.wardRadius, AffixPoisonDebuffAura.buffDuration, null, null, true);
+                            //Util.DebuffSphere(RoR2Content.Buffs.HealingDisabled.buffIndex, ownerBody.teamComponent.teamIndex,
+                                //ownerBody.corePosition, AffixHauntedDebuffAura.wardRadius, AffixHauntedDebuffAura.buffDuration, null, null, true);
                         }
                     }
                 }

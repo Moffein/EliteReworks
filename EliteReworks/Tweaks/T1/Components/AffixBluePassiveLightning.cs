@@ -15,9 +15,19 @@ namespace EliteReworks.Tweaks.T1.Components
         public static float baseLightningTimer = 6f;
         public static CharacterBody ownerBody;
         public static int baseMeatballCount = 5;
-        public static float baseDamage = 24f;
+        public static float baseDamage = 32f;
+        public static float onHitCooldown = 0.33f;
 
-        public float lightningStopwatch;
+        //Min time til next on-hit can be triggered
+        public float onHitTimer;
+        public bool onHitReady => onHitTimer <= 0f;
+
+        private float lightningStopwatch;
+
+        public void TriggerOnHit()
+        {
+            onHitTimer = onHitCooldown;
+        }
 
         public void Awake()
         {
@@ -27,6 +37,7 @@ namespace EliteReworks.Tweaks.T1.Components
                 Destroy(this);
                 return;
             }
+            onHitTimer = 0f;
             lightningStopwatch = 0f;
             ssoh = base.GetComponent<SetStateOnHurt>();
         }
@@ -39,7 +50,6 @@ namespace EliteReworks.Tweaks.T1.Components
             }
             if (!ownerBody || !ownerBody.HasBuff(RoR2Content.Buffs.AffixBlue.buffIndex) || !ownerBody.healthComponent || !ownerBody.healthComponent.alive)
             {
-                Destroy(this);
                 return;
             }
 
@@ -68,6 +78,11 @@ namespace EliteReworks.Tweaks.T1.Components
                 AffixBlue.FireMeatballs(ownerBody.gameObject, ownerBody.isChampion, scaledDamage, ownerBody.RollCrit(),
                                 Vector3.up, ownerBody.corePosition + Vector3.up, ownerBody.transform.forward,
                                 meatballCount, 20f, 400f, 20f);
+            }
+
+            if (onHitTimer > 0f)
+            {
+                onHitTimer -= Time.fixedDeltaTime;
             }
         }
     }

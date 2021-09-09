@@ -9,103 +9,49 @@ namespace EliteReworks.Tweaks.T2
 {
     public static class AffixHaunted
     {
-        public static int ghostLifetime = 15;
-        public static BuffDef reviveBuff;
         public static void Setup()
         {
-            //Pause invis on stun
-            On.RoR2.CharacterBody.AffixHauntedBehavior.FixedUpdate += (orig, self) =>
-            {
-                bool stunned = false;
-                if (self.body && self.body.healthComponent && self.body.healthComponent.isInFrozenState)
-                {
-                    stunned = true;
-                }
-                else
-                {
-                    SetStateOnHurt ssoh = self.body.gameObject.GetComponent<SetStateOnHurt>();
-                    if (ssoh)
-                    {
-                        Type state = ssoh.targetStateMachine.state.GetType();
-                        if (state == typeof(EntityStates.StunState) || state == typeof(EntityStates.ShockState))
-                        {
-                            stunned = true;
-                        }
-                    }
-                }
-
-                //Ward gets automatically remade once stun ends.
-                if (stunned)
-                {
-                    UnityEngine.Object.Destroy(self.affixHauntedWard);
-                    self.affixHauntedWard = null;
-                    return;
-                }
-                orig(self);
-            };
-
-            #region disabled reviving
-            //reviveBuff = CreateReviveBuff();
-            /*
-            //Marked enemies become ghosts on death
-            On.RoR2.CharacterBody.OnDeathStart += (orig, self) =>
-            {
-                if (NetworkServer.active)
-                {
-                    if (self.master && self.master.inventory
-                    && self.master.inventory.GetItemCount(RoR2Content.Items.Ghost) <= 0 && self.master.inventory.GetItemCount(RoR2Content.Items.ExtraLife) <= 0)
-                    {
-                        if (self.HasBuff(reviveBuff))
-                        {
-                            CharacterBody cb = EliteReworksUtil.FindElite(RoR2Content.Buffs.AffixHaunted.buffIndex, self.teamComponent.teamIndex,
-                                self.corePosition, AffixHauntedReviver.wardRadius);
-                            if (cb)
-                            {
-                                //Ghosts seem to be intangible, so that's a feature now.
-                                CharacterBody ghostBody = Util.TryToCreateGhost(self, cb, ghostLifetime);
-                                if (ghostBody)
-                                {
-                                    ghostBody.master.inventory.RemoveItem(RoR2Content.Items.BoostDamage, 150);
-
-                                    AffixHauntedReviver arv = cb.gameObject.GetComponent<AffixHauntedReviver>();
-                                    if (arv)
-                                    {
-                                        arv.AddGhost(ghostBody);
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-                }
-                orig(self);
-            };
-
-            //Celestines can't revive each other
-            On.RoR2.CharacterBody.AddBuff_BuffIndex += (On.RoR2.CharacterBody.orig_AddBuff_BuffIndex orig, CharacterBody self, BuffIndex buffType) =>
-            {
-                if (buffType == reviveBuff.buffIndex && self.HasBuff(RoR2Content.Buffs.AffixHaunted.buffIndex))
-                {
-                    return;
-                }
-                orig(self, buffType);
-            };
-
-            */
-            #endregion
+            Debug.Log("Haunted Setup");
+            AffixHauntedAura.indicatorPrefab = BuildIndicator();
+            HideBubble();
         }
 
-        private static BuffDef CreateReviveBuff()
+        private static GameObject BuildIndicator()
         {
-            BuffDef buff = ScriptableObject.CreateInstance<BuffDef>();
-            buff.canStack = false;
-            buff.name = "MoffeinEliteReworkReviveBuff";
-            buff.isDebuff = false;
-            buff.iconSprite = Resources.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
-            buff.buffColor = new Color(148f / 255f, 215f / 255f, 214f/255f);
+            GameObject indicator = Resources.Load<GameObject>("prefabs/networkedobjects/shrines/ShrineHealingWard").InstantiateClone("MoffeinEliteReworksHauntedIndicator", true);
+            indicator.transform.localScale *= 30f;
 
-            BuffAPI.Add(new CustomBuff(buff));
-            return buff;
+            UnityEngine.Object.Destroy(indicator.GetComponent<HealingWard>());
+            ParticleSystemRenderer[] pr = indicator.GetComponentsInChildren<ParticleSystemRenderer>();
+            foreach (ParticleSystemRenderer p in pr)
+            {
+                if (p.name == "HealingSymbols")
+                {
+                    UnityEngine.Object.Destroy(p);
+                }
+            }
+
+
+
+            NetworkedBodyAttachment nba = indicator.AddComponent<NetworkedBodyAttachment>();
+            nba.shouldParentToAttachedBody = true;
+            nba.forceHostAuthority = false;
+
+            PrefabAPI.RegisterNetworkPrefab(indicator);
+            return indicator;
+        }
+
+        private static void HideBubble()
+        {
+            GameObject bubble = Resources.Load<GameObject>("prefabs/networkedobjects/AffixHauntedWard");
+            MeshRenderer[] mr = bubble.GetComponentsInChildren<MeshRenderer>();
+            foreach (MeshRenderer m in mr)
+            {
+                if (m.name == "IndicatorSphere")
+                {
+                    UnityEngine.Object.Destroy(m);
+                }
+            }
         }
     }
 }

@@ -19,6 +19,7 @@ namespace EliteReworks.Tweaks.T2
 			malachiteDamage = DamageAPI.ReserveDamageType();
 			spikePrefab = BuildSpikePrefab();
 			spikeOrbProjectile = BuildSpikeOrb(spikePrefab);
+			AffixPoisonDebuffAura.indicatorPrefab = BuildIndicator();
 
 			//Replace original code
             On.RoR2.CharacterBody.UpdateAffixPoison += (On.RoR2.CharacterBody.orig_UpdateAffixPoison orig, RoR2.CharacterBody self, float deltaTime) =>
@@ -97,6 +98,14 @@ namespace EliteReworks.Tweaks.T2
 			pie.childrenProjectilePrefab = projectileChild;
 			ProjectileAPI.Add(projectile);
 			return projectile;
+		}
+
+		private static GameObject BuildIndicator()
+        {
+			GameObject indicator = Resources.Load<GameObject>("Prefabs/NetworkedObjects/NearbyDamageBonusIndicator").InstantiateClone("MoffeinEliteReworksPoisonIndicator", true);
+			indicator.transform.localScale = AffixPoisonDebuffAura.wardRadius / 12.8f * Vector3.one;
+			PrefabAPI.RegisterNetworkPrefab(indicator);
+			return indicator;
 		}
     }
 }

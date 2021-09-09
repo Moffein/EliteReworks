@@ -11,7 +11,7 @@ namespace EliteReworks.Tweaks.T1
     public static class AffixBlue
     {
 		public static int baseMeatballCount = 5;
-		public static float lightningDamageCoefficient = 0.5f;
+		public static float lightningDamageCoefficient = 0.8f;
 		public static float lightningBlastRadius = 6f;
 		public static GameObject lightningProjectilePrefab;
 
@@ -25,7 +25,17 @@ namespace EliteReworks.Tweaks.T1
 
 			AffixBlue.lightningProjectilePrefab = BuildLightningProjectile();
 			AffixBluePassiveLightning.lightningProjectilePrefab = AffixBlue.lightningProjectilePrefab;
-			RemoveVanillaEffects();
+
+			//Remove vanilla on-hit effect
+			IL.RoR2.GlobalEventManager.OnHitAll += (il) =>
+			{
+				ILCursor c = new ILCursor(il);
+				c.GotoNext(
+					 x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixBlue")
+					);
+				c.Remove();
+				c.Emit<EliteReworksPlugin>(OpCodes.Ldsfld, nameof(EliteReworksPlugin.EmptyBuff));
+			};
 		}
 
         private static GameObject BuildLightningProjectile()
@@ -85,24 +95,10 @@ namespace EliteReworks.Tweaks.T1
 			return effect;
 		}
 
-		public static void RemoveVanillaEffects()
+		public static void RemoveShields()
         {
 			//Remove Shields
-			if (EliteReworksPlugin.affixBlueRemoveShield)
-			{
-				IL.RoR2.CharacterBody.RecalculateStats += (il) =>
-				{
-					ILCursor c = new ILCursor(il);
-					c.GotoNext(
-						 x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixBlue")
-						);
-					c.Remove();
-					c.Emit<EliteReworksPlugin>(OpCodes.Ldsfld, nameof(EliteReworksPlugin.EmptyBuff));
-				};
-			}
-
-			//Remove vanilla on-hit effect
-			IL.RoR2.GlobalEventManager.OnHitAll += (il) =>
+			IL.RoR2.CharacterBody.RecalculateStats += (il) =>
 			{
 				ILCursor c = new ILCursor(il);
 				c.GotoNext(
