@@ -11,7 +11,7 @@ namespace EliteReworks.Tweaks.T1
     public static class AffixBlue
     {
 		public static int baseMeatballCount = 5;
-		public static float lightningDamageCoefficient = 0.8f;
+		public static float lightningDamageCoefficient = 0.5f;
 		public static float lightningBlastRadius = 6f;
 		public static GameObject lightningProjectilePrefab;
 

@@ -15,7 +15,7 @@ namespace EliteReworks.Tweaks.T1.Components
         public static float baseLightningTimer = 6f;
         public static CharacterBody ownerBody;
         public static int baseMeatballCount = 5;
-        public static float baseDamage = 32f;
+        public static float baseDamage = 28f;
         public static float onHitCooldown = 0.33f;
 
         //Min time til next on-hit can be triggered

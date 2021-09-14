@@ -13,7 +13,7 @@ namespace EliteReworks
 {
     [BepInDependency("com.bepis.r2api")]
     [R2API.Utils.R2APISubmoduleDependency(nameof(PrefabAPI), nameof(EffectAPI), nameof(ProjectileAPI), nameof(BuffAPI), nameof(DamageAPI))]
-    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "0.0.3")]
+    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "0.0.4")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class EliteReworksPlugin : BaseUnityPlugin
     {
