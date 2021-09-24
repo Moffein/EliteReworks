@@ -13,6 +13,8 @@ namespace EliteReworks.Tweaks.T1
 {
     public static class AffixWhite
     {
+        public static BuffDef slow80alt;
+
         public static float baseRadius = 4f;
         public static float slowDuration = 3f;
 
@@ -23,6 +25,19 @@ namespace EliteReworks.Tweaks.T1
         {
             explosionEffectPrefab = CreateExplosionEffect();
             hitEffectPrefab = CreateHitEffect();
+            slow80alt = CreateAltSlowBuff();
+        }
+
+        public static BuffDef CreateAltSlowBuff()
+        {
+            BuffDef buff = ScriptableObject.CreateInstance<BuffDef>();
+            buff.buffColor = new Color(165f/255f, 222f/255f, 237f/255f);
+            buff.canStack = false;
+            buff.isDebuff = true;
+            buff.name = "EliteReworksSlow80";
+            buff.iconSprite = Resources.Load<Sprite>("textures/bufficons/texBuffSlow50Icon");
+            BuffAPI.Add(new CustomBuff(buff));
+            return buff;
         }
 
         public static GameObject CreateHitEffect()

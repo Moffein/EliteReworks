@@ -12,8 +12,9 @@ using EliteReworks.Tweaks.T2;
 namespace EliteReworks
 {
     [BepInDependency("com.bepis.r2api")]
-    [R2API.Utils.R2APISubmoduleDependency(nameof(PrefabAPI), nameof(EffectAPI), nameof(ProjectileAPI), nameof(BuffAPI), nameof(DamageAPI))]
-    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "0.0.4")]
+    [BepInDependency("com.TPDespair.ZetAspects", BepInDependency.DependencyFlags.SoftDependency)]
+    [R2API.Utils.R2APISubmoduleDependency(nameof(PrefabAPI), nameof(EffectAPI), nameof(ProjectileAPI), nameof(BuffAPI), nameof(RecalculateStatsAPI), nameof(DamageAPI))]
+    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "0.0.5")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class EliteReworksPlugin : BaseUnityPlugin
     {
@@ -26,9 +27,20 @@ namespace EliteReworks
         public static bool affixHauntedEnabled = true;
         public static bool affixPoisonEnabled = true;
 
+        public static bool zetAspectsLoaded = false;
+
+        private void CheckDependencies()
+        {
+            if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.TPDespair.ZetAspects"))
+            {
+                zetAspectsLoaded = true;
+            }
+        }
+
 
         public void Awake()
         {
+            CheckDependencies();
             ReadConfig();
             BuildEmptyBuff();
             if (affixWhiteEnabled)
@@ -65,6 +77,7 @@ namespace EliteReworks
             On.RoR2.CharacterBody.OnClientBuffsChanged += OnClientBuffsChanged.AddEliteComponents;
             On.RoR2.GlobalEventManager.OnHitAll += OnHitAll.TriggerOnHitAllEffects;
             On.RoR2.HealthComponent.TakeDamage += TakeDamage.HealthComponent_TakeDamage;
+            RecalculateStatsAPI.GetStatCoefficients += GetStatCoefficients.Hook;
         }
 
         public void ReadConfig()

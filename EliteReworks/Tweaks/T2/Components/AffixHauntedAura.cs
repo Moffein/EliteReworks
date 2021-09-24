@@ -35,6 +35,10 @@ namespace EliteReworks.Tweaks.T2.Components
         {
 
             wardActive = true;
+            if (!(ownerBody && ownerBody.HasBuff(RoR2Content.Buffs.AffixHaunted) && ownerBody.healthComponent && ownerBody.healthComponent.alive))
+            {
+                wardActive = false;
+            }    
             //Stun checks disabled because it doesn't do much for Celestine.
             /*if (ownerBody && ownerBody.HasBuff(RoR2Content.Buffs.AffixHaunted) && ownerBody.healthComponent && ownerBody.healthComponent.alive)
             {
@@ -83,26 +87,23 @@ namespace EliteReworks.Tweaks.T2.Components
                         }
                     }
                 }
+                UpdateIndicator(wardActive);
             }
-            UpdateIndicator(wardActive);
         }
 
         public void UpdateIndicator(bool wardActive)
         {
-            if (NetworkServer.active)
+            if (this.indicator != wardActive)
             {
-                if (this.indicator != wardActive)
+                if (wardActive)
                 {
-                    if (wardActive)
-                    {
-                        this.indicator = UnityEngine.Object.Instantiate<GameObject>(indicatorPrefab);
-                        this.indicator.GetComponent<NetworkedBodyAttachment>().AttachToGameObjectAndSpawn(base.gameObject);
-                    }
-                    else
-                    {
-                        Destroy(this.indicator);
-                        this.indicator = null;
-                    }
+                    this.indicator = UnityEngine.Object.Instantiate<GameObject>(indicatorPrefab);
+                    this.indicator.GetComponent<NetworkedBodyAttachment>().AttachToGameObjectAndSpawn(base.gameObject);
+                }
+                else
+                {
+                    Destroy(this.indicator);
+                    this.indicator = null;
                 }
             }
         }

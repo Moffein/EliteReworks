@@ -32,11 +32,6 @@ namespace EliteReworks.Tweaks.T1.Components
         public void Awake()
         {
             ownerBody = base.GetComponent<CharacterBody>();
-            if (!ownerBody)
-            {
-                Destroy(this);
-                return;
-            }
             onHitTimer = 0f;
             lightningStopwatch = 0f;
             ssoh = base.GetComponent<SetStateOnHurt>();
@@ -48,7 +43,13 @@ namespace EliteReworks.Tweaks.T1.Components
             {
                 return;
             }
-            if (!ownerBody || !ownerBody.HasBuff(RoR2Content.Buffs.AffixBlue.buffIndex) || !ownerBody.healthComponent || !ownerBody.healthComponent.alive)
+
+            if (onHitTimer > 0f)
+            {
+                onHitTimer -= Time.fixedDeltaTime;
+            }
+
+            if (!(ownerBody && ownerBody.HasBuff(RoR2Content.Buffs.AffixBlue.buffIndex) && ownerBody.healthComponent && ownerBody.healthComponent.alive))
             {
                 return;
             }
@@ -78,11 +79,6 @@ namespace EliteReworks.Tweaks.T1.Components
                 AffixBlue.FireMeatballs(ownerBody.gameObject, ownerBody.isChampion, scaledDamage, ownerBody.RollCrit(),
                                 Vector3.up, ownerBody.corePosition + Vector3.up, ownerBody.transform.forward,
                                 meatballCount, 20f, 400f, 20f);
-            }
-
-            if (onHitTimer > 0f)
-            {
-                onHitTimer -= Time.fixedDeltaTime;
             }
         }
     }

@@ -29,7 +29,7 @@ namespace EliteReworks.SharedHooks
                     {
                         float radius = AffixWhite.baseRadius;
                         float slow = AffixWhite.slowDuration;
-                        Util.DebuffSphere(RoR2Content.Buffs.Slow80.buffIndex, attackerBody.teamComponent.teamIndex,
+                        Util.DebuffSphere(EliteReworksPlugin.zetAspectsLoaded ? AffixWhite.slow80alt.buffIndex : RoR2Content.Buffs.Slow80.buffIndex, attackerBody.teamComponent.teamIndex,
                             damageInfo.position, radius, slow,
                             AffixWhite.explosionEffectPrefab, AffixWhite.hitEffectPrefab, false);
                     }

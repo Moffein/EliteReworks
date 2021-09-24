@@ -11,7 +11,6 @@ namespace EliteReworks.Tweaks.T2
     {
         public static void Setup()
         {
-            Debug.Log("Haunted Setup");
             AffixHauntedAura.indicatorPrefab = BuildIndicator();
             HideBubble();
         }

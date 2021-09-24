@@ -25,10 +25,6 @@ namespace EliteReworks.Tweaks.T2.Components
             wardActive = false;
             stopwatch = 0f;
             ownerBody = base.gameObject.GetComponent<CharacterBody>();
-            if (!ownerBody)
-            {
-                Destroy(this);
-            }
         }
 
         public void FixedUpdate()
