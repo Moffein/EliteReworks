@@ -17,26 +17,34 @@ namespace EliteReworks.Tweaks.T1
         {
 			//Make Stun/Shock/Freeze disable the fire trail.
             On.RoR2.CharacterBody.UpdateFireTrail += (On.RoR2.CharacterBody.orig_UpdateFireTrail orig, CharacterBody self) =>
-            {
+			{
+				bool blazing = self.HasBuff(RoR2Content.Buffs.AffixRed);
 				bool disableFireTrail = false;
-				if (self.healthComponent && self.healthComponent.isInFrozenState)
-                {
-					disableFireTrail = true;
-                }
-				else
-                {
-					SetStateOnHurt ssoh = self.gameObject.GetComponent<SetStateOnHurt>();
-					if (ssoh)
+
+				if (blazing)
+				{
+					if (self.healthComponent && self.healthComponent.isInFrozenState)
 					{
-						Type state = ssoh.targetStateMachine.state.GetType();
-						if (state == typeof(EntityStates.StunState) || state == typeof(EntityStates.ShockState))
+						disableFireTrail = true;
+					}
+					else
+					{
+						SetStateOnHurt ssoh = self.gameObject.GetComponent<SetStateOnHurt>();
+						if (ssoh)
 						{
-							disableFireTrail = true;
+							Type state = ssoh.targetStateMachine.state.GetType();
+							if (state == typeof(EntityStates.StunState) || state == typeof(EntityStates.ShockState))
+							{
+								disableFireTrail = true;
+							}
 						}
 					}
-                }
+				}
+
 				orig(self);
-				if (disableFireTrail && self.fireTrail)
+
+
+				if (blazing && disableFireTrail && self.fireTrail)
 				{
 					UnityEngine.Object.Destroy(self.fireTrail.gameObject);
 					self.fireTrail = null;
