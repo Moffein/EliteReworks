@@ -8,6 +8,7 @@ using UnityEngine.Networking;
 
 namespace EliteReworks.Tweaks.T1.Components
 {
+    [DisallowMultipleComponent]
     public class AffixBluePassiveLightning : MonoBehaviour
     {
         public static SetStateOnHurt ssoh;
@@ -17,6 +18,7 @@ namespace EliteReworks.Tweaks.T1.Components
         public static int baseMeatballCount = 5;
         public static float baseDamage = 28f;
 
+        public static bool uncapOnHitLightning = false;
         public static int baseBodyMeatballStock = 20;
         public static float totalBodyMeatballRechargeInterval = 1.6f;
         public int bodyMeatballStock { get; private set; }
@@ -27,11 +29,12 @@ namespace EliteReworks.Tweaks.T1.Components
 
         public bool OnHitReady(int meatballCount)
         {
-            return meatballCount <= bodyMeatballStock;
+            return meatballCount <= bodyMeatballStock || uncapOnHitLightning;
         }
 
         public void TriggerOnHit(int meatballCount)
         {
+            bodyMeatballRechargeStopwatch = 0f;
             bodyMeatballStock -= meatballCount;
             if (bodyMeatballStock < 0)
             {
@@ -90,7 +93,7 @@ namespace EliteReworks.Tweaks.T1.Components
             }
 
             lightningStopwatch += Time.fixedDeltaTime;
-            if (lightningStopwatch > baseLightningTimer)
+            if (lightningStopwatch >= baseLightningTimer)
             {
                 lightningStopwatch -= baseLightningTimer;
                 int meatballCount = baseMeatballCount + (int)(ownerBody.radius * baseMeatballCount/3f);

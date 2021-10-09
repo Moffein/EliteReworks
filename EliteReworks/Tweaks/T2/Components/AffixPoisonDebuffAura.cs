@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 
 namespace EliteReworks.Tweaks.T2.Components
 {
+    [DisallowMultipleComponent]
     public class AffixPoisonDebuffAura : MonoBehaviour
     {
         public static float wardRadius = 22f;

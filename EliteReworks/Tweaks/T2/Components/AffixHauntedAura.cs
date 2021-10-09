@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 
 namespace EliteReworks.Tweaks.T2.Components
 {
+    [DisallowMultipleComponent]
     public class AffixHauntedAura : MonoBehaviour
     {
         public static float wardRadius = 30f;
