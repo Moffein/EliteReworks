@@ -16,25 +16,38 @@ namespace EliteReworks.Tweaks.T1.Components
         public static CharacterBody ownerBody;
         public static int baseMeatballCount = 5;
         public static float baseDamage = 28f;
-        public static float onHitCooldown = 0.33f;
 
-        //Min time til next on-hit can be triggered
-        public float onHitTimer;
-        public bool onHitReady => onHitTimer <= 0f;
+        public static int baseBodyMeatballStock = 20;
+        public static float totalBodyMeatballRechargeInterval = 1.6f;
+        public int bodyMeatballStock { get; private set; }
+        private float bodyMeatballRechargeInterval;
+        private float bodyMeatballRechargeStopwatch;
 
         private float lightningStopwatch;
 
-        public void TriggerOnHit()
+        public bool OnHitReady(int meatballCount)
         {
-            onHitTimer = onHitCooldown;
+            return meatballCount <= bodyMeatballStock;
+        }
+
+        public void TriggerOnHit(int meatballCount)
+        {
+            bodyMeatballStock -= meatballCount;
+            if (bodyMeatballStock < 0)
+            {
+                bodyMeatballStock = 0;
+            }
         }
 
         public void Awake()
         {
             ownerBody = base.GetComponent<CharacterBody>();
-            onHitTimer = 0f;
             lightningStopwatch = 0f;
             ssoh = base.GetComponent<SetStateOnHurt>();
+
+            bodyMeatballStock = baseBodyMeatballStock;
+            bodyMeatballRechargeInterval = totalBodyMeatballRechargeInterval / (float)baseBodyMeatballStock;
+            bodyMeatballRechargeStopwatch = 0f;
         }
 
         public void FixedUpdate()
@@ -44,9 +57,18 @@ namespace EliteReworks.Tweaks.T1.Components
                 return;
             }
 
-            if (onHitTimer > 0f)
+            if (bodyMeatballStock < baseBodyMeatballStock)
             {
-                onHitTimer -= Time.fixedDeltaTime;
+                bodyMeatballRechargeStopwatch += Time.fixedDeltaTime;
+                if (bodyMeatballRechargeStopwatch >= bodyMeatballRechargeInterval)
+                {
+                    bodyMeatballRechargeStopwatch -= bodyMeatballRechargeInterval;
+                    bodyMeatballStock++;
+                }
+            }
+            else
+            {
+                bodyMeatballRechargeStopwatch = 0f;
             }
 
             if (!(ownerBody && ownerBody.HasBuff(RoR2Content.Buffs.AffixBlue.buffIndex) && ownerBody.healthComponent && ownerBody.healthComponent.alive))
