@@ -73,7 +73,7 @@ namespace EliteReworks.Tweaks.T2.Components
                         stopwatch -= refreshTime;
                         if (ownerBody.teamComponent)
                         {
-                            Util.DebuffSphere(RoR2Content.Buffs.HealingDisabled.buffIndex, ownerBody.teamComponent.teamIndex,
+                            EliteReworksUtils.DebuffSphere(RoR2Content.Buffs.HealingDisabled.buffIndex, ownerBody.teamComponent.teamIndex,
                                 ownerBody.corePosition, AffixPoisonDebuffAura.wardRadius, AffixPoisonDebuffAura.buffDuration, null, null, true);
                         }
                     }

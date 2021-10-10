@@ -2,6 +2,7 @@
 using UnityEngine;
 using R2API;
 using EliteReworks.Tweaks.T1;
+using EliteReworks.Tweaks.T2;
 
 namespace EliteReworks.SharedHooks
 {
@@ -12,6 +13,10 @@ namespace EliteReworks.SharedHooks
             if (sender.HasBuff(AffixWhite.slow80alt))
             {
                 args.moveSpeedReductionMultAdd += 0.8f;
+            }
+            if (sender.HasBuff(AffixHaunted.reviveBuff))
+            {
+                args.armorAdd += 15f;
             }
         }
     }
