@@ -42,7 +42,7 @@ namespace EliteReworks.Tweaks.T2.Components
             if (!(ownerBody && ownerBody.HasBuff(RoR2Content.Buffs.AffixHaunted) && ownerBody.healthComponent && ownerBody.healthComponent.alive))
             {
                 wardActive = false;
-                if (ownerBody.healthComponent && !ownerBody.healthComponent.alive)
+                if (NetworkServer.active && ownerBody.healthComponent && !ownerBody.healthComponent.alive)
                 {
                     DestroyGhosts();
                 }
@@ -76,6 +76,7 @@ namespace EliteReworks.Tweaks.T2.Components
                     if (stopwatch > refreshTime)
                     {
                         stopwatch -= refreshTime;
+                        UpdateGhosts();
                         if (ownerBody.teamComponent)
                         {
                             EliteReworksUtils.BuffSphere(ownerBody, AffixHaunted.reviveBuff.buffIndex, ownerBody.teamComponent.teamIndex, ownerBody.corePosition,
@@ -86,9 +87,27 @@ namespace EliteReworks.Tweaks.T2.Components
             }
         }
 
-        private void OnDestroy()
+        private void UpdateGhosts()
         {
-            DestroyGhosts();
+            if (attachedGhosts.Count > 0)
+            {
+                List<CharacterBody> toRemove = new List<CharacterBody>();
+                foreach (CharacterBody cb in attachedGhosts)
+                {
+                    if (!(cb.healthComponent && cb.healthComponent.alive))
+                    {
+                        toRemove.Add(cb);
+                    }
+                }
+
+                if (toRemove.Count > 0)
+                {
+                    foreach (CharacterBody cb in toRemove)
+                    {
+                        attachedGhosts.Remove(cb);
+                    }
+                }
+            }
         }
 
         private void DestroyGhosts()
@@ -104,6 +123,11 @@ namespace EliteReworks.Tweaks.T2.Components
                 }
                 attachedGhosts.Clear();
             }
+        }
+
+        private void OnDestroy()
+        {
+            DestroyGhosts();
         }
     }
 }
