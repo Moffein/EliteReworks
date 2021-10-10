@@ -42,6 +42,10 @@ namespace EliteReworks.Tweaks.T2.Components
             if (!(ownerBody && ownerBody.HasBuff(RoR2Content.Buffs.AffixHaunted) && ownerBody.healthComponent && ownerBody.healthComponent.alive))
             {
                 wardActive = false;
+                if (ownerBody.healthComponent && !ownerBody.healthComponent.alive)
+                {
+                    DestroyGhosts();
+                }
             }
 
             if (NetworkServer.active)
@@ -79,6 +83,26 @@ namespace EliteReworks.Tweaks.T2.Components
                         }
                     }
                 }
+            }
+        }
+
+        private void OnDestroy()
+        {
+            DestroyGhosts();
+        }
+
+        private void DestroyGhosts()
+        {
+            if (attachedGhosts.Count > 0)
+            {
+                foreach (CharacterBody cb in attachedGhosts)
+                {
+                    if (cb.healthComponent)
+                    {
+                        cb.healthComponent.health = -100f;
+                    }
+                }
+                attachedGhosts.Clear();
             }
         }
     }
