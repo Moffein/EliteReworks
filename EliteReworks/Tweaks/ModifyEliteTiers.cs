@@ -29,9 +29,9 @@ namespace EliteReworks.Tweaks
                     else if (edf.damageBoostCoefficient == 6f && edf.healthBoostCoefficient == 18f && edf.costMultiplier == 36f)
                     {
                         //Debug.Log("Modifying t2 elites");
-                        edf.costMultiplier = 12f;
-                        edf.healthBoostCoefficient = 8f;
-                        edf.damageBoostCoefficient = 3f;
+                        edf.costMultiplier = 15f;
+                        edf.healthBoostCoefficient = 10f;
+                        edf.damageBoostCoefficient = 4f;
                     }
                 }
             };

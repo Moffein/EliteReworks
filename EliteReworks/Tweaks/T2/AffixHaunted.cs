@@ -3,6 +3,9 @@ using UnityEngine.Networking;
 using RoR2;
 using R2API;
 using EliteReworks.Tweaks.T2.Components;
+using MonoMod.Cil;
+using System;
+using Mono.Cecil.Cil;
 
 namespace EliteReworks.Tweaks.T2
 {
@@ -17,6 +20,7 @@ namespace EliteReworks.Tweaks.T2
             {
                 DisableBubble();
                 On.RoR2.GlobalEventManager.OnCharacterDeath += ReviveAsGhost;
+                AddToWarbannerBuff();
             }
             else if (EliteReworksPlugin.affixHauntedSimpleIndicatorEnabled)
             {
@@ -95,13 +99,14 @@ namespace EliteReworks.Tweaks.T2
                             if (squareDist < radiusSquare)
                             {
                                 AffixHauntedReviveAura ahr = tc.body.GetComponent<AffixHauntedReviveAura>();
-                                if (ahr && ahr.wardActive && ahr.attachedGhosts.Count < AffixHauntedReviveAura.maxAttachedGhosts)
+                                if (ahr && ahr.wardActive && (ahr.attachedGhosts.Count + ahr.attachedAliveMonsters.Count) < AffixHauntedReviveAura.maxAttachedGhosts)
                                 {
                                     CharacterBody ghostBody = Util.TryToCreateGhost(sourceBody, tc.body, 30);
                                     if (ghostBody.master && ghostBody.master.inventory)
                                     {
                                         ghostBody.master.inventory.RemoveItem(RoR2Content.Items.BoostDamage, 150);
                                     }
+                                    ghostBody.AddBuff(reviveBuff);
                                     ahr.attachedGhosts.Add(ghostBody);
                                     break;
                                 }
@@ -123,11 +128,29 @@ namespace EliteReworks.Tweaks.T2
         private static void ReviveAsGhost(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
         {
             orig(self, damageReport);
-            if (damageReport.victimBody && damageReport.victimBody.HasBuff(reviveBuff.buffIndex) && !damageReport.victimBody.HasBuff(RoR2Content.Buffs.AffixHaunted))
+            if (damageReport.victimBody && damageReport.victimBody.HasBuff(reviveBuff.buffIndex) && !damageReport.victimBody.disablingHurtBoxes && !damageReport.victimBody.HasBuff(RoR2Content.Buffs.AffixHaunted))
             {
                 AttemptSpawnGhost(damageReport.victimBody, damageReport.damageInfo.position, AffixHauntedReviveAura.wardRadius);
             }
         }
         #endregion
+    
+        private static void AddToWarbannerBuff()
+        {
+            //Revive Buff shows the warbanner effect
+            IL.RoR2.CharacterBody.UpdateAllTemporaryVisualEffects += (il) =>
+            {
+                ILCursor c = new ILCursor(il);
+                c.GotoNext(
+                     x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "Warbanner")
+                    );
+                c.Index += 2;
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<bool, CharacterBody, bool>>((hasWarbanner, self) =>
+                {
+                    return hasWarbanner || self.HasBuff(reviveBuff);
+                });
+            };
+        }
     }
 }

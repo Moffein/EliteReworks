@@ -15,9 +15,11 @@ namespace EliteReworks.Tweaks.T2.Components
 
         public static int maxAttachedGhosts = 7;
         public List<CharacterBody> attachedGhosts;
+        public List<CharacterBody> attachedAliveMonsters;
 
         private float stopwatch;
         private CharacterBody ownerBody;
+        private TeamComponent teamComponent;
 
         public bool wardActive = false;
 
@@ -27,12 +29,14 @@ namespace EliteReworks.Tweaks.T2.Components
             stopwatch = 0f;
 
             attachedGhosts = new List<CharacterBody>();
+            attachedAliveMonsters = new List<CharacterBody>();
 
             ownerBody = base.gameObject.GetComponent<CharacterBody>();
             if (!ownerBody)
             {
                 Destroy(this);
             }
+            teamComponent = ownerBody.teamComponent;
         }
 
         public void FixedUpdate()
@@ -45,6 +49,7 @@ namespace EliteReworks.Tweaks.T2.Components
                 if (NetworkServer.active && ownerBody.healthComponent && !ownerBody.healthComponent.alive)
                 {
                     DestroyGhosts();
+                    ClearAliveMonsters();
                 }
             }
 
@@ -76,13 +81,17 @@ namespace EliteReworks.Tweaks.T2.Components
                     if (stopwatch > refreshTime)
                     {
                         stopwatch -= refreshTime;
-                        UpdateGhosts();
-                        if (ownerBody.teamComponent)
+                        if (attachedGhosts.Count + attachedAliveMonsters.Count < maxAttachedGhosts)
                         {
-                            EliteReworksUtils.BuffSphere(ownerBody, AffixHaunted.reviveBuff.buffIndex, ownerBody.teamComponent.teamIndex, ownerBody.corePosition,
-                                AffixHauntedReviveAura.wardRadius, AffixHauntedReviveAura.buffDuration, null, true);
+                            FindAliveMonsters();
                         }
+                        UpdateGhosts();
+                        UpdateAliveMonsters();
                     }
+                }
+                else
+                {
+                    ClearAliveMonsters();
                 }
             }
         }
@@ -110,6 +119,105 @@ namespace EliteReworks.Tweaks.T2.Components
             }
         }
 
+        private void UpdateAliveMonsters()
+        {
+            if (attachedAliveMonsters.Count > 0)
+            {
+                float radiusSquare = wardRadius * wardRadius;
+                float squareDist;
+
+                List<CharacterBody> toRemove = new List<CharacterBody>();
+                foreach (CharacterBody cb in attachedAliveMonsters)
+                {
+                    bool remove = true;
+                    bool dead = false;
+                    if (cb)
+                    {
+                        remove = false;
+                        if (!(cb.healthComponent && cb.healthComponent.alive))
+                        {
+                            remove = true;
+                        }
+                        else
+                        {
+                            squareDist = (ownerBody.corePosition - cb.corePosition).sqrMagnitude;
+                            if (squareDist > radiusSquare)
+                            {
+                                if (cb.HasBuff(AffixHaunted.reviveBuff))
+                                {
+                                    cb.RemoveBuff(AffixHaunted.reviveBuff);
+                                }
+                                remove = true;
+                            }
+                        }
+                    }
+
+                    if (remove)
+                    {
+                        toRemove.Add(cb);
+                    }
+                }
+
+                if (toRemove.Count > 0)
+                {
+                    foreach (CharacterBody cb in toRemove)
+                    {
+                        attachedAliveMonsters.Remove(cb);
+                    }
+                }
+            }
+        }
+
+        private void FindAliveMonsters()
+        {
+            if (teamComponent)
+            {
+                Vector3 position = ownerBody.corePosition;
+                int slotsRemaining = maxAttachedGhosts - (attachedGhosts.Count + attachedAliveMonsters.Count);
+                if (slotsRemaining > 0)
+                {
+                    float radiusSquare = wardRadius * wardRadius;
+                    float squareDist;
+                    TeamIndex ti = teamComponent.teamIndex;
+
+                    System.Collections.ObjectModel.ReadOnlyCollection<TeamComponent> teamMembers = TeamComponent.GetTeamMembers(ti);
+                    foreach (TeamComponent tc in teamMembers)
+                    {
+                        if (tc.body && !tc.body.disablingHurtBoxes && tc.body.healthComponent && tc.body.healthComponent.alive)
+                        {
+                            if (!tc.body.HasBuff(RoR2Content.Buffs.AffixHaunted) && !tc.body.HasBuff(AffixHaunted.reviveBuff))
+                            {
+                                squareDist = (position - tc.body.corePosition).sqrMagnitude;
+                                if (squareDist <= radiusSquare)
+                                {
+                                    tc.body.AddBuff(AffixHaunted.reviveBuff);
+                                    attachedAliveMonsters.Add(tc.body);
+
+                                    slotsRemaining--;
+                                    if (slotsRemaining <= 0)
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void ClearAliveMonsters()
+        {
+            foreach(CharacterBody cb in attachedAliveMonsters)
+            {
+                if (cb && cb.HasBuff(AffixHaunted.reviveBuff) && cb.healthComponent && cb.healthComponent.alive)
+                {
+                    cb.RemoveBuff(AffixHaunted.reviveBuff);
+                }
+            }
+            attachedAliveMonsters.Clear();
+        }
+
         private void DestroyGhosts()
         {
             if (attachedGhosts.Count > 0)
@@ -128,6 +236,7 @@ namespace EliteReworks.Tweaks.T2.Components
         private void OnDestroy()
         {
             DestroyGhosts();
+            ClearAliveMonsters();
         }
     }
 }
