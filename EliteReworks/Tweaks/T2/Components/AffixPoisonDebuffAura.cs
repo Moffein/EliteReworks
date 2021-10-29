@@ -9,7 +9,7 @@ namespace EliteReworks.Tweaks.T2.Components
     public class AffixPoisonDebuffAura : MonoBehaviour
     {
         public static float wardRadius = 22f;
-        public static float buffDuration = 0.6f;
+        public static float buffDuration = 0.4f;
         public static float refreshTime = 0.2f;
         public static GameObject indicatorPrefab;
 

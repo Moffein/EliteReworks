@@ -11,8 +11,8 @@ namespace EliteReworks.Tweaks.T1
     public static class AffixBlue
     {
 		public static int baseMeatballCount = 5;
-		public static float lightningDamageCoefficient = 0.5f;
-		public static float lightningBlastRadius = 6f;
+		public static float lightningDamageCoefficient = 0.7f;
+		public static float lightningBlastRadius = 3f;
 		public static GameObject lightningProjectilePrefab;
 
 		public static GameObject triggerEffectPrefab;
@@ -57,9 +57,10 @@ namespace EliteReworks.Tweaks.T1
 			pie.blastProcCoefficient = 0f;
 			pie.blastRadius = lightningBlastRadius;
 			//pie.explosionEffect = BuildLightningEffect();
-			pie.impactEffect = BuildLightningEffect();
+			//pie.impactEffect = BuildLightningEffect();
 			pie.destroyOnEnemy = false;
 			pie.blastAttackerFiltering = AttackerFiltering.NeverHit;
+			pie.falloffModel = BlastAttack.FalloffModel.None;
 
 			ProjectileAPI.Add(projectile);
 			return projectile;

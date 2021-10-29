@@ -19,10 +19,10 @@ namespace EliteReworks.Tweaks.T2
 			malachiteDamage = DamageAPI.ReserveDamageType();
 			spikePrefab = BuildSpikePrefab();
 			spikeOrbProjectile = BuildSpikeOrb(spikePrefab);
-			AffixPoisonDebuffAura.indicatorPrefab = BuildIndicator();
+			AffixPoisonDebuffAura.indicatorPrefab = BuildIndicatorAlt();//BuildIndicator();
 
 			//Replace original code
-            On.RoR2.CharacterBody.UpdateAffixPoison += (On.RoR2.CharacterBody.orig_UpdateAffixPoison orig, RoR2.CharacterBody self, float deltaTime) =>
+			On.RoR2.CharacterBody.UpdateAffixPoison += (On.RoR2.CharacterBody.orig_UpdateAffixPoison orig, RoR2.CharacterBody self, float deltaTime) =>
             {
 				if (self.HasBuff(RoR2Content.Buffs.AffixPoison))
 				{
@@ -107,5 +107,28 @@ namespace EliteReworks.Tweaks.T2
 			PrefabAPI.RegisterNetworkPrefab(indicator);
 			return indicator;
 		}
-    }
+
+		private static GameObject BuildIndicatorAlt()
+		{
+			GameObject indicator = Resources.Load<GameObject>("prefabs/networkedobjects/shrines/ShrineHealingWard").InstantiateClone("MoffeinEliteReworksPoisonAltIndicator", true);
+			indicator.transform.localScale *= AffixPoisonDebuffAura.wardRadius;
+
+			UnityEngine.Object.Destroy(indicator.GetComponent<HealingWard>());
+			ParticleSystemRenderer[] pr = indicator.GetComponentsInChildren<ParticleSystemRenderer>();
+			foreach (ParticleSystemRenderer p in pr)
+			{
+				if (p.name == "HealingSymbols")
+				{
+					UnityEngine.Object.Destroy(p);
+				}
+			}
+
+			NetworkedBodyAttachment nba = indicator.AddComponent<NetworkedBodyAttachment>();
+			nba.shouldParentToAttachedBody = true;
+			nba.forceHostAuthority = false;
+
+			PrefabAPI.RegisterNetworkPrefab(indicator);
+			return indicator;
+		}
+	}
 }

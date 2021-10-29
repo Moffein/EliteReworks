@@ -21,6 +21,7 @@ namespace EliteReworks.Tweaks.T2
                 DisableBubble();
                 On.RoR2.GlobalEventManager.OnCharacterDeath += ReviveAsGhost;
                 AddToWarbannerBuff();
+                ChangeOnHitEffect();
             }
             else if (EliteReworksPlugin.affixHauntedSimpleIndicatorEnabled)
             {
@@ -149,6 +150,35 @@ namespace EliteReworks.Tweaks.T2
                 c.EmitDelegate<Func<bool, CharacterBody, bool>>((hasWarbanner, self) =>
                 {
                     return hasWarbanner || self.HasBuff(reviveBuff);
+                });
+            };
+        }
+
+        private static void ChangeOnHitEffect()
+        {
+            //Remove vanilla effect
+            IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+            {
+                ILCursor c = new ILCursor(il);
+                c.GotoNext(
+                     x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixHaunted")
+                    );
+                c.Remove();
+                c.Emit<EliteReworksPlugin>(OpCodes.Ldsfld, nameof(EliteReworksPlugin.EmptyBuff));
+            };
+
+            //Attach to CrippleOnHit
+            IL.RoR2.HealthComponent.TakeDamage += (il) =>
+            {
+                ILCursor c = new ILCursor(il);
+                c.GotoNext(
+                     x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixLunar")
+                    );
+                c.Index += 2;
+                c.Emit(OpCodes.Ldloc_1);
+                c.EmitDelegate<Func<bool, CharacterBody, bool>>((hasAffixLunar, body) =>
+                {
+                    return hasAffixLunar || body.HasBuff(RoR2Content.Buffs.AffixHaunted);
                 });
             };
         }
