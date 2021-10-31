@@ -19,7 +19,7 @@ namespace EliteReworks.Tweaks.T2
 			malachiteDamage = DamageAPI.ReserveDamageType();
 			spikePrefab = BuildSpikePrefab();
 			spikeOrbProjectile = BuildSpikeOrb(spikePrefab);
-			AffixPoisonDebuffAura.indicatorPrefab = BuildIndicatorAlt();//BuildIndicator();
+			AffixPoisonDebuffAura.indicatorPrefab = BuildIndicator();//BuildIndicatorAlt();
 
 			//Replace original code
 			On.RoR2.CharacterBody.UpdateAffixPoison += (On.RoR2.CharacterBody.orig_UpdateAffixPoison orig, RoR2.CharacterBody self, float deltaTime) =>
