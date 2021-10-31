@@ -15,11 +15,11 @@ namespace EliteReworks
     [BepInDependency("com.bepis.r2api")]
     [BepInDependency("com.TPDespair.ZetAspects", BepInDependency.DependencyFlags.SoftDependency)]
     [R2API.Utils.R2APISubmoduleDependency(nameof(PrefabAPI), nameof(EffectAPI), nameof(ProjectileAPI), nameof(BuffAPI), nameof(RecalculateStatsAPI), nameof(DamageAPI))]
-    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "0.0.7")]
+    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "0.1.0")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class EliteReworksPlugin : BaseUnityPlugin
     {
-        public static BuffDef EmptyBuff; //This is a buff that is never used. This is used to stop vanilla elite affix checks from working.
+        public static BuffDef EmptyBuff = null; //This is a buff that is never used. This is used to stop vanilla elite affix checks from working.
         public static bool modifyStats = true;
         public static bool affixBlueEnabled = true;
         public static bool affixBlueRemoveShield = true;
@@ -44,7 +44,6 @@ namespace EliteReworks
         {
             CheckDependencies();
             ReadConfig();
-            BuildEmptyBuff();
             if (affixWhiteEnabled)
             {
                 AffixWhite.Setup();
@@ -99,13 +98,6 @@ namespace EliteReworks
 
             affixHauntedSimpleIndicatorEnabled = base.Config.Bind<bool>(new ConfigDefinition("T2 - Celestine", "Simple Indicator"), false, new ConfigDescription("Replace the bubble with a less obtrusive indicator.")).Value;
             affixHauntedBetaEnabled = base.Config.Bind<bool>(new ConfigDefinition("T2 - Celestine", "Enable Changes (beta)"), false, new ConfigDescription("Enables beta rework to this elite type. Removes invisibility/bubbles, enemies that die near Celestines revive as ghosts.")).Value;
-        }
-
-        public void BuildEmptyBuff()
-        {
-            EmptyBuff = ScriptableObject.CreateInstance<BuffDef>();
-            EmptyBuff.name = "MoffeinEliteReworksEmptyBuff";
-            BuffAPI.Add(new CustomBuff(EmptyBuff));
         }
     }
 }
