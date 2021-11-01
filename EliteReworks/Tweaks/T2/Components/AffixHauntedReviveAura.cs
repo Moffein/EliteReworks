@@ -43,7 +43,8 @@ namespace EliteReworks.Tweaks.T2.Components
         {
 
             wardActive = true;
-            if (!(ownerBody && ownerBody.HasBuff(RoR2Content.Buffs.AffixHaunted) && ownerBody.healthComponent && ownerBody.healthComponent.alive))
+            bool eliteActive = ownerBody && ownerBody.HasBuff(RoR2Content.Buffs.AffixHaunted) && ownerBody.healthComponent && ownerBody.healthComponent.alive;
+            if (!eliteActive)
             {
                 wardActive = false;
                 if (NetworkServer.active && ownerBody.healthComponent && !ownerBody.healthComponent.alive)
@@ -55,7 +56,7 @@ namespace EliteReworks.Tweaks.T2.Components
 
             if (NetworkServer.active)
             {
-                if (ownerBody && ownerBody.HasBuff(RoR2Content.Buffs.AffixHaunted) && ownerBody.healthComponent && ownerBody.healthComponent.alive)
+                if (eliteActive)
                 {
                     if (ownerBody.healthComponent && ownerBody.healthComponent.isInFrozenState)
                     {
@@ -92,6 +93,21 @@ namespace EliteReworks.Tweaks.T2.Components
                 else
                 {
                     ClearAliveMonsters();
+                }
+
+                if (attachedGhosts.Count > 0)
+                {
+                    if (!ownerBody.HasBuff(AffixHaunted.ghostsActiveBuff))
+                    {
+                        ownerBody.AddBuff(AffixHaunted.ghostsActiveBuff);
+                    }
+                }
+                else
+                {
+                    if (ownerBody.HasBuff(AffixHaunted.ghostsActiveBuff))
+                    {
+                        ownerBody.RemoveBuff(AffixHaunted.ghostsActiveBuff);
+                    }
                 }
             }
         }

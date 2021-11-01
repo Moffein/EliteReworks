@@ -14,7 +14,7 @@ namespace EliteReworks.SharedHooks
             {
                 args.moveSpeedReductionMultAdd += 0.8f;
             }
-            if (sender.HasBuff(AffixHaunted.reviveBuff))
+            if (sender.HasBuff(AffixHaunted.reviveBuff) || sender.HasBuff(AffixHaunted.ghostsActiveBuff))
             {
                 args.moveSpeedMultAdd += 0.3f;
                 args.attackSpeedMultAdd += 0.3f;

@@ -11,16 +11,18 @@ namespace EliteReworks.Tweaks.T2
 {
     public static class AffixHaunted
     {
-        public static BuffDef reviveBuff;
+        public static BuffDef reviveBuff;   //Indicates if an enemy is attached to a Celestine.
+        public static BuffDef ghostsActiveBuff; //Indicates that a Celestine has active ghosts.
 
         public static void Setup()
         {
             reviveBuff = CreateReviveBuff();
+            ghostsActiveBuff = CreateGhostsActiveBuff();
             if (EliteReworksPlugin.affixHauntedBetaEnabled)
             {
                 DisableBubble();
                 On.RoR2.GlobalEventManager.OnCharacterDeath += ReviveAsGhost;
-                AddToWarbannerBuff();
+                StealBuffVFX();
                 ChangeOnHitEffect();
             }
             else if (EliteReworksPlugin.affixHauntedSimpleIndicatorEnabled)
@@ -81,6 +83,18 @@ namespace EliteReworks.Tweaks.T2
             return buff;
         }
 
+        public static BuffDef CreateGhostsActiveBuff()
+        {
+            BuffDef buff = ScriptableObject.CreateInstance<BuffDef>();
+            buff.buffColor = new Color(210f / 255f, 50f / 255f, 22f / 255f);
+            buff.canStack = false;
+            buff.isDebuff = false;
+            buff.name = "EliteReworksHauntedGhostsActive";
+            buff.iconSprite = Resources.Load<Sprite>("textures/bufficons/texBuffDeathMarkIcon");
+            BuffAPI.Add(new CustomBuff(buff));
+            return buff;
+        }
+
         public static void AttemptSpawnGhost(CharacterBody sourceBody, Vector3 position, float radius)
         {
             float radiusSquare = radius * radius;
@@ -136,7 +150,7 @@ namespace EliteReworks.Tweaks.T2
         }
         #endregion
     
-        private static void AddToWarbannerBuff()
+        private static void StealBuffVFX()
         {
             //Revive Buff shows the warbanner effect
             IL.RoR2.CharacterBody.UpdateAllTemporaryVisualEffects += (il) =>
@@ -150,6 +164,20 @@ namespace EliteReworks.Tweaks.T2
                 c.EmitDelegate<Func<bool, CharacterBody, bool>>((hasWarbanner, self) =>
                 {
                     return hasWarbanner || self.HasBuff(reviveBuff);
+                });
+            };
+
+            IL.RoR2.CharacterBody.OnClientBuffsChanged += (il) =>
+            {
+                ILCursor c = new ILCursor(il);
+                c.GotoNext(
+                     x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "WarCryBuff")
+                    );
+                c.Index += 2;
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<bool, CharacterBody, bool>>((hasWarCry, self) =>
+                {
+                    return hasWarCry || self.HasBuff(ghostsActiveBuff);
                 });
             };
         }

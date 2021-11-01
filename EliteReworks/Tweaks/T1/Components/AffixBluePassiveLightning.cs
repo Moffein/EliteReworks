@@ -16,7 +16,7 @@ namespace EliteReworks.Tweaks.T1.Components
         public static float baseLightningTimer = 6f;
         public static CharacterBody ownerBody;
         public static int baseMeatballCount = 5;
-        public static float baseDamage = 32f;
+        public static float baseDamage = 36f;
 
         public static bool uncapOnHitLightning = false;
         public static int baseBodyMeatballStock = 20;
