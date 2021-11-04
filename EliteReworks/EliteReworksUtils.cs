@@ -9,7 +9,7 @@ namespace EliteReworks
 {
     public static class EliteReworksUtils
     {
-        public static void DebuffSphere(BuffIndex buff, TeamIndex team, Vector3 position, float radius, float debuffDuration, GameObject effect, GameObject hitEffect, bool ignoreImmunity)
+        public static void DebuffSphere(BuffIndex buff, TeamIndex team, Vector3 position, float radius, float debuffDuration, GameObject effect, GameObject hitEffect, bool ignoreImmunity, bool falloff = false)
         {
             if (!NetworkServer.active)
             {
@@ -24,7 +24,7 @@ namespace EliteReworks
                     scale = radius
                 }, true);
             }
-
+            float radiusHalfwaySqr = radius * radius * 0.25f;
             List<HealthComponent> hcList = new List<HealthComponent>();
             Collider[] array = Physics.OverlapSphere(position, radius, LayerIndex.entityPrecise.mask);
             for (int i = 0; i < array.Length; i++)
@@ -40,9 +40,18 @@ namespace EliteReworks
                         if (healthComponent.body && healthComponent.body.teamComponent && healthComponent.body.teamComponent.teamIndex != team)
                         {
                             if (healthComponent.body
-                                && (ignoreImmunity|| (!healthComponent.body.HasBuff(RoR2Content.Buffs.Immune) && !healthComponent.body.HasBuff(RoR2Content.Buffs.HiddenInvincibility))))
+                                && (ignoreImmunity || (!healthComponent.body.HasBuff(RoR2Content.Buffs.Immune) && !healthComponent.body.HasBuff(RoR2Content.Buffs.HiddenInvincibility))))
                             {
-                                healthComponent.body.AddTimedBuff(buff, debuffDuration);
+                                float effectiveness = 1f;
+                                if (falloff)
+                                {
+                                    float distSqr = (position - hurtBox.collider.ClosestPoint(position)).sqrMagnitude;
+                                    if (distSqr > radiusHalfwaySqr)  //Reduce effectiveness when over half the radius away
+                                    {
+                                        effectiveness *= 0.5f;
+                                    }
+                                }
+                                healthComponent.body.AddTimedBuff(buff, effectiveness * debuffDuration);
                                 if (hitEffect != null)
                                 {
                                     EffectManager.SpawnEffect(hitEffect, new EffectData

@@ -16,35 +16,34 @@ namespace EliteReworks.SharedHooks
         public static void TriggerOnHitAllEffects(On.RoR2.GlobalEventManager.orig_OnHitAll orig, GlobalEventManager self, DamageInfo damageInfo, GameObject hitObject)
         {
             orig(self, damageInfo, hitObject);
-            if (damageInfo.procCoefficient == 0f || damageInfo.rejected || !NetworkServer.active)
+            if (NetworkServer.active && !damageInfo.rejected && damageInfo.procCoefficient > 0f)
             {
-                return;
-            }
-            if (damageInfo.attacker)
-            {
-                CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                if (attackerBody)
+                if (damageInfo.attacker)
                 {
-                    if (EliteReworksPlugin.affixWhiteEnabled && attackerBody.teamComponent && attackerBody.HasBuff(RoR2Content.Buffs.AffixWhite))
+                    CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
+                    if (attackerBody)
                     {
-                        float radius = AffixWhite.baseRadius;
-                        float slow = AffixWhite.slowDuration * 0.33f + AffixWhite.slowDuration * 0.67f * damageInfo.procCoefficient;
-                        EliteReworksUtils.DebuffSphere(EliteReworksPlugin.zetAspectsLoaded ? AffixWhite.slow80alt.buffIndex : RoR2Content.Buffs.Slow80.buffIndex, attackerBody.teamComponent.teamIndex,
-                            damageInfo.position, radius, slow,
-                            AffixWhite.explosionEffectPrefab, AffixWhite.hitEffectPrefab, false);
-                    }
-                    if (EliteReworksPlugin.affixBlueEnabled && attackerBody.HasBuff(RoR2Content.Buffs.AffixBlue))
-                    {
-                        AffixBluePassiveLightning ab = attackerBody.GetComponent<AffixBluePassiveLightning>();
-                        if (ab)
+                        if (EliteReworksPlugin.affixWhiteEnabled && attackerBody.teamComponent && attackerBody.HasBuff(RoR2Content.Buffs.AffixWhite))
                         {
-                            int meatballCount = Math.Min(Math.Max(1, Mathf.RoundToInt(AffixBlue.baseMeatballCount * damageInfo.procCoefficient)), AffixBluePassiveLightning.baseBodyMeatballStock);
-                            if (ab.OnHitReady(meatballCount))
+                            float radius = AffixWhite.baseRadius;
+                            float slowDuration = AffixWhite.baseSlowDuration + AffixWhite.procSlowDuration * damageInfo.procCoefficient;
+                            EliteReworksUtils.DebuffSphere(EliteReworksPlugin.zetAspectsLoaded ? AffixWhite.slow80alt.buffIndex : RoR2Content.Buffs.Slow80.buffIndex, attackerBody.teamComponent.teamIndex,
+                                damageInfo.position, radius, slowDuration,
+                                AffixWhite.explosionEffectPrefab, AffixWhite.hitEffectPrefab, false);
+                        }
+                        if (EliteReworksPlugin.affixBlueEnabled && attackerBody.HasBuff(RoR2Content.Buffs.AffixBlue))
+                        {
+                            AffixBluePassiveLightning ab = attackerBody.GetComponent<AffixBluePassiveLightning>();
+                            if (ab)
                             {
-                                ab.TriggerOnHit(meatballCount);
-                                AffixBlue.FireMeatballs(damageInfo.attacker, attackerBody.isChampion, damageInfo.damage * AffixBlue.lightningDamageCoefficient, damageInfo.crit,
-                                        Vector3.up, damageInfo.position + Vector3.up, attackerBody.transform.forward,
-                                        meatballCount, 20f, 400f, 20f);
+                                int meatballCount = Math.Min(Math.Max(1, Mathf.RoundToInt(AffixBlue.baseMeatballCount * damageInfo.procCoefficient)), AffixBluePassiveLightning.baseBodyMeatballStock);
+                                if (ab.OnHitReady(meatballCount))
+                                {
+                                    ab.TriggerOnHit(meatballCount);
+                                    AffixBlue.FireMeatballs(damageInfo.attacker, attackerBody.isChampion, damageInfo.damage * AffixBlue.lightningDamageCoefficient, damageInfo.crit,
+                                            Vector3.up, damageInfo.position + Vector3.up, attackerBody.transform.forward,
+                                            meatballCount, 20f, 400f, 20f, true);
+                                }
                             }
                         }
                     }

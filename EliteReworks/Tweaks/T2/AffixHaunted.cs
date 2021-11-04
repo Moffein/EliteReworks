@@ -153,7 +153,7 @@ namespace EliteReworks.Tweaks.T2
         private static void StealBuffVFX()
         {
             //Revive Buff shows the warbanner effect
-            IL.RoR2.CharacterBody.UpdateAllTemporaryVisualEffects += (il) =>
+            /*IL.RoR2.CharacterBody.UpdateAllTemporaryVisualEffects += (il) =>
             {
                 ILCursor c = new ILCursor(il);
                 c.GotoNext(
@@ -165,19 +165,33 @@ namespace EliteReworks.Tweaks.T2
                 {
                     return hasWarbanner || self.HasBuff(reviveBuff);
                 });
-            };
+            };*/
 
-            IL.RoR2.CharacterBody.OnClientBuffsChanged += (il) =>
+            IL.RoR2.CharacterBody.UpdateAllTemporaryVisualEffects += (il) =>
             {
                 ILCursor c = new ILCursor(il);
                 c.GotoNext(
-                     x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "WarCryBuff")
+                     x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "Warbanner")
                     );
                 c.Index += 2;
                 c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate<Func<bool, CharacterBody, bool>>((hasWarCry, self) =>
+                c.EmitDelegate<Func<bool, CharacterBody, bool>>((hasBuff, self) =>
                 {
-                    return hasWarCry || self.HasBuff(ghostsActiveBuff);
+                    return hasBuff || self.HasBuff(ghostsActiveBuff);
+                });
+            };
+
+            IL.RoR2.CharacterModel.UpdateOverlays += (il) =>
+            {
+                ILCursor c = new ILCursor(il);
+                c.GotoNext(
+                     x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "FullCrit")
+                    );
+                c.Index += 2;
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<bool, CharacterModel, bool>>((hasBuff, self) =>
+                {
+                    return hasBuff || (self.body.HasBuff(reviveBuff));
                 });
             };
         }

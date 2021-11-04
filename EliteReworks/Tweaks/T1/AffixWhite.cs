@@ -16,7 +16,8 @@ namespace EliteReworks.Tweaks.T1
         public static BuffDef slow80alt;
 
         public static float baseRadius = 4f;
-        public static float slowDuration = 3f;
+        public static float baseSlowDuration = 0.5f;
+        public static float procSlowDuration = 2f;
 
         public static GameObject explosionEffectPrefab;
         public static GameObject hitEffectPrefab;
