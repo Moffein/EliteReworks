@@ -10,10 +10,9 @@ namespace EliteReworks.Tweaks.T2.Components
     public class AffixHauntedReviveAura : MonoBehaviour
     {
         public static float wardRadius = 30f;
-        public static float buffDuration = 1f;
-        public static float refreshTime = 0.25f;
+        public static float refreshTime = 0.4f;
 
-        public static int maxAttachedGhosts = 7;
+        public static int maxAttachedGhosts = 3;
         public List<CharacterBody> attachedGhosts;
         public List<CharacterBody> attachedAliveMonsters;
 
@@ -137,6 +136,9 @@ namespace EliteReworks.Tweaks.T2.Components
 
         private void UpdateAliveMonsters()
         {
+            int maxAlive = maxAttachedGhosts - attachedGhosts.Count;
+            int aliveCount = 1;
+
             if (attachedAliveMonsters.Count > 0)
             {
                 float radiusSquare = wardRadius * wardRadius;
@@ -146,11 +148,10 @@ namespace EliteReworks.Tweaks.T2.Components
                 foreach (CharacterBody cb in attachedAliveMonsters)
                 {
                     bool remove = true;
-                    bool dead = false;
                     if (cb)
                     {
                         remove = false;
-                        if (!(cb.healthComponent && cb.healthComponent.alive))
+                        if (!(cb.healthComponent && cb.healthComponent.alive) || aliveCount > maxAlive)
                         {
                             remove = true;
                         }
@@ -159,10 +160,6 @@ namespace EliteReworks.Tweaks.T2.Components
                             squareDist = (ownerBody.corePosition - cb.corePosition).sqrMagnitude;
                             if (squareDist > radiusSquare)
                             {
-                                if (cb.HasBuff(AffixHaunted.reviveBuff))
-                                {
-                                    cb.RemoveBuff(AffixHaunted.reviveBuff);
-                                }
                                 remove = true;
                             }
                         }
@@ -172,12 +169,20 @@ namespace EliteReworks.Tweaks.T2.Components
                     {
                         toRemove.Add(cb);
                     }
+                    else
+                    {
+                        aliveCount++;
+                    }
                 }
 
                 if (toRemove.Count > 0)
                 {
                     foreach (CharacterBody cb in toRemove)
                     {
+                        if (cb.HasBuff(AffixHaunted.reviveBuff))
+                        {
+                            cb.RemoveBuff(AffixHaunted.reviveBuff);
+                        }
                         attachedAliveMonsters.Remove(cb);
                     }
                 }
@@ -224,7 +229,7 @@ namespace EliteReworks.Tweaks.T2.Components
 
         private void ClearAliveMonsters()
         {
-            foreach(CharacterBody cb in attachedAliveMonsters)
+            foreach (CharacterBody cb in attachedAliveMonsters)
             {
                 if (cb && cb.HasBuff(AffixHaunted.reviveBuff) && cb.healthComponent && cb.healthComponent.alive)
                 {

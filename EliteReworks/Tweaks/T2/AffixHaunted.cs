@@ -12,12 +12,15 @@ namespace EliteReworks.Tweaks.T2
     public static class AffixHaunted
     {
         public static BuffDef reviveBuff;   //Indicates if an enemy is attached to a Celestine.
-        public static BuffDef ghostsActiveBuff; //Indicates that a Celestine has active ghosts.
+        public static BuffDef ghostsActiveBuff; //Indicates that a Celestine has active ghosts.'
+        public static BuffDef armorReductionBuff;   //Applied on-hit.
 
         public static void Setup()
         {
             reviveBuff = CreateReviveBuff();
             ghostsActiveBuff = CreateGhostsActiveBuff();
+            armorReductionBuff = CreateArmorReductionBuff();
+
             if (EliteReworksPlugin.affixHauntedBetaEnabled)
             {
                 DisableBubble();
@@ -95,6 +98,18 @@ namespace EliteReworks.Tweaks.T2
             return buff;
         }
 
+        public static BuffDef CreateArmorReductionBuff()
+        {
+            BuffDef buff = ScriptableObject.CreateInstance<BuffDef>();
+            buff.buffColor = new Color(132f / 255f, 214f / 255f, 236f / 255f);
+            buff.canStack = false;
+            buff.isDebuff = true;
+            buff.name = "EliteReworksHauntedArmorReduction";
+            buff.iconSprite = Resources.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
+            BuffAPI.Add(new CustomBuff(buff));
+            return buff;
+        }
+
         public static void AttemptSpawnGhost(CharacterBody sourceBody, Vector3 position, float radius)
         {
             float radiusSquare = radius * radius;
@@ -114,7 +129,7 @@ namespace EliteReworks.Tweaks.T2
                             if (squareDist < radiusSquare)
                             {
                                 AffixHauntedReviveAura ahr = tc.body.GetComponent<AffixHauntedReviveAura>();
-                                if (ahr && ahr.wardActive && (ahr.attachedGhosts.Count + ahr.attachedAliveMonsters.Count) < AffixHauntedReviveAura.maxAttachedGhosts)
+                                if (ahr && ahr.wardActive && ahr.attachedGhosts.Count < AffixHauntedReviveAura.maxAttachedGhosts)
                                 {
                                     CharacterBody ghostBody = Util.TryToCreateGhost(sourceBody, tc.body, 30);
                                     if (ghostBody.master && ghostBody.master.inventory)
@@ -171,6 +186,16 @@ namespace EliteReworks.Tweaks.T2
             {
                 ILCursor c = new ILCursor(il);
                 c.GotoNext(
+                      x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "Cripple")
+                     );
+                c.Index += 2;
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<bool, CharacterBody, bool>>((hasBuff, self) =>
+                {
+                    return hasBuff || self.HasBuff(armorReductionBuff);
+                });
+
+                c.GotoNext(
                      x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "Warbanner")
                     );
                 c.Index += 2;
@@ -209,19 +234,24 @@ namespace EliteReworks.Tweaks.T2
                 c.Emit<EliteReworksPlugin>(OpCodes.Ldsfld, nameof(EliteReworksPlugin.EmptyBuff));
             };
 
-            //Attach to CrippleOnHit
-            IL.RoR2.HealthComponent.TakeDamage += (il) =>
+            On.RoR2.GlobalEventManager.OnHitEnemy += (orig, self, damageInfo, victim) =>
             {
-                ILCursor c = new ILCursor(il);
-                c.GotoNext(
-                     x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixLunar")
-                    );
-                c.Index += 2;
-                c.Emit(OpCodes.Ldloc_1);
-                c.EmitDelegate<Func<bool, CharacterBody, bool>>((hasAffixLunar, body) =>
+                orig(self, damageInfo, victim);
+                if (NetworkServer.active && !damageInfo.rejected && damageInfo.procCoefficient > 0f && damageInfo.attacker && victim)
                 {
-                    return hasAffixLunar || body.HasBuff(RoR2Content.Buffs.AffixHaunted);
-                });
+                    CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
+                    if (attackerBody)
+                    {
+                        CharacterBody victimBody = victim.GetComponent<CharacterBody>();
+                        if (victimBody)
+                        {
+                            if (attackerBody.HasBuff(RoR2Content.Buffs.AffixHaunted))
+                            {
+                                victimBody.AddTimedBuff(AffixHaunted.armorReductionBuff, 3f);
+                            }
+                        }
+                    }
+                }
             };
         }
     }

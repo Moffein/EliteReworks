@@ -15,7 +15,7 @@ namespace EliteReworks
     [BepInDependency("com.bepis.r2api")]
     [BepInDependency("com.TPDespair.ZetAspects", BepInDependency.DependencyFlags.SoftDependency)]
     [R2API.Utils.R2APISubmoduleDependency(nameof(PrefabAPI), nameof(EffectAPI), nameof(ProjectileAPI), nameof(BuffAPI), nameof(RecalculateStatsAPI), nameof(DamageAPI))]
-    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "0.1.3")]
+    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "0.1.4")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class EliteReworksPlugin : BaseUnityPlugin
     {
@@ -78,8 +78,11 @@ namespace EliteReworks
             On.RoR2.CharacterBody.OnClientBuffsChanged += OnClientBuffsChanged.AddEliteComponents;
             On.RoR2.GlobalEventManager.OnHitAll += OnHitAll.TriggerOnHitAllEffects;
             On.RoR2.HealthComponent.TakeDamage += TakeDamage.HealthComponent_TakeDamage;
+            On.RoR2.CharacterBody.RecalculateStats += RecalculateStats.CharacterBody_RecalculateStats;
             RecalculateStatsAPI.GetStatCoefficients += GetStatCoefficients.Hook;
         }
+
+        
 
         public void ReadConfig()
         {

@@ -31,7 +31,7 @@ namespace EliteReworks.Tweaks
                         //Debug.Log("Modifying t2 elites");
                         edf.costMultiplier = 15f;
                         edf.healthBoostCoefficient = 10f;
-                        edf.damageBoostCoefficient = 4f;
+                        edf.damageBoostCoefficient = 3.5f;
                     }
                 }
             };

@@ -14,10 +14,19 @@ namespace EliteReworks.SharedHooks
             {
                 args.moveSpeedReductionMultAdd += 0.8f;
             }
-            if (sender.HasBuff(AffixHaunted.reviveBuff) || sender.HasBuff(AffixHaunted.ghostsActiveBuff))
+            if (sender.HasBuff(AffixHaunted.reviveBuff))
+            {
+                args.moveSpeedMultAdd += 0.5f;
+                args.attackSpeedMultAdd += 0.3f;
+            }
+            if (sender.HasBuff(AffixHaunted.ghostsActiveBuff))
             {
                 args.moveSpeedMultAdd += 0.3f;
                 args.attackSpeedMultAdd += 0.3f;
+            }
+            if (sender.HasBuff(AffixHaunted.armorReductionBuff))
+            {
+                args.armorAdd -= 20f;
             }
         }
     }

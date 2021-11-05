@@ -95,7 +95,7 @@ namespace EliteReworks.Tweaks.T1.Components
             lightningStopwatch += Time.fixedDeltaTime;
             if (lightningStopwatch >= baseLightningTimer)
             {
-                lightningStopwatch -= baseLightningTimer;
+                lightningStopwatch = 0f;
                 int meatballCount = baseMeatballCount + (int)(ownerBody.radius * baseMeatballCount/3f);
 
                 //float scaledDamage = ownerBody.damage * damageCoefficient;
