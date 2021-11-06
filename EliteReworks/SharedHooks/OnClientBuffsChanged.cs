@@ -2,6 +2,7 @@
 using RoR2;
 using EliteReworks.Tweaks.T1.Components;
 using EliteReworks.Tweaks.T2.Components;
+using UnityEngine.Networking;
 
 namespace EliteReworks.SharedHooks
 {
@@ -10,7 +11,7 @@ namespace EliteReworks.SharedHooks
 		public static void AddEliteComponents(On.RoR2.CharacterBody.orig_OnClientBuffsChanged orig, CharacterBody self)
 		{
 			orig(self);
-			if (self.gameObject)
+			if (self.gameObject && NetworkServer.active)
 			{
 				if (EliteReworksPlugin.affixBlueEnabled && self.HasBuff(RoR2Content.Buffs.AffixBlue.buffIndex) && !self.gameObject.GetComponent<AffixBluePassiveLightning>())
 				{
