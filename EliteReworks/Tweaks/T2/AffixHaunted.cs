@@ -134,7 +134,8 @@ namespace EliteReworks.Tweaks.T2
                                     CharacterBody ghostBody = Util.TryToCreateGhost(sourceBody, tc.body, 30);
                                     if (ghostBody.master && ghostBody.master.inventory)
                                     {
-                                        ghostBody.master.inventory.RemoveItem(RoR2Content.Items.BoostDamage, 150);
+                                        ghostBody.master.inventory.RemoveItem(RoR2Content.Items.BoostDamage, ghostBody.master.inventory.GetItemCount(RoR2Content.Items.BoostDamage));
+                                        ghostBody.master.inventory.SetEquipmentIndex(EquipmentIndex.None);
                                     }
                                     ghostBody.AddBuff(reviveBuff);
                                     ahr.attachedGhosts.Add(ghostBody);
