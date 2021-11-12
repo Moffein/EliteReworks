@@ -12,7 +12,7 @@ namespace EliteReworks.Tweaks.T2.Components
         public static float wardRadius = 30f;
         public static float refreshTime = 0.4f;
 
-        public static int maxAttachedGhosts = 3;
+        public static int maxAttachedGhosts = 4;
         public List<CharacterBody> attachedGhosts;
         public List<CharacterBody> attachedAliveMonsters;
 
