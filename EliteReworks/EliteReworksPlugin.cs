@@ -72,7 +72,7 @@ namespace EliteReworks
             }
 
             //These all have things to check if config features are enabled
-            On.RoR2.CharacterBody.OnClientBuffsChanged += OnClientBuffsChanged.AddEliteComponents;
+            On.RoR2.CharacterBody.AddBuff_BuffIndex += AddBuff.AddEliteComponents;
             On.RoR2.GlobalEventManager.OnHitAll += OnHitAll.TriggerOnHitAllEffects;
             On.RoR2.HealthComponent.TakeDamage += TakeDamage.HealthComponent_TakeDamage;
             On.RoR2.CharacterBody.RecalculateStats += RecalculateStats.CharacterBody_RecalculateStats;
