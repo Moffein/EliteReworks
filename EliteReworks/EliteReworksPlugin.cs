@@ -26,17 +26,14 @@ namespace EliteReworks
         public static bool affixWhiteEnabled = true;
         public static bool affixRedEnabled = true;
         public static bool affixHauntedSimpleIndicatorEnabled = true;
-        public static bool affixHauntedBetaEnabled = true;
+        public static bool affixHauntedEnabled = true;
         public static bool affixPoisonEnabled = true;
 
         public static bool zetAspectsLoaded = false;
 
         private void CheckDependencies()
         {
-            if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.TPDespair.ZetAspects"))
-            {
-                zetAspectsLoaded = true;
-            }
+            zetAspectsLoaded = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.TPDespair.ZetAspects");
         }
 
 
@@ -60,7 +57,7 @@ namespace EliteReworks
             {
                 AffixRed.Setup();
             }
-            if (affixHauntedSimpleIndicatorEnabled || affixHauntedBetaEnabled)
+            if (affixHauntedSimpleIndicatorEnabled || affixHauntedEnabled)
             {
                 AffixHaunted.Setup();
             }
@@ -99,8 +96,7 @@ namespace EliteReworks
             
             affixPoisonEnabled = base.Config.Bind<bool>(new ConfigDefinition("T2 - Malachite", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
 
-            affixHauntedSimpleIndicatorEnabled = base.Config.Bind<bool>(new ConfigDefinition("T2 - Celestine", "Simple Indicator"), false, new ConfigDescription("Replace the bubble with a less obtrusive indicator.")).Value;
-            affixHauntedBetaEnabled = base.Config.Bind<bool>(new ConfigDefinition("T2 - Celestine", "Enable Changes (beta)"), false, new ConfigDescription("Enables beta rework to this elite type. Removes invisibility/bubbles, enemies that die near Celestines revive as ghosts.")).Value;
+            affixHauntedEnabled = base.Config.Bind<bool>(new ConfigDefinition("T2 - Celestine", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
         }
     }
 }

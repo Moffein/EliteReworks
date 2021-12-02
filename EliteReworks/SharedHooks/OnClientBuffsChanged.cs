@@ -11,25 +11,30 @@ namespace EliteReworks.SharedHooks
 		public static void AddEliteComponents(On.RoR2.CharacterBody.orig_OnClientBuffsChanged orig, CharacterBody self)
 		{
 			orig(self);
-			if (self.gameObject && NetworkServer.active)
+			if (NetworkServer.active && self.gameObject)
 			{
-				if (EliteReworksPlugin.affixBlueEnabled && self.HasBuff(RoR2Content.Buffs.AffixBlue.buffIndex) && !self.gameObject.GetComponent<AffixBluePassiveLightning>())
+				if (EliteReworksPlugin.affixBlueEnabled)
 				{
-					self.gameObject.AddComponent<AffixBluePassiveLightning>();
+					if (self.HasBuff(RoR2Content.Buffs.AffixBlue.buffIndex) && !self.gameObject.GetComponent<AffixBluePassiveLightning>())
+					{
+						self.gameObject.AddComponent<AffixBluePassiveLightning>();
+					}
 				}
-				if (EliteReworksPlugin.affixPoisonEnabled && self.HasBuff(RoR2Content.Buffs.AffixPoison.buffIndex) && !self.gameObject.GetComponent<AffixPoisonDebuffAura>())
+				if (EliteReworksPlugin.affixPoisonEnabled)
 				{
-					self.gameObject.AddComponent<AffixPoisonDebuffAura>();
+					if (self.HasBuff(RoR2Content.Buffs.AffixPoison.buffIndex) && !self.gameObject.GetComponent<AffixPoisonDebuffAura>())
+					{
+						self.gameObject.AddComponent<AffixPoisonDebuffAura>();
+					}
 				}
 				if (self.HasBuff(RoR2Content.Buffs.AffixHaunted.buffIndex))
 				{
-					if (EliteReworksPlugin.affixHauntedBetaEnabled && !self.gameObject.GetComponent<AffixHauntedReviveAura>())
+					if (EliteReworksPlugin.affixHauntedEnabled)
 					{
-						self.gameObject.AddComponent<AffixHauntedReviveAura>();
-					}
-					else if (EliteReworksPlugin.affixHauntedSimpleIndicatorEnabled && !self.gameObject.GetComponent<AffixHauntedAura>())
-					{
-						self.gameObject.AddComponent<AffixHauntedAura>();
+						if (!self.gameObject.GetComponent<AffixHauntedReviveAura>())
+						{
+							self.gameObject.AddComponent<AffixHauntedReviveAura>();
+						}
 					}
 				}
 			}

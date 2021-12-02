@@ -21,17 +21,12 @@ namespace EliteReworks.Tweaks.T2
             ghostsActiveBuff = CreateGhostsActiveBuff();
             armorReductionBuff = CreateArmorReductionBuff();
 
-            if (EliteReworksPlugin.affixHauntedBetaEnabled)
+            if (EliteReworksPlugin.affixHauntedEnabled)
             {
                 DisableBubble();
                 On.RoR2.GlobalEventManager.OnCharacterDeath += ReviveAsGhost;
                 StealBuffVFX();
                 ChangeOnHitEffect();
-            }
-            else if (EliteReworksPlugin.affixHauntedSimpleIndicatorEnabled)
-            {
-                AffixHauntedAura.indicatorPrefab = BuildIndicator();
-                HideBubble();
             }
         }
 
@@ -112,6 +107,8 @@ namespace EliteReworks.Tweaks.T2
 
         public static void AttemptSpawnGhost(CharacterBody sourceBody, Vector3 position, float radius)
         {
+            if (!sourceBody || (sourceBody.bodyFlags & CharacterBody.BodyFlags.Masterless) == CharacterBody.BodyFlags.Masterless) return;
+
             float radiusSquare = radius * radius;
             float squareDist;
 
@@ -119,27 +116,35 @@ namespace EliteReworks.Tweaks.T2
             {
                 TeamIndex ti = sourceBody.teamComponent.teamIndex;
                 System.Collections.ObjectModel.ReadOnlyCollection<TeamComponent> teamMembers = TeamComponent.GetTeamMembers(ti);
-                foreach (TeamComponent tc in teamMembers)
+                if (teamMembers != null)
                 {
-                    if (tc.body && tc.body.healthComponent && tc.body.healthComponent.alive)
+                    foreach (TeamComponent tc in teamMembers)
                     {
-                        if (tc.body.HasBuff(RoR2Content.Buffs.AffixHaunted))
+                        if (tc.body
+                            && (tc.body.bodyFlags & CharacterBody.BodyFlags.Masterless) != CharacterBody.BodyFlags.Masterless
+                            && tc.body.healthComponent && tc.body.healthComponent.alive)
                         {
-                            squareDist = (position - tc.body.corePosition).sqrMagnitude;
-                            if (squareDist < radiusSquare)
+                            if (tc.body.HasBuff(RoR2Content.Buffs.AffixHaunted))
                             {
-                                AffixHauntedReviveAura ahr = tc.body.GetComponent<AffixHauntedReviveAura>();
-                                if (ahr && ahr.wardActive && ahr.attachedGhosts.Count < AffixHauntedReviveAura.maxAttachedGhosts)
+                                squareDist = (position - tc.body.corePosition).sqrMagnitude;
+                                if (squareDist < radiusSquare)
                                 {
-                                    CharacterBody ghostBody = Util.TryToCreateGhost(sourceBody, tc.body, 30);
-                                    if (ghostBody.master && ghostBody.master.inventory)
+                                    AffixHauntedReviveAura ahr = tc.body.GetComponent<AffixHauntedReviveAura>();
+                                    if (ahr && ahr.wardActive && ahr.attachedGhosts.Count < AffixHauntedReviveAura.maxAttachedGhosts)
                                     {
-                                        ghostBody.master.inventory.RemoveItem(RoR2Content.Items.BoostDamage, ghostBody.master.inventory.GetItemCount(RoR2Content.Items.BoostDamage));
-                                        ghostBody.master.inventory.SetEquipmentIndex(EquipmentIndex.None);
+                                        CharacterBody ghostBody = Util.TryToCreateGhost(sourceBody, tc.body, 30);
+                                        if (ghostBody)
+                                        {
+                                            if (ghostBody.master && ghostBody.master.inventory)
+                                            {
+                                                ghostBody.master.inventory.RemoveItem(RoR2Content.Items.BoostDamage, ghostBody.master.inventory.GetItemCount(RoR2Content.Items.BoostDamage));
+                                                ghostBody.master.inventory.SetEquipmentIndex(EquipmentIndex.None);
+                                            }
+                                            ghostBody.AddBuff(reviveBuff);
+                                            ahr.attachedGhosts.Add(ghostBody);
+                                        }
+                                        break;
                                     }
-                                    ghostBody.AddBuff(reviveBuff);
-                                    ahr.attachedGhosts.Add(ghostBody);
-                                    break;
                                 }
                             }
                         }
@@ -159,7 +164,10 @@ namespace EliteReworks.Tweaks.T2
         private static void ReviveAsGhost(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
         {
             orig(self, damageReport);
-            if (damageReport.victimBody && damageReport.victimBody.HasBuff(reviveBuff.buffIndex) && !damageReport.victimBody.disablingHurtBoxes && !damageReport.victimBody.HasBuff(RoR2Content.Buffs.AffixHaunted))
+            if (damageReport.victimBody
+                && damageReport.victimBody.HasBuff(reviveBuff.buffIndex)
+                && !damageReport.victimBody.disablingHurtBoxes
+                && !damageReport.victimBody.HasBuff(RoR2Content.Buffs.AffixHaunted))
             {
                 AttemptSpawnGhost(damageReport.victimBody, damageReport.damageInfo.position, AffixHauntedReviveAura.wardRadius);
             }
@@ -168,21 +176,6 @@ namespace EliteReworks.Tweaks.T2
     
         private static void StealBuffVFX()
         {
-            //Revive Buff shows the warbanner effect
-            /*IL.RoR2.CharacterBody.UpdateAllTemporaryVisualEffects += (il) =>
-            {
-                ILCursor c = new ILCursor(il);
-                c.GotoNext(
-                     x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "Warbanner")
-                    );
-                c.Index += 2;
-                c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate<Func<bool, CharacterBody, bool>>((hasWarbanner, self) =>
-                {
-                    return hasWarbanner || self.HasBuff(reviveBuff);
-                });
-            };*/
-
             IL.RoR2.CharacterBody.UpdateAllTemporaryVisualEffects += (il) =>
             {
                 ILCursor c = new ILCursor(il);

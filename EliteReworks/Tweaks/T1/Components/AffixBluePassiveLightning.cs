@@ -55,10 +55,7 @@ namespace EliteReworks.Tweaks.T1.Components
 
         public void FixedUpdate()
         {
-            if (!NetworkServer.active)
-            {
-                return;
-            }
+            if (!NetworkServer.active) return;
 
             if (bodyMeatballStock < baseBodyMeatballStock)
             {

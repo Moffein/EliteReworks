@@ -14,19 +14,19 @@ namespace EliteReworks.SharedHooks
                 {
                     if (self.skillLocator.primary)
                     {
-                        self.skillLocator.primary.cooldownScale *= 0.75f;
+                        self.skillLocator.primary.cooldownScale *= 0.7f;
                     }
                     if (self.skillLocator.secondary)
                     {
-                        self.skillLocator.secondary.cooldownScale *= 0.75f;
+                        self.skillLocator.secondary.cooldownScale *= 0.7f;
                     }
                     if (self.skillLocator.utility)
                     {
-                        self.skillLocator.utility.cooldownScale *= 0.75f;
+                        self.skillLocator.utility.cooldownScale *= 0.7f;
                     }
                     if (self.skillLocator.special)
                     {
-                        self.skillLocator.special.cooldownScale *= 0.75f;
+                        self.skillLocator.special.cooldownScale *= 0.7f;
                     }
                 }
             }

@@ -204,7 +204,10 @@ namespace EliteReworks.Tweaks.T2.Components
                     System.Collections.ObjectModel.ReadOnlyCollection<TeamComponent> teamMembers = TeamComponent.GetTeamMembers(ti);
                     foreach (TeamComponent tc in teamMembers)
                     {
-                        if (tc.body && !tc.body.disablingHurtBoxes && tc.body.healthComponent && tc.body.healthComponent.alive)
+                        if (tc.body
+                            && (tc.body.bodyFlags & CharacterBody.BodyFlags.Masterless) != CharacterBody.BodyFlags.Masterless
+                            && !tc.body.disablingHurtBoxes
+                            && tc.body.healthComponent && tc.body.healthComponent.alive)
                         {
                             if (!tc.body.HasBuff(RoR2Content.Buffs.AffixHaunted) && !tc.body.HasBuff(AffixHaunted.reviveBuff))
                             {
