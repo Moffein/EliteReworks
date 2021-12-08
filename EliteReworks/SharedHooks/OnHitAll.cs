@@ -40,7 +40,7 @@ namespace EliteReworks.SharedHooks
                                 if (ab.OnHitReady(meatballCount))
                                 {
                                     ab.TriggerOnHit(meatballCount);
-                                    AffixBlue.FireMeatballs(damageInfo.attacker, attackerBody.isChampion, damageInfo.damage * AffixBlue.lightningDamageCoefficient, damageInfo.crit,
+                                    ab.FireMeatballs(damageInfo.attacker, attackerBody.isChampion, damageInfo.damage * AffixBlue.lightningDamageCoefficient, damageInfo.crit,
                                             Vector3.up, damageInfo.position + Vector3.up, attackerBody.transform.forward,
                                             meatballCount, 20f, 400f, 20f, true);
                                 }
