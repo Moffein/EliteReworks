@@ -9,6 +9,7 @@ namespace EliteReworks.Tweaks.T2.Components
     [DisallowMultipleComponent]
     public class AffixHauntedReviveAura : MonoBehaviour
     {
+        public static float detachRadius = 45f;
         public static float wardRadius = 30f;
         public static float refreshTime = 0.4f;
 
@@ -141,7 +142,7 @@ namespace EliteReworks.Tweaks.T2.Components
 
             if (attachedAliveMonsters.Count > 0)
             {
-                float radiusSquare = wardRadius * wardRadius;
+                float radiusSquare = detachRadius * detachRadius;
                 float squareDist;
 
                 List<CharacterBody> toRemove = new List<CharacterBody>();

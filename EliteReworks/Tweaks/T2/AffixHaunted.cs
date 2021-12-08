@@ -169,7 +169,7 @@ namespace EliteReworks.Tweaks.T2
                 && !damageReport.victimBody.disablingHurtBoxes
                 && !damageReport.victimBody.HasBuff(RoR2Content.Buffs.AffixHaunted))
             {
-                AttemptSpawnGhost(damageReport.victimBody, damageReport.damageInfo.position, AffixHauntedReviveAura.wardRadius);
+                AttemptSpawnGhost(damageReport.victimBody, damageReport.damageInfo.position, AffixHauntedReviveAura.detachRadius * 1.1f);
             }
         }
         #endregion

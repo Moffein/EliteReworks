@@ -10,7 +10,7 @@ namespace EliteReworks.SharedHooks
     {
         public static void Hook(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
         {
-            if (sender.HasBuff(AffixWhite.slow80alt))
+            if (sender.HasBuff(AffixWhite.slow80alt) && !sender.HasBuff(RoR2Content.Buffs.Slow80))
             {
                 args.moveSpeedReductionMultAdd += 0.8f;
             }

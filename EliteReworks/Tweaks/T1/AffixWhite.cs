@@ -1,9 +1,10 @@
 ﻿using EliteReworks.Tweaks.T1.Components;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using R2API;
 using RoR2;
 using RoR2.Projectile;
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
@@ -27,6 +28,20 @@ namespace EliteReworks.Tweaks.T1
             explosionEffectPrefab = CreateExplosionEffect();
             hitEffectPrefab = CreateHitEffect();
             slow80alt = CreateAltSlowBuff();
+
+            IL.RoR2.CharacterModel.UpdateOverlays += (il) =>
+            {
+                ILCursor c = new ILCursor(il);
+                c.GotoNext(
+                     x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "Slow80")
+                    );
+                c.Index += 2;
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<bool, CharacterModel, bool>>((hasBuff, self) =>
+                {
+                    return hasBuff || (self.body.HasBuff(slow80alt));
+                });
+            };
         }
 
         public static BuffDef CreateAltSlowBuff()
