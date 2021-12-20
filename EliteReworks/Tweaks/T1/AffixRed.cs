@@ -11,7 +11,8 @@ namespace EliteReworks.Tweaks.T1
 {
     public static class AffixRed
     {
-		public static float fireTrailBaseDamage = 21f * 0.2f;	//18f is same as lemurian
+		public static float fireTrailBaseDamage = 21f * 0.2f;   //18f is same as lemurian
+		public static float bossDamageMult = 1.6f;
 
 		public static void Setup()
         {

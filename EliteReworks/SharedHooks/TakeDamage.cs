@@ -33,6 +33,10 @@ namespace EliteReworks.SharedHooks
                 damageInfo.procCoefficient = 0f;
 
                 damageInfo.damage = AffixRed.fireTrailBaseDamage + 0.2f * AffixRed.fireTrailBaseDamage * Mathf.Max(0f, (attackerBody ? attackerBody.level : Run.instance.ambientLevel) - 1f);
+                if (attackerBody && attackerBody.isChampion)
+                {
+                    damageInfo.damage *= AffixRed.bossDamageMult;
+                }
             }
 
             orig(self, damageInfo);

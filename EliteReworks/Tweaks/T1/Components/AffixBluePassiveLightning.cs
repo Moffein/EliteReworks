@@ -16,6 +16,7 @@ namespace EliteReworks.Tweaks.T1.Components
         public static float baseLightningTimer = 6f;
         public static int baseMeatballCount = 5;
         public static float baseDamage = 36f;
+        public static float bossDamageMult = 1.6f;
 
         public static bool uncapOnHitLightning = false;
         public static int baseBodyMeatballStock = 20;
@@ -97,6 +98,10 @@ namespace EliteReworks.Tweaks.T1.Components
 
                 //float scaledDamage = ownerBody.damage * damageCoefficient;
                 float scaledDamage = (baseDamage + Mathf.Max(0f, ownerBody.level - 1f) * baseDamage * 0.2f);
+                if (ownerBody.isChampion)
+                {
+                    scaledDamage *= bossDamageMult;
+                }
 
                 this.FireMeatballs(ownerBody.gameObject, ownerBody.isChampion, scaledDamage, ownerBody.RollCrit(),
                                 Vector3.up, ownerBody.corePosition + Vector3.up, ownerBody.transform.forward,

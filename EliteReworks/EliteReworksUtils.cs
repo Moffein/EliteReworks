@@ -48,7 +48,7 @@ namespace EliteReworks
                                     float distSqr = (position - hurtBox.collider.ClosestPoint(position)).sqrMagnitude;
                                     if (distSqr > radiusHalfwaySqr)  //Reduce effectiveness when over half the radius away
                                     {
-                                        effectiveness *= 0.5f;
+                                        effectiveness *= 0.25f;
                                     }
                                 }
                                 healthComponent.body.AddTimedBuff(buff, effectiveness * debuffDuration);
