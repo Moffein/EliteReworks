@@ -43,19 +43,32 @@ namespace EliteReworks.Tweaks.T2
 						}
 					}
 
-					self.poisonballTimer += deltaTime;
-					if (self.poisonballTimer >= basePoisonTimer)
+					AffixPoisonDebuffAura apd = self.gameObject.GetComponent<AffixPoisonDebuffAura>();
+					if (!apd)
+                    {
+						self.gameObject.AddComponent<AffixPoisonDebuffAura>();
+                    }
+
+					if (!apd.wardActive)
 					{
-						int num = 3 + (int)self.radius;
 						self.poisonballTimer = 0f;
-						Vector3 up = Vector3.up;
-						float num2 = 360f / (float)num;
-						Vector3 normalized = Vector3.ProjectOnPlane(self.transform.forward, up).normalized;
-						Vector3 point = Vector3.RotateTowards(up, normalized, 0.436332315f, float.PositiveInfinity);
-						for (int i = 0; i < num; i++)
+					}
+					else
+					{
+						self.poisonballTimer += deltaTime;
+						if (self.poisonballTimer >= basePoisonTimer)
 						{
-							Vector3 forward = Quaternion.AngleAxis(num2 * (float)i, up) * point;
-                            ProjectileManager.instance.FireProjectile(spikeOrbProjectile, self.corePosition, RoR2.Util.QuaternionSafeLookRotation(forward), self.gameObject, self.damage * 1f, 0f, RoR2.Util.CheckRoll(self.crit, self.master), DamageColorIndex.Default, null, -1f);
+							int num = 3 + (int)self.radius;
+							self.poisonballTimer = 0f;
+							Vector3 up = Vector3.up;
+							float num2 = 360f / (float)num;
+							Vector3 normalized = Vector3.ProjectOnPlane(self.transform.forward, up).normalized;
+							Vector3 point = Vector3.RotateTowards(up, normalized, 0.436332315f, float.PositiveInfinity);
+							for (int i = 0; i < num; i++)
+							{
+								Vector3 forward = Quaternion.AngleAxis(num2 * (float)i, up) * point;
+								ProjectileManager.instance.FireProjectile(spikeOrbProjectile, self.corePosition, RoR2.Util.QuaternionSafeLookRotation(forward), self.gameObject, self.damage * 1f, 0f, RoR2.Util.CheckRoll(self.crit, self.master), DamageColorIndex.Default, null, -1f);
+							}
 						}
 					}
 				}

@@ -12,7 +12,6 @@ namespace EliteReworks.Tweaks.T1
     public static class AffixRed
     {
 		public static float fireTrailBaseDamage = 21f * 0.2f;   //18f is same as lemurian
-		public static float bossDamageMult = 1.6f;
 
 		public static void Setup()
         {
@@ -21,12 +20,20 @@ namespace EliteReworks.Tweaks.T1
 			{
 				bool blazing = self.HasBuff(RoR2Content.Buffs.AffixRed);
 				bool disableFireTrail = false;
+				AffixRedStunTracker ars = null;
 
 				if (blazing)
 				{
+					ars = self.gameObject.GetComponent<AffixRedStunTracker>();
+					if (!ars)
+                    {
+						self.gameObject.AddComponent<AffixRedStunTracker>();
+                    }
+
 					if (self.healthComponent && self.healthComponent.isInFrozenState)
 					{
 						disableFireTrail = true;
+						ars.SetStun();
 					}
 					else
 					{
@@ -37,6 +44,7 @@ namespace EliteReworks.Tweaks.T1
 							if (state == typeof(EntityStates.StunState) || state == typeof(EntityStates.ShockState))
 							{
 								disableFireTrail = true;
+								ars.SetStun();
 							}
 						}
 					}
@@ -45,10 +53,13 @@ namespace EliteReworks.Tweaks.T1
 				orig(self);
 
 
-				if (blazing && disableFireTrail && self.fireTrail)
+				if (blazing && self.fireTrail)
 				{
-					UnityEngine.Object.Destroy(self.fireTrail.gameObject);
-					self.fireTrail = null;
+					if (disableFireTrail || !(ars && ars.PassiveActive()))
+					{
+						UnityEngine.Object.Destroy(self.fireTrail.gameObject);
+						self.fireTrail = null;
+					}
 				}
 			};
 		}

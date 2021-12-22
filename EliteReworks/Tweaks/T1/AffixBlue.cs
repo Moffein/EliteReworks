@@ -66,16 +66,6 @@ namespace EliteReworks.Tweaks.T1
 			return projectile;
         }
 
-		private static GameObject BuildLightningEffect()
-		{
-			GameObject effect = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("prefabs/effects/lightningstakenova"), "MoffeinEliteReworksOverloadinLightningEffect", false);
-			EffectComponent ec = effect.GetComponent<EffectComponent>();
-			ec.applyScale = true;
-			ec.soundName = "Play_item_use_lighningArm";
-			EffectAPI.AddEffect(effect);
-			return effect;
-		}
-
 		private static GameObject BuildLightningTriggerEffect()
 		{
 			GameObject effect = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("prefabs/effects/lightningstakenova"), "MoffeinEliteReworksOverloadinLightningTriggerEffect", false);

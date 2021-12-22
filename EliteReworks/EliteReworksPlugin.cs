@@ -15,7 +15,7 @@ namespace EliteReworks
     [BepInDependency("com.bepis.r2api")]
     [BepInDependency("com.TPDespair.ZetAspects", BepInDependency.DependencyFlags.SoftDependency)]
     [R2API.Utils.R2APISubmoduleDependency(nameof(PrefabAPI), nameof(EffectAPI), nameof(ProjectileAPI), nameof(BuffAPI), nameof(RecalculateStatsAPI), nameof(DamageAPI))]
-    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.1.0")]
+    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.2.0")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class EliteReworksPlugin : BaseUnityPlugin
     {
@@ -28,6 +28,9 @@ namespace EliteReworks
         public static bool affixHauntedSimpleIndicatorEnabled = true;
         public static bool affixHauntedEnabled = true;
         public static bool affixPoisonEnabled = true;
+
+        public static float eliteStunDisableDuration = 2f;
+        public static float eliteBossDamageMult = 1.6f;
 
         public static bool zetAspectsLoaded = false;
 

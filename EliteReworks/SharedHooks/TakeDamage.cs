@@ -35,7 +35,7 @@ namespace EliteReworks.SharedHooks
                 damageInfo.damage = AffixRed.fireTrailBaseDamage + 0.2f * AffixRed.fireTrailBaseDamage * Mathf.Max(0f, (attackerBody ? attackerBody.level : Run.instance.ambientLevel) - 1f);
                 if (attackerBody && attackerBody.isChampion)
                 {
-                    damageInfo.damage *= AffixRed.bossDamageMult;
+                    damageInfo.damage *= EliteReworksPlugin.eliteBossDamageMult;
                 }
             }
 

@@ -19,6 +19,7 @@ namespace EliteReworks.Tweaks.T2.Components
         private GameObject indicator = null;
         public bool wardActive = false;
 
+        private float stunDisableTimer = 0f;
 
         public void Awake()
         {
@@ -30,12 +31,13 @@ namespace EliteReworks.Tweaks.T2.Components
 
         public void FixedUpdate()
         {
-            wardActive = true;
+            wardActive = stunDisableTimer <= 0f;
             if (ownerBody && ownerBody.HasBuff(RoR2Content.Buffs.AffixPoison) && ownerBody.healthComponent && ownerBody.healthComponent.alive)
             {
                 if (ownerBody.healthComponent && ownerBody.healthComponent.isInFrozenState)
                 {
                     wardActive = false;
+                    stunDisableTimer = EliteReworksPlugin.eliteStunDisableDuration;
                 }
                 else
                 {
@@ -46,6 +48,7 @@ namespace EliteReworks.Tweaks.T2.Components
                         if (state == typeof(EntityStates.StunState) || state == typeof(EntityStates.ShockState))
                         {
                             wardActive = false;
+                            stunDisableTimer = EliteReworksPlugin.eliteStunDisableDuration;
                         }
                     }
                 }
@@ -65,18 +68,25 @@ namespace EliteReworks.Tweaks.T2.Components
 
             if (NetworkServer.active)
             {
-                if (wardActive)
+                if (stunDisableTimer <= 0f)
                 {
-                    stopwatch += Time.fixedDeltaTime;
-                    if (stopwatch > refreshTime)
+                    if (wardActive)
                     {
-                        stopwatch -= refreshTime;
-                        if (ownerBody.teamComponent)
+                        stopwatch += Time.fixedDeltaTime;
+                        if (stopwatch > refreshTime)
                         {
-                            EliteReworksUtils.DebuffSphere(RoR2Content.Buffs.HealingDisabled.buffIndex, ownerBody.teamComponent.teamIndex,
-                                ownerBody.corePosition, AffixPoisonDebuffAura.wardRadius, AffixPoisonDebuffAura.buffDuration, null, null, true);
+                            stopwatch -= refreshTime;
+                            if (ownerBody.teamComponent)
+                            {
+                                EliteReworksUtils.DebuffSphere(RoR2Content.Buffs.HealingDisabled.buffIndex, ownerBody.teamComponent.teamIndex,
+                                    ownerBody.corePosition, AffixPoisonDebuffAura.wardRadius, AffixPoisonDebuffAura.buffDuration, null, null, true);
+                            }
                         }
                     }
+                }
+                else
+                {
+                    stunDisableTimer -= Time.fixedDeltaTime;
                 }
             }
             UpdateIndicator(wardActive);

@@ -13,6 +13,13 @@ namespace EliteReworks.SharedHooks
 			orig(self, buffIndex);
 			if (NetworkServer.active && self.gameObject)
 			{
+				if (EliteReworksPlugin.affixRedEnabled && buffIndex == RoR2Content.Buffs.AffixRed.buffIndex)
+				{
+					if (self.HasBuff(RoR2Content.Buffs.AffixRed.buffIndex) && !self.gameObject.GetComponent<AffixRedStunTracker>())
+					{
+						self.gameObject.AddComponent<AffixRedStunTracker>();
+					}
+				}
 				if (EliteReworksPlugin.affixBlueEnabled && buffIndex == RoR2Content.Buffs.AffixBlue.buffIndex)
 				{
 					if (self.HasBuff(RoR2Content.Buffs.AffixBlue.buffIndex) && !self.gameObject.GetComponent<AffixBluePassiveLightning>())

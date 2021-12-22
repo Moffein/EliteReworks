@@ -16,7 +16,6 @@ namespace EliteReworks.Tweaks.T1.Components
         public static float baseLightningTimer = 6f;
         public static int baseMeatballCount = 5;
         public static float baseDamage = 36f;
-        public static float bossDamageMult = 1.6f;
 
         public static bool uncapOnHitLightning = false;
         public static int baseBodyMeatballStock = 20;
@@ -27,6 +26,8 @@ namespace EliteReworks.Tweaks.T1.Components
         public CharacterBody ownerBody;
 
         private float lightningStopwatch;
+
+        private float stunDisableTimer = 0f;
 
         public bool OnHitReady(int meatballCount)
         {
@@ -77,9 +78,11 @@ namespace EliteReworks.Tweaks.T1.Components
                 return;
             }
 
+
             if (ownerBody.healthComponent && ownerBody.healthComponent.isInFrozenState)
             {
                 lightningStopwatch = 0f;
+                stunDisableTimer = EliteReworksPlugin.eliteStunDisableDuration;
             }
             else if (ssoh)
             {
@@ -87,26 +90,35 @@ namespace EliteReworks.Tweaks.T1.Components
                 if (state == typeof(EntityStates.StunState) || state == typeof(EntityStates.ShockState))
                 {
                     lightningStopwatch = 0f;
+                    stunDisableTimer = EliteReworksPlugin.eliteStunDisableDuration;
                 }
             }
 
-            lightningStopwatch += Time.fixedDeltaTime;
-            if (lightningStopwatch >= baseLightningTimer)
+            if (stunDisableTimer <= 0f)
             {
-                lightningStopwatch = 0f;
-                int meatballCount = baseMeatballCount + (int)(ownerBody.radius * baseMeatballCount/3f);
-
-                //float scaledDamage = ownerBody.damage * damageCoefficient;
-                float scaledDamage = (baseDamage + Mathf.Max(0f, ownerBody.level - 1f) * baseDamage * 0.2f);
-                if (ownerBody.isChampion)
+                lightningStopwatch += Time.fixedDeltaTime;
+                if (lightningStopwatch >= baseLightningTimer)
                 {
-                    scaledDamage *= bossDamageMult;
-                }
+                    lightningStopwatch = 0f;
+                    int meatballCount = baseMeatballCount + (int)(ownerBody.radius * baseMeatballCount / 3f);
 
-                this.FireMeatballs(ownerBody.gameObject, ownerBody.isChampion, scaledDamage, ownerBody.RollCrit(),
-                                Vector3.up, ownerBody.corePosition + Vector3.up, ownerBody.transform.forward,
-                                meatballCount, 20f, 400f, 20f);
+                    //float scaledDamage = ownerBody.damage * damageCoefficient;
+                    float scaledDamage = (baseDamage + Mathf.Max(0f, ownerBody.level - 1f) * baseDamage * 0.2f);
+                    if (ownerBody.isChampion)
+                    {
+                        scaledDamage *= EliteReworksPlugin.eliteBossDamageMult;
+                    }
+
+                    this.FireMeatballs(ownerBody.gameObject, ownerBody.isChampion, scaledDamage, ownerBody.RollCrit(),
+                                    Vector3.up, ownerBody.corePosition + Vector3.up, ownerBody.transform.forward,
+                                    meatballCount, 20f, 400f, 20f);
+                }
             }
+            else
+            {
+                stunDisableTimer -= Time.fixedDeltaTime;
+            }
+           
         }
 
         //Copypasted from Magma Worm

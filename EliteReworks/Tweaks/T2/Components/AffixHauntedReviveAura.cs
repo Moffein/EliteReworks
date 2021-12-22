@@ -23,6 +23,8 @@ namespace EliteReworks.Tweaks.T2.Components
 
         public bool wardActive = false;
 
+        private float stunDisableTimer = 0f;
+
         public void Awake()
         {
             wardActive = false;
@@ -42,7 +44,7 @@ namespace EliteReworks.Tweaks.T2.Components
         public void FixedUpdate()
         {
 
-            wardActive = true;
+            wardActive = stunDisableTimer <= 0f;
             bool eliteActive = ownerBody && ownerBody.HasBuff(RoR2Content.Buffs.AffixHaunted) && ownerBody.healthComponent && ownerBody.healthComponent.alive;
             if (!eliteActive)
             {
@@ -61,6 +63,7 @@ namespace EliteReworks.Tweaks.T2.Components
                     if (ownerBody.healthComponent && ownerBody.healthComponent.isInFrozenState)
                     {
                         wardActive = false;
+                        stunDisableTimer = EliteReworksPlugin.eliteStunDisableDuration;
                     }
                     else
                     {
@@ -71,28 +74,36 @@ namespace EliteReworks.Tweaks.T2.Components
                             if (state == typeof(EntityStates.StunState) || state == typeof(EntityStates.ShockState))
                             {
                                 wardActive = false;
+                                stunDisableTimer = EliteReworksPlugin.eliteStunDisableDuration;
                             }
                         }
                     }
                 }
 
-                if (wardActive)
+                if (stunDisableTimer <= 0f)
                 {
-                    stopwatch += Time.fixedDeltaTime;
-                    if (stopwatch > refreshTime)
+                    if (wardActive)
                     {
-                        stopwatch -= refreshTime;
-                        if (attachedGhosts.Count + attachedAliveMonsters.Count < maxAttachedGhosts)
+                        stopwatch += Time.fixedDeltaTime;
+                        if (stopwatch > refreshTime)
                         {
-                            FindAliveMonsters();
+                            stopwatch -= refreshTime;
+                            if (attachedGhosts.Count + attachedAliveMonsters.Count < maxAttachedGhosts)
+                            {
+                                FindAliveMonsters();
+                            }
+                            UpdateGhosts();
+                            UpdateAliveMonsters();
                         }
-                        UpdateGhosts();
-                        UpdateAliveMonsters();
+                    }
+                    else
+                    {
+                        ClearAliveMonsters();
                     }
                 }
                 else
                 {
-                    ClearAliveMonsters();
+                    stunDisableTimer -= Time.fixedDeltaTime;
                 }
 
                 if (attachedGhosts.Count > 0)
