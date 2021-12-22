@@ -80,28 +80,25 @@ namespace EliteReworks.Tweaks.T2.Components
                     }
                 }
 
-                if (stunDisableTimer <= 0f)
+                if (wardActive && stunDisableTimer <= 0f)
                 {
-                    if (wardActive)
+                    stopwatch += Time.fixedDeltaTime;
+                    if (stopwatch > refreshTime)
                     {
-                        stopwatch += Time.fixedDeltaTime;
-                        if (stopwatch > refreshTime)
+                        stopwatch -= refreshTime;
+                        if (attachedGhosts.Count + attachedAliveMonsters.Count < maxAttachedGhosts)
                         {
-                            stopwatch -= refreshTime;
-                            if (attachedGhosts.Count + attachedAliveMonsters.Count < maxAttachedGhosts)
-                            {
-                                FindAliveMonsters();
-                            }
-                            UpdateGhosts();
-                            UpdateAliveMonsters();
+                            FindAliveMonsters();
                         }
-                    }
-                    else
-                    {
-                        ClearAliveMonsters();
+                        UpdateGhosts();
+                        UpdateAliveMonsters();
                     }
                 }
                 else
+                {
+                    ClearAliveMonsters();
+                }
+                if (stunDisableTimer > 0f)
                 {
                     stunDisableTimer -= Time.fixedDeltaTime;
                 }
