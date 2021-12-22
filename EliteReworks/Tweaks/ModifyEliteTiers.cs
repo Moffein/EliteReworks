@@ -1,5 +1,6 @@
 ﻿using RoR2;
 using UnityEngine;
+using R2API;
 
 namespace EliteReworks.Tweaks
 {
@@ -10,7 +11,7 @@ namespace EliteReworks.Tweaks
             On.RoR2.CombatDirector.Init += (orig) =>
             {
                 orig();
-                foreach (CombatDirector.EliteTierDef edf in CombatDirector.eliteTiers)
+                foreach (CombatDirector.EliteTierDef edf in EliteAPI.VanillaEliteTiers)
                 {
                     /*string eliteTier = "\nElites:";
                     foreach(EliteDef ed in edf.eliteTypes)
@@ -29,8 +30,8 @@ namespace EliteReworks.Tweaks
                     else if (edf.damageBoostCoefficient == 6f && edf.healthBoostCoefficient == 18f && edf.costMultiplier == 36f)
                     {
                         //Debug.Log("Modifying t2 elites");
-                        edf.costMultiplier = 15f;
-                        edf.healthBoostCoefficient = 10f;
+                        edf.costMultiplier = 36f;
+                        edf.healthBoostCoefficient = 14f;
                         edf.damageBoostCoefficient = 3.5f;
                     }
                 }
