@@ -29,7 +29,7 @@ namespace EliteReworks
         public static bool affixHauntedEnabled = true;
         public static bool affixPoisonEnabled = true;
 
-        public static float eliteStunDisableDuration = 1.5f;
+        public static float eliteStunDisableDuration = 1.2f;
         public static float eliteBossDamageMult = 1.6f;
 
         public static bool zetAspectsLoaded = false;
