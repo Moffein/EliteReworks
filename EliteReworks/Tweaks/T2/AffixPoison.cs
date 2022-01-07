@@ -113,7 +113,7 @@ namespace EliteReworks.Tweaks.T2
 			On.RoR2.CharacterBody.AddBuff_BuffIndex += (orig, self, buffIndex) =>
 			{
 				orig(self, buffIndex);
-				if (buffIndex == RoR2Content.Buffs.HealingDisabled.buffIndex && self.HasBuff(MalachiteBuildup.buffIndex))
+				if (NetworkServer.active && buffIndex == RoR2Content.Buffs.HealingDisabled.buffIndex && self.HasBuff(MalachiteBuildup.buffIndex))
                 {
 					self.ClearTimedBuffs(MalachiteBuildup.buffIndex);
                 }
