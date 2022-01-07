@@ -20,11 +20,13 @@ namespace EliteReworks.Tweaks.T2
 		public static BuffDef MalachiteBuildup;
 		public static float malachiteBuildupTime = 4f;
 		public static int malachiteBuildupMaxStacks = 5;
+		public static float malachiteBuildupHealReduction;
 
         public static void Setup()
         {
 			AffixPoisonDebuffAura.refreshTime = malachiteBuildupTime / malachiteBuildupMaxStacks;
 			AffixPoisonDebuffAura.buffDuration = AffixPoisonDebuffAura.refreshTime + 0.1f;
+			malachiteBuildupHealReduction = 1f / malachiteBuildupMaxStacks;
 
 			malachiteDamage = DamageAPI.ReserveDamageType();
 			spikePrefab = BuildSpikePrefab();
@@ -90,7 +92,7 @@ namespace EliteReworks.Tweaks.T2
 		private static void SetupDebuff()
         {
 			BuffDef buff = ScriptableObject.CreateInstance<BuffDef>();
-			buff.buffColor = new Color(0.5f, 0.5f, 0.5f);
+			buff.buffColor = new Color(0.3f, 0.3f, 0.3f);
 			buff.canStack = true;
 			buff.isDebuff = true;
 			buff.name = "EliteReworksMalachiteBuildup";
@@ -100,10 +102,10 @@ namespace EliteReworks.Tweaks.T2
 
 			On.RoR2.HealthComponent.Heal += (orig, self, amount, procChainMask, isRegen) =>
 			{
-				int malachiteCount = Mathf.Min(self.body.GetBuffCount(MalachiteBuildup), 5);
+				int malachiteCount = Mathf.Min(self.body.GetBuffCount(MalachiteBuildup), malachiteBuildupMaxStacks);
 				if (malachiteCount > 0)
                 {
-					amount *= 1f - 0.2f * malachiteCount;
+					amount *= 1f - malachiteBuildupHealReduction * malachiteCount;
                 }
 				return orig(self, amount, procChainMask, isRegen);
 			};
