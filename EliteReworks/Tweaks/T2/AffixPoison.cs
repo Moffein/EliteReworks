@@ -3,7 +3,10 @@ using R2API;
 using RoR2;
 using RoR2.Projectile;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
+
 namespace EliteReworks.Tweaks.T2
 {
     public static class AffixPoison
@@ -14,8 +17,15 @@ namespace EliteReworks.Tweaks.T2
 		public static float basePoisonTimer = 6f;
 		public static float spikeHPPercent = 0.5f;
 
+		public static BuffDef MalachiteBuildup;
+		public static float malachiteBuildupTime = 4f;
+		public static int malachiteBuildupMaxStacks = 5;
+
         public static void Setup()
         {
+			AffixPoisonDebuffAura.refreshTime = malachiteBuildupTime / malachiteBuildupMaxStacks;
+			AffixPoisonDebuffAura.buffDuration = AffixPoisonDebuffAura.refreshTime + 0.1f;
+
 			malachiteDamage = DamageAPI.ReserveDamageType();
 			spikePrefab = BuildSpikePrefab();
 			spikeOrbProjectile = BuildSpikeOrb(spikePrefab);
@@ -73,27 +83,44 @@ namespace EliteReworks.Tweaks.T2
 					}
 				}
 			};
+
+			SetupDebuff();
         }
+
+		private static void SetupDebuff()
+        {
+			Debug.Log("\n\n\n\n\n\n\n\n\n\nMalachite Color: " + RoR2Content.Buffs.HealingDisabled.buffColor);
+			BuffDef buff = ScriptableObject.CreateInstance<BuffDef>();
+			buff.buffColor = RoR2Content.Buffs.PulverizeBuildup.buffColor;
+			buff.isDebuff = true;
+			buff.name = "EliteReworksMalachiteBuildup";
+			buff.iconSprite = RoR2Content.Buffs.HealingDisabled.iconSprite;
+			BuffAPI.Add(new CustomBuff(buff));
+			MalachiteBuildup = buff;
+
+			On.RoR2.HealthComponent.Heal += (orig, self, amount, procChainMask, isRegen) =>
+			{
+				int malachiteCount = Mathf.Min(self.body.GetBuffCount(MalachiteBuildup), 5);
+				if (malachiteCount > 0)
+                {
+					amount *= 1f - 0.2f * malachiteCount;
+                }
+				return orig(self, amount, procChainMask, isRegen);
+			};
+
+			On.RoR2.CharacterBody.AddBuff_BuffIndex += (orig, self, buffIndex) =>
+			{
+				orig(self, buffIndex);
+				if (buffIndex == RoR2Content.Buffs.HealingDisabled.buffIndex && self.HasBuff(MalachiteBuildup.buffIndex))
+                {
+					self.ClearTimedBuffs(MalachiteBuildup.buffIndex);
+                }
+			};
+		}
 
 		private static GameObject BuildSpikePrefab()
         {
 			GameObject projectile = Resources.Load<GameObject>("Prefabs/Projectiles/PoisonStakeProjectile").InstantiateClone("MoffeinEliteReworksPoisonStakeProjectile", true);
-
-			//UnityEngine.Object.Destroy(projectile.GetComponent<ProjectileImpactExplosion>());
-			//UnityEngine.Object.Destroy(projectile.GetComponent<TeamAreaIndicator>());
-			//UnityEngine.Object.Destroy(projectile.GetComponent<MineProximityDetonator>());
-
-			//projectile.AddComponent<DestroyOnTimer>().duration = basePoisonTimer * 1.5f;
-
-			/*BuffWard poisonWard = projectile.AddComponent<BuffWard>();
-			poisonWard.radius = 20f;
-			poisonWard.interval = 0.5f;
-			poisonWard.rangeIndicator = null;
-			poisonWard.buffDef = RoR2Content.Buffs.HealingDisabled;
-			poisonWard.buffDuration = 1f;
-			poisonWard.floorWard = false;
-			poisonWard.invertTeamFilter = true;
-			poisonWard.expireDuration = 0;*/
 
 			DamageAPI.ModdedDamageTypeHolderComponent modDamage = projectile.AddComponent<DamageAPI.ModdedDamageTypeHolderComponent>();
 			modDamage.Add(malachiteDamage);
@@ -121,27 +148,58 @@ namespace EliteReworks.Tweaks.T2
 			return indicator;
 		}
 
-		private static GameObject BuildIndicatorAlt()
+		//Should this go in the Component instead?
+		public static void MalachiteSphere(TeamIndex team, Vector3 position, float radius, float debuffDuration)
 		{
-			GameObject indicator = Resources.Load<GameObject>("prefabs/networkedobjects/shrines/ShrineHealingWard").InstantiateClone("MoffeinEliteReworksPoisonAltIndicator", true);
-			indicator.transform.localScale *= AffixPoisonDebuffAura.wardRadius;
-
-			UnityEngine.Object.Destroy(indicator.GetComponent<HealingWard>());
-			ParticleSystemRenderer[] pr = indicator.GetComponentsInChildren<ParticleSystemRenderer>();
-			foreach (ParticleSystemRenderer p in pr)
+			if (!NetworkServer.active)
 			{
-				if (p.name == "HealingSymbols")
-				{
-					UnityEngine.Object.Destroy(p);
-				}
+				return;
 			}
 
-			NetworkedBodyAttachment nba = indicator.AddComponent<NetworkedBodyAttachment>();
-			nba.shouldParentToAttachedBody = true;
-			nba.forceHostAuthority = false;
+			List<HealthComponent> hcList = new List<HealthComponent>();
+			Collider[] array = Physics.OverlapSphere(position, radius, LayerIndex.entityPrecise.mask);
+			for (int i = 0; i < array.Length; i++)
+			{
+				HurtBox hurtBox = array[i].GetComponent<HurtBox>();
+				if (hurtBox)
+				{
+					HealthComponent healthComponent = hurtBox.healthComponent;
+					ProjectileController pc = array[i].GetComponentInParent<ProjectileController>();
+					if (healthComponent && !pc && !hcList.Contains(healthComponent))
+					{
+						hcList.Add(healthComponent);
+						if (healthComponent.body.teamComponent && healthComponent.body.teamComponent.teamIndex != team)
+						{
+							if (!healthComponent.body.HasBuff(RoR2Content.Buffs.HealingDisabled.buffIndex))
+							{
+								healthComponent.body.AddTimedBuff(MalachiteBuildup, debuffDuration);
+								int buffCount = healthComponent.body.GetBuffCount(MalachiteBuildup);
+								if (buffCount >= malachiteBuildupMaxStacks)
+								{
+									healthComponent.body.ClearTimedBuffs(MalachiteBuildup.buffIndex);
+									healthComponent.body.AddTimedBuff(RoR2Content.Buffs.HealingDisabled.buffIndex, debuffDuration);
+								}
+								else
+								{
+									for (int j = 0; j < healthComponent.body.timedBuffs.Count; j++)
+									{
+										if (healthComponent.body.timedBuffs[j].buffIndex == MalachiteBuildup.buffIndex
+											&& healthComponent.body.timedBuffs[j].timer < debuffDuration)
+										{
+											healthComponent.body.timedBuffs[j].timer = debuffDuration;
 
-			PrefabAPI.RegisterNetworkPrefab(indicator);
-			return indicator;
+										}
+									}
+								}
+							}
+							else
+							{
+								healthComponent.body.AddTimedBuff(RoR2Content.Buffs.HealingDisabled.buffIndex, debuffDuration);
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }

@@ -1,5 +1,7 @@
 ﻿using RoR2;
+using RoR2.Projectile;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -9,8 +11,8 @@ namespace EliteReworks.Tweaks.T2.Components
     public class AffixPoisonDebuffAura : MonoBehaviour
     {
         public static float wardRadius = 22f;
-        public static float buffDuration = 0.4f;
-        public static float refreshTime = 0.2f;
+        public static float buffDuration;
+        public static float refreshTime;
         public static GameObject indicatorPrefab;
 
         private float stopwatch;
@@ -78,8 +80,8 @@ namespace EliteReworks.Tweaks.T2.Components
                             stopwatch -= refreshTime;
                             if (ownerBody.teamComponent)
                             {
-                                EliteReworksUtils.DebuffSphere(RoR2Content.Buffs.HealingDisabled.buffIndex, ownerBody.teamComponent.teamIndex,
-                                    ownerBody.corePosition, AffixPoisonDebuffAura.wardRadius, AffixPoisonDebuffAura.buffDuration, null, null, true);
+                                AffixPoison.MalachiteSphere(ownerBody.teamComponent.teamIndex,
+                                    ownerBody.corePosition, AffixPoisonDebuffAura.wardRadius, AffixPoisonDebuffAura.buffDuration);
                             }
                         }
                     }

@@ -37,10 +37,9 @@ namespace EliteReworks
                     if (healthComponent && !pc && !hcList.Contains(healthComponent))
                     {
                         hcList.Add(healthComponent);
-                        if (healthComponent.body && healthComponent.body.teamComponent && healthComponent.body.teamComponent.teamIndex != team)
+                        if (healthComponent.body.teamComponent && healthComponent.body.teamComponent.teamIndex != team)
                         {
-                            if (healthComponent.body
-                                && (ignoreImmunity || (!healthComponent.body.HasBuff(RoR2Content.Buffs.Immune) && !healthComponent.body.HasBuff(RoR2Content.Buffs.HiddenInvincibility))))
+                            if (ignoreImmunity || (!healthComponent.body.HasBuff(RoR2Content.Buffs.Immune) && !healthComponent.body.HasBuff(RoR2Content.Buffs.HiddenInvincibility)))
                             {
                                 float effectiveness = 1f;
                                 if (falloff)
