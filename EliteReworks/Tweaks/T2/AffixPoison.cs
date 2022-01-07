@@ -89,9 +89,9 @@ namespace EliteReworks.Tweaks.T2
 
 		private static void SetupDebuff()
         {
-			Debug.Log("\n\n\n\n\n\n\n\n\n\nMalachite Color: " + RoR2Content.Buffs.HealingDisabled.buffColor);
 			BuffDef buff = ScriptableObject.CreateInstance<BuffDef>();
-			buff.buffColor = RoR2Content.Buffs.PulverizeBuildup.buffColor;
+			buff.buffColor = new Color(0.5f, 0.5f, 0.5f);
+			buff.canStack = true;
 			buff.isDebuff = true;
 			buff.name = "EliteReworksMalachiteBuildup";
 			buff.iconSprite = RoR2Content.Buffs.HealingDisabled.iconSprite;
