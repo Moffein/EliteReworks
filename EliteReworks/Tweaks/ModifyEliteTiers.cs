@@ -6,35 +6,29 @@ namespace EliteReworks.Tweaks
 {
     public static class ModifyEliteTiers
     {
+        public static float t1Cost = 4.5f;
+        public static float t1Health = 3f;
+        public static float t1Damage = 1.5f;
+
+        public static float t2Cost = 36f;
+        public static float t2Health = 14f;
+        public static float t2Damage = 3.5f;
+
         public static void Setup()
         {
             On.RoR2.CombatDirector.Init += (orig) =>
             {
                 orig();
-                foreach (CombatDirector.EliteTierDef edf in EliteAPI.VanillaEliteTiers)
-                {
-                    /*string eliteTier = "\nElites:";
-                    foreach(EliteDef ed in edf.eliteTypes)
-                    {
-                        eliteTier += " " + ed.eliteEquipmentDef.nameToken;
-                    }
-                    eliteTier += "\nCost: " + edf.costMultiplier + "\nHP: " + edf.healthBoostCoefficient + "\nDamage: " + edf.damageBoostCoefficient;
-                    Debug.Log(eliteTier);*/
-                    if (edf.damageBoostCoefficient == 2f && edf.healthBoostCoefficient == 4f && edf.costMultiplier == 6f)
-                    {
-                        //Debug.Log("Modifying t1 elites");
-                        edf.costMultiplier = 4.5f;
-                        edf.healthBoostCoefficient = 3f;
-                        edf.damageBoostCoefficient = 1.5f;
-                    }
-                    else if (edf.damageBoostCoefficient == 6f && edf.healthBoostCoefficient == 18f && edf.costMultiplier == 36f)
-                    {
-                        //Debug.Log("Modifying t2 elites");
-                        edf.costMultiplier = 36f;
-                        edf.healthBoostCoefficient = 14f;
-                        edf.damageBoostCoefficient = 3.5f;
-                    }
-                }
+
+                //T1
+                EliteAPI.VanillaEliteTiers[1].costMultiplier = 4.5f;
+                EliteAPI.VanillaEliteTiers[1].healthBoostCoefficient = 3f;
+                EliteAPI.VanillaEliteTiers[1].damageBoostCoefficient = 1.5f;
+
+                //T2
+                EliteAPI.VanillaEliteTiers[3].costMultiplier = 36f;
+                EliteAPI.VanillaEliteTiers[3].healthBoostCoefficient = 14f;
+                EliteAPI.VanillaEliteTiers[3].damageBoostCoefficient = 3.5f;
             };
         }
     }
