@@ -25,7 +25,6 @@ namespace EliteReworks
         public static bool affixBlueRemoveShield = true;
         public static bool affixWhiteEnabled = true;
         public static bool affixRedEnabled = true;
-        public static bool affixHauntedSimpleIndicatorEnabled = true;
         public static bool affixHauntedEnabled = true;
         public static bool affixPoisonEnabled = true;
 
@@ -60,7 +59,7 @@ namespace EliteReworks
             {
                 AffixRed.Setup();
             }
-            if (affixHauntedSimpleIndicatorEnabled || affixHauntedEnabled)
+            if (affixHauntedEnabled)
             {
                 AffixHaunted.Setup();
             }
