@@ -9,6 +9,8 @@ using BepInEx.Configuration;
 using EliteReworks.Tweaks;
 using EliteReworks.Tweaks.T2;
 using EliteReworks.Tweaks.T1.Components;
+using System.Collections;
+using System;
 
 namespace EliteReworks
 {
@@ -75,6 +77,13 @@ namespace EliteReworks
             On.RoR2.CharacterBody.RecalculateStats += RecalculateStats.CharacterBody_RecalculateStats;
             RecalculateStatsAPI.GetStatCoefficients += GetStatCoefficients.Hook;
 
+            //RoR2Application.onLoad += ModifyStats;
+            //ModifyStats();
+        }
+
+        private void ModifyStats()
+        {
+            //Debug.Log("Modifying stats\n\n\n\n\n");
             if (modifyStats)
             {
                 ModifyEliteTiers.Setup();
