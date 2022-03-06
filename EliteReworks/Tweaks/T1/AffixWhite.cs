@@ -51,19 +51,19 @@ namespace EliteReworks.Tweaks.T1
             buff.canStack = false;
             buff.isDebuff = true;
             buff.name = "EliteReworksSlow80";
-            buff.iconSprite = Resources.Load<Sprite>("textures/bufficons/texBuffSlow50Icon");
-            BuffAPI.Add(new CustomBuff(buff));
+            buff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffSlow50Icon");
+            R2API.ContentAddition.AddBuffDef((buff));
             return buff;
         }
 
         public static GameObject CreateHitEffect()
         {
-            GameObject effect = Resources.Load<GameObject>("prefabs/effects/muzzleflashes/MuzzleflashMageIceLarge").InstantiateClone("MoffeinEliteReworksGlacialHit", false);
+            GameObject effect = LegacyResourcesAPI.Load<GameObject>("prefabs/effects/muzzleflashes/MuzzleflashMageIceLarge").InstantiateClone("MoffeinEliteReworksGlacialHit", false);
             UnityEngine.Object.Destroy(effect.GetComponent<ShakeEmitter>());
             EffectComponent ec = effect.GetComponent<EffectComponent>();
             ec.soundName = "Play_mage_m2_iceSpear_shoot";
             ec.applyScale = false;
-            EffectAPI.AddEffect(effect);
+            R2API.ContentAddition.AddEffect(effect);
             return effect;
         }
 
@@ -71,7 +71,7 @@ namespace EliteReworks.Tweaks.T1
         {
             //prefabs/effects/impacteffects/AffixWhiteExplosion
             //prefabs/effects/muzzleflashes/MuzzleflashMageIceLarge
-            GameObject effect = Resources.Load<GameObject>("prefabs/effects/impacteffects/IceRingExplosion").InstantiateClone("MoffeinEliteReworksGlacialExplosion", false);
+            GameObject effect = LegacyResourcesAPI.Load<GameObject>("prefabs/effects/impacteffects/IceRingExplosion").InstantiateClone("MoffeinEliteReworksGlacialExplosion", false);
             UnityEngine.Object.Destroy(effect.GetComponent<ShakeEmitter>());
             EffectComponent ec = effect.GetComponent<EffectComponent>();
             ec.soundName = "";
@@ -97,7 +97,7 @@ namespace EliteReworks.Tweaks.T1
 
             //effect.AddComponent<DestroyOnTimer>().duration = 0.5f;
 
-            EffectAPI.AddEffect(effect);
+            R2API.ContentAddition.AddEffect(effect);
             return effect;
         }
     }

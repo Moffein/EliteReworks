@@ -40,7 +40,7 @@ namespace EliteReworks.Tweaks.T1
 
         private static GameObject BuildLightningProjectile()
         {
-			GameObject projectile = Resources.Load<GameObject>("prefabs/projectiles/ElectricWormSeekerProjectile").InstantiateClone("MoffeinEliteReworkOverloadinLightningProjectile",true);
+			GameObject projectile = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/ElectricWormSeekerProjectile").InstantiateClone("MoffeinEliteReworkOverloadinLightningProjectile",true);
 
 			ProjectileController pc = projectile.GetComponent<ProjectileController>();
 			pc.procCoefficient = 0f;
@@ -59,30 +59,31 @@ namespace EliteReworks.Tweaks.T1
 			//pie.explosionEffect = BuildLightningEffect();
 			//pie.impactEffect = BuildLightningEffect();
 			pie.destroyOnEnemy = false;
-			pie.blastAttackerFiltering = AttackerFiltering.NeverHit;
+			pie.blastAttackerFiltering = AttackerFiltering.NeverHitSelf;
 			pie.falloffModel = BlastAttack.FalloffModel.None;
 
-			ProjectileAPI.Add(projectile);
+			
+			R2API.ContentAddition.AddProjectile(projectile);
 			return projectile;
         }
 
 		private static GameObject BuildLightningTriggerEffect()
 		{
-			GameObject effect = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("prefabs/effects/lightningstakenova"), "MoffeinEliteReworksOverloadinLightningTriggerEffect", false);
+			GameObject effect = PrefabAPI.InstantiateClone(LegacyResourcesAPI.Load<GameObject>("prefabs/effects/lightningstakenova"), "MoffeinEliteReworksOverloadinLightningTriggerEffect", false);
 			EffectComponent ec = effect.GetComponent<EffectComponent>();
 			ec.applyScale = true;
 			ec.soundName = "Play_mage_m2_impact";
-			EffectAPI.AddEffect(effect);
+			R2API.ContentAddition.AddEffect(effect);
 			return effect;
 		}
 
 		private static GameObject BuildLightningTriggerEffectBoss()
 		{
-			GameObject effect = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("prefabs/effects/lightningstakenova"), "MoffeinEliteReworksOverloadinLightningTriggerBossEffect", false);
+			GameObject effect = PrefabAPI.InstantiateClone(LegacyResourcesAPI.Load<GameObject>("prefabs/effects/lightningstakenova"), "MoffeinEliteReworksOverloadinLightningTriggerBossEffect", false);
 			EffectComponent ec = effect.GetComponent<EffectComponent>();
 			ec.applyScale = true;
 			ec.soundName = "Play_titanboss_shift_shoot";
-			EffectAPI.AddEffect(effect);
+			R2API.ContentAddition.AddEffect(effect);
 			return effect;
 		}
 

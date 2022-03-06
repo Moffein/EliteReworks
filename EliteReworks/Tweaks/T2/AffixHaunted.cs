@@ -38,8 +38,8 @@ namespace EliteReworks.Tweaks.T2
             buff.canStack = false;
             buff.isDebuff = false;
             buff.name = "EliteReworksHauntedRevive";
-            buff.iconSprite = Resources.Load<Sprite>("textures/bufficons/texBuffDeathMarkIcon");
-            BuffAPI.Add(new CustomBuff(buff));
+            buff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffDeathMarkIcon");
+            R2API.ContentAddition.AddBuffDef((buff));
             return buff;
         }
 
@@ -50,8 +50,8 @@ namespace EliteReworks.Tweaks.T2
             buff.canStack = false;
             buff.isDebuff = false;
             buff.name = "EliteReworksHauntedGhostsActive";
-            buff.iconSprite = Resources.Load<Sprite>("textures/bufficons/texBuffDeathMarkIcon");
-            BuffAPI.Add(new CustomBuff(buff));
+            buff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffDeathMarkIcon");
+            R2API.ContentAddition.AddBuffDef((buff));
             return buff;
         }
 
@@ -62,8 +62,8 @@ namespace EliteReworks.Tweaks.T2
             buff.canStack = false;
             buff.isDebuff = true;
             buff.name = "EliteReworksHauntedArmorReduction";
-            buff.iconSprite = Resources.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
-            BuffAPI.Add(new CustomBuff(buff));
+            buff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
+            R2API.ContentAddition.AddBuffDef((buff));
             return buff;
         }
 

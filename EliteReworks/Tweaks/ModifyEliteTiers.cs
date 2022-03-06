@@ -21,14 +21,19 @@ namespace EliteReworks.Tweaks
                 orig();
 
                 //T1
-                EliteAPI.VanillaEliteTiers[1].costMultiplier = t1Cost;
+                /*EliteAPI.VanillaEliteTiers[1].costMultiplier = t1Cost;
                 EliteAPI.VanillaEliteTiers[1].healthBoostCoefficient = t1Health;
-                EliteAPI.VanillaEliteTiers[1].damageBoostCoefficient = t1Damage;
+                EliteAPI.VanillaEliteTiers[1].damageBoostCoefficient = t1Damage;*/
+
+                foreach (EliteDef e in EliteAPI.VanillaEliteTiers[1].eliteTypes)
+                {
+                    Debug.Log(e.name + " - HP " + e.healthBoostCoefficient + " - Damage " + e.damageBoostCoefficient +"\n");
+                }
 
                 //T2
-                EliteAPI.VanillaEliteTiers[3].costMultiplier = t2Cost;
+                /*EliteAPI.VanillaEliteTiers[3].costMultiplier = t2Cost;
                 EliteAPI.VanillaEliteTiers[3].healthBoostCoefficient = t2Health;
-                EliteAPI.VanillaEliteTiers[3].damageBoostCoefficient = t2Damage;
+                EliteAPI.VanillaEliteTiers[3].damageBoostCoefficient = t2Damage;*/
             };
         }
     }

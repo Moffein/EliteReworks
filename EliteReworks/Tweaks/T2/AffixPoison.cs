@@ -96,8 +96,8 @@ namespace EliteReworks.Tweaks.T2
 			buff.canStack = true;
 			buff.isDebuff = true;
 			buff.name = "EliteReworksMalachiteBuildup";
-			buff.iconSprite = RoR2Content.Buffs.HealingDisabled.iconSprite;
-			BuffAPI.Add(new CustomBuff(buff));
+			buff.iconSprite = LegacyResourcesAPI.Load<Sprite>("Textures/BuffIcons/texBuffHealingDisabledIcon");
+			R2API.ContentAddition.AddBuffDef((buff));
 			MalachiteBuildup = buff;
 
 			On.RoR2.HealthComponent.Heal += (orig, self, amount, procChainMask, isRegen) =>
@@ -122,29 +122,29 @@ namespace EliteReworks.Tweaks.T2
 
 		private static GameObject BuildSpikePrefab()
         {
-			GameObject projectile = Resources.Load<GameObject>("Prefabs/Projectiles/PoisonStakeProjectile").InstantiateClone("MoffeinEliteReworksPoisonStakeProjectile", true);
+			GameObject projectile = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/PoisonStakeProjectile").InstantiateClone("MoffeinEliteReworksPoisonStakeProjectile", true);
 
 			DamageAPI.ModdedDamageTypeHolderComponent modDamage = projectile.AddComponent<DamageAPI.ModdedDamageTypeHolderComponent>();
 			modDamage.Add(malachiteDamage);
-			ProjectileAPI.Add(projectile);
+			R2API.ContentAddition.AddProjectile(projectile);
 			return projectile;
 		}
 
 		private static GameObject BuildSpikeOrb(GameObject projectileChild)
 		{
-			GameObject projectile = Resources.Load<GameObject>("Prefabs/Projectiles/PoisonOrbProjectile").InstantiateClone("MoffeinEliteReworksPoisonOrbProjectile", true);
+			GameObject projectile = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/PoisonOrbProjectile").InstantiateClone("MoffeinEliteReworksPoisonOrbProjectile", true);
 			ProjectileImpactExplosion pie = projectile.GetComponent<ProjectileImpactExplosion>();
 			pie.blastRadius = 0f;
 			pie.blastDamageCoefficient = 0f;
 			pie.blastProcCoefficient = 0f;
 			pie.childrenProjectilePrefab = projectileChild;
-			ProjectileAPI.Add(projectile);
+			R2API.ContentAddition.AddProjectile(projectile);
 			return projectile;
 		}
 
 		private static GameObject BuildIndicator()
         {
-			GameObject indicator = Resources.Load<GameObject>("Prefabs/NetworkedObjects/NearbyDamageBonusIndicator").InstantiateClone("MoffeinEliteReworksPoisonIndicator", true);
+			GameObject indicator = LegacyResourcesAPI.Load<GameObject>("Prefabs/NetworkedObjects/NearbyDamageBonusIndicator").InstantiateClone("MoffeinEliteReworksPoisonIndicator", true);
 			indicator.transform.localScale = AffixPoisonDebuffAura.wardRadius / 12.8f * Vector3.one;
 			PrefabAPI.RegisterNetworkPrefab(indicator);
 			return indicator;
