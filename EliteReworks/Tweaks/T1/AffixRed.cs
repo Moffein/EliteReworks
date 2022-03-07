@@ -67,7 +67,7 @@ namespace EliteReworks.Tweaks.T1
 			};
 		}
 
-		public static void FixBurnDamage()
+		private static void FixBurnDamage()
         {
 			IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
 			{
@@ -88,7 +88,7 @@ namespace EliteReworks.Tweaks.T1
                     {
 						float burnPercent = damageInfo.procCoefficient * 0.2f;	//This assumes old burn was 5% hp damage per second. Might need to doublecheck
 						float totalBurnDamage = burnPercent * victimBody.healthComponent.fullCombinedHealth;
-						dotInfo.totalDamage = totalBurnDamage;//Mathf.Min((float)dotInfo.totalDamage, totalBurnDamage);
+						dotInfo.totalDamage = Mathf.Min((float)dotInfo.totalDamage, totalBurnDamage);
                     }
 					return dotInfo;
 				});

@@ -11,6 +11,7 @@ using EliteReworks.Tweaks.T2;
 using EliteReworks.Tweaks.T1.Components;
 using System.Collections;
 using System;
+using EliteReworks.Tweaks.DLC1;
 
 namespace EliteReworks
 {
@@ -29,6 +30,7 @@ namespace EliteReworks
         public static bool affixRedEnabled = true;
         public static bool affixHauntedEnabled = true;
         public static bool affixPoisonEnabled = true;
+        public static bool eliteVoidEnabled = true;
 
         public static float eliteStunDisableDuration = 1.2f;
         public static float eliteBossDamageMult = 1.6f;
@@ -69,12 +71,17 @@ namespace EliteReworks
             {
                 AffixPoison.Setup();
             }
+            if (eliteVoidEnabled)
+            {
+                EliteVoid.Setup();
+            }
 
             //These all have things to check if config features are enabled
             On.RoR2.CharacterBody.AddBuff_BuffIndex += AddBuff.AddEliteComponents;
             On.RoR2.GlobalEventManager.OnHitAll += OnHitAll.TriggerOnHitAllEffects;
             On.RoR2.HealthComponent.TakeDamage += TakeDamage.HealthComponent_TakeDamage;
             On.RoR2.CharacterBody.RecalculateStats += RecalculateStats.CharacterBody_RecalculateStats;
+            On.RoR2.GlobalEventManager.OnHitEnemy += OnHitEnemy.GlobalEventManager_OnHitEnemy;
             RecalculateStatsAPI.GetStatCoefficients += GetStatCoefficients.Hook;
 
             //RoR2Application.onLoad += ModifyStats;
@@ -114,6 +121,8 @@ namespace EliteReworks
             affixPoisonEnabled = base.Config.Bind<bool>(new ConfigDefinition("T2 - Malachite", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
 
             affixHauntedEnabled = base.Config.Bind<bool>(new ConfigDefinition("T2 - Celestine", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
+
+            eliteVoidEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC1 - Voidtouched", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
         }
     }
 }
