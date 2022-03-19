@@ -87,17 +87,7 @@ namespace EliteReworks
             On.RoR2.HealthComponent.TakeDamage += TakeDamage.HealthComponent_TakeDamage;
             On.RoR2.CharacterBody.RecalculateStats += RecalculateStats.CharacterBody_RecalculateStats;
 
-            //RoR2Application.onLoad += ModifyStats;
-            //ModifyStats();
-        }
-
-        private void ModifyStats()
-        {
-            //Debug.Log("Modifying stats\n\n\n\n\n");
-            if (modifyStats)
-            {
-                ModifyEliteTiers.Setup();
-            }
+            ModifyEliteTiers.Setup();
         }
 
         public void ReadConfig()
@@ -107,10 +97,16 @@ namespace EliteReworks
 
             ModifyEliteTiers.t1Cost = base.Config.Bind<float>(new ConfigDefinition("General", "T1 Cost"), 4.5f, new ConfigDescription("T1 Director Cost multiplier. (Vanilla is 6)")).Value;
             ModifyEliteTiers.t1Health = base.Config.Bind<float>(new ConfigDefinition("General", "T1 HP"), 3f, new ConfigDescription("T1 Health multiplier. (Vanilla is 4)")).Value;
+            ModifyEliteTiers.t1HealthEarth = base.Config.Bind<float>(new ConfigDefinition("General", "T1 HP - Mending"), 3f, new ConfigDescription("Mending Health multiplier. (Vanilla is 3)")).Value;
             ModifyEliteTiers.t1Damage = base.Config.Bind<float>(new ConfigDefinition("General", "T1 Damage"), 1.5f, new ConfigDescription("T1 Damage multipliers. (Vanilla is 2)")).Value;
 
+            ModifyEliteTiers.t1HonorCost = base.Config.Bind<float>(new ConfigDefinition("General", "T1 (Honor) Cost"), 3.5f, new ConfigDescription("T1 Director Cost multiplier while Honor is active. (Vanilla is 3.5)")).Value;
+            ModifyEliteTiers.t1HonorHealth = base.Config.Bind<float>(new ConfigDefinition("General", "T1 (Honor) HP"), 2.5f, new ConfigDescription("T1 Health multiplier while Honor is active. (Vanilla is 2.5)")).Value;
+            ModifyEliteTiers.t1HonorHealthEarth = base.Config.Bind<float>(new ConfigDefinition("General", "T1 (Honor) HP - Mending"), 1.5f, new ConfigDescription("Mending Health multiplier while Honor is active. (Vanilla is 1.5)")).Value;
+            ModifyEliteTiers.t1HonorDamage = base.Config.Bind<float>(new ConfigDefinition("General", "T1 (Honor) Damage"), 1.5f, new ConfigDescription("T1 Damage multipliers while Honor is active. (Vanilla is 1.5)")).Value;
+
             ModifyEliteTiers.t2Cost = base.Config.Bind<float>(new ConfigDefinition("General", "T2 Cost"), 36f, new ConfigDescription("T2 Director Cost multiplier. (Vanilla is 36)")).Value;
-            ModifyEliteTiers.t2Health = base.Config.Bind<float>(new ConfigDefinition("General", "T2 HP"), 14f, new ConfigDescription("T2 Health multiplier. (Vanilla is 18)")).Value;
+            ModifyEliteTiers.t2Health = base.Config.Bind<float>(new ConfigDefinition("General", "T2 HP"), 12f, new ConfigDescription("T2 Health multiplier. (Vanilla is 18)")).Value;
             ModifyEliteTiers.t2Damage = base.Config.Bind<float>(new ConfigDefinition("General", "T2 Damage"), 3.5f, new ConfigDescription("T2 Damage multipliers. (Vanilla is 6)")).Value;
 
             affixBlueRemoveShield = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "Remove Shield"), true, new ConfigDescription("Remove shields from Overloading Enemies.")).Value;
