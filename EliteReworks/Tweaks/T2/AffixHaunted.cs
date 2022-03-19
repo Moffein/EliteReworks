@@ -21,6 +21,19 @@ namespace EliteReworks.Tweaks.T2
             ghostsActiveBuff = CreateGhostsActiveBuff();
             armorReductionBuff = CreateArmorReductionBuff();
 
+            RecalculateStatsAPI.GetStatCoefficients += (sender, args) =>
+            {
+                if (sender.HasBuff(AffixHaunted.reviveBuff))
+                {
+                    args.moveSpeedMultAdd += 0.7f;
+                    args.attackSpeedMultAdd += 0.5f;
+                }
+                if (sender.HasBuff(AffixHaunted.armorReductionBuff))
+                {
+                    args.armorAdd -= 20f;
+                }
+            };
+
             if (EliteReworksPlugin.affixHauntedEnabled)
             {
                 DisableBubble();
@@ -38,7 +51,7 @@ namespace EliteReworks.Tweaks.T2
             buff.canStack = false;
             buff.isDebuff = false;
             buff.name = "EliteReworksHauntedRevive";
-            buff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffDeathMarkIcon");
+            buff.iconSprite = LegacyResourcesAPI.Load<BuffDef>("BuffDefs/DeathMark").iconSprite;
             R2API.ContentAddition.AddBuffDef((buff));
             return buff;
         }
@@ -50,7 +63,7 @@ namespace EliteReworks.Tweaks.T2
             buff.canStack = false;
             buff.isDebuff = false;
             buff.name = "EliteReworksHauntedGhostsActive";
-            buff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffDeathMarkIcon");
+            buff.iconSprite = LegacyResourcesAPI.Load<BuffDef>("BuffDefs/DeathMark").iconSprite;
             R2API.ContentAddition.AddBuffDef((buff));
             return buff;
         }
@@ -62,7 +75,7 @@ namespace EliteReworks.Tweaks.T2
             buff.canStack = false;
             buff.isDebuff = true;
             buff.name = "EliteReworksHauntedArmorReduction";
-            buff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
+            buff.iconSprite = LegacyResourcesAPI.Load<BuffDef>("BuffDefs/Cripple").iconSprite;
             R2API.ContentAddition.AddBuffDef((buff));
             return buff;
         }

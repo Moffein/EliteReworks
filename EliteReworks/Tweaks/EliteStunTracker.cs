@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using RoR2;
 
-namespace EliteReworks.Tweaks.T1.Components
+namespace EliteReworks.Tweaks
 {
-    public class AffixRedStunTracker : MonoBehaviour
+    public class EliteStunTracker : MonoBehaviour
     {
         private float stunDisableTimer = 0f;
 

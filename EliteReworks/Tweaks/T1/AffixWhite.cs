@@ -29,6 +29,14 @@ namespace EliteReworks.Tweaks.T1
             hitEffectPrefab = CreateHitEffect();
             slow80alt = CreateAltSlowBuff();
 
+            RecalculateStatsAPI.GetStatCoefficients += (sender, args) =>
+            {
+                if (sender.HasBuff(AffixWhite.slow80alt) && !sender.HasBuff(RoR2Content.Buffs.Slow80))
+                {
+                    args.moveSpeedReductionMultAdd += 0.8f;
+                }
+            };
+
             IL.RoR2.CharacterModel.UpdateOverlays += (il) =>
             {
                 ILCursor c = new ILCursor(il);
@@ -51,7 +59,7 @@ namespace EliteReworks.Tweaks.T1
             buff.canStack = false;
             buff.isDebuff = true;
             buff.name = "EliteReworksSlow80";
-            buff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffSlow50Icon");
+            buff.iconSprite = LegacyResourcesAPI.Load<BuffDef>("BuffDefs/Slow80").iconSprite;
             R2API.ContentAddition.AddBuffDef((buff));
             return buff;
         }

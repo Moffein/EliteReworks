@@ -3,6 +3,7 @@ using RoR2;
 using EliteReworks.Tweaks.T1.Components;
 using EliteReworks.Tweaks.T2.Components;
 using UnityEngine.Networking;
+using EliteReworks.Tweaks;
 
 namespace EliteReworks.SharedHooks
 {
@@ -13,11 +14,16 @@ namespace EliteReworks.SharedHooks
 			orig(self, buffIndex);
 			if (NetworkServer.active && self.gameObject)
 			{
+				bool hasStunTracker = false;
 				if (EliteReworksPlugin.affixRedEnabled && buffIndex == RoR2Content.Buffs.AffixRed.buffIndex)
 				{
-					if (self.HasBuff(RoR2Content.Buffs.AffixRed.buffIndex) && !self.gameObject.GetComponent<AffixRedStunTracker>())
+					if (self.HasBuff(RoR2Content.Buffs.AffixRed.buffIndex))
 					{
-						self.gameObject.AddComponent<AffixRedStunTracker>();
+						if (!self.gameObject.GetComponent<EliteStunTracker>())
+						{
+							self.gameObject.AddComponent<EliteStunTracker>();
+						}
+						hasStunTracker = true;
 					}
 				}
 				if (EliteReworksPlugin.affixBlueEnabled && buffIndex == RoR2Content.Buffs.AffixBlue.buffIndex)
@@ -34,15 +40,23 @@ namespace EliteReworks.SharedHooks
 						self.gameObject.AddComponent<AffixPoisonDebuffAura>();
 					}
 				}
-				if (self.HasBuff(RoR2Content.Buffs.AffixHaunted.buffIndex) && buffIndex == RoR2Content.Buffs.AffixHaunted.buffIndex)
+				if (EliteReworksPlugin.affixHauntedEnabled)
 				{
-					if (EliteReworksPlugin.affixHauntedEnabled)
+					if (self.HasBuff(RoR2Content.Buffs.AffixHaunted.buffIndex) && buffIndex == RoR2Content.Buffs.AffixHaunted.buffIndex)
 					{
 						if (!self.gameObject.GetComponent<AffixHauntedReviveAura>())
 						{
 							self.gameObject.AddComponent<AffixHauntedReviveAura>();
 						}
 					}
+				}
+				if (EliteReworksPlugin.eliteEarthEnabled && !hasStunTracker)
+				{
+					if (!self.gameObject.GetComponent<EliteStunTracker>())
+					{
+						self.gameObject.AddComponent<EliteStunTracker>();
+					}
+					hasStunTracker = true;
 				}
 			}
 		}

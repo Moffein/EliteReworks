@@ -13,6 +13,12 @@ namespace EliteReworks.SharedHooks
         {
             bool isPoison = false;
 
+            CharacterBody attackerBody = null;
+            if (damageInfo.attacker)
+            {
+                attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
+            }
+
             if (EliteReworksPlugin.affixPoisonEnabled && damageInfo.HasModdedDamageType(AffixPoison.malachiteDamage))
             {
                 isPoison = true;
@@ -24,11 +30,6 @@ namespace EliteReworks.SharedHooks
 
             if (EliteReworksPlugin.affixRedEnabled && damageInfo.inflictor && damageInfo.inflictor.name == "FireTrail(Clone)")
             {
-                CharacterBody attackerBody = null;
-                if (damageInfo.attacker)
-                {
-                    attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                }
                 damageInfo.crit = false;
                 damageInfo.procCoefficient = 0f;
 
@@ -49,6 +50,17 @@ namespace EliteReworks.SharedHooks
                     {
                         self.body.AddTimedBuff(RoR2Content.Buffs.HealingDisabled.buffIndex, 8f);
                         self.body.AddTimedBuff(RoR2Content.Buffs.Weak.buffIndex, 8f);
+                    }
+                }
+
+                if (EliteReworksPlugin.eliteVoidEnabled)
+                {
+                    if (attackerBody && damageInfo.procCoefficient > 0f)
+                    {
+                        if (attackerBody.HasBuff(DLC1Content.Buffs.EliteVoid))
+                        {
+                            self.body.AddTimedBuff(RoR2Content.Buffs.NullifyStack.buffIndex, 8f * damageInfo.procCoefficient);
+                        }
                     }
                 }
             }

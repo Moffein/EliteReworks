@@ -313,4 +313,8 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Tweaks\DLC1\Components\" />
+  </ItemGroup>
+
 </Project>

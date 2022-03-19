@@ -21,21 +21,21 @@ namespace EliteReworks.Tweaks.T1
             On.RoR2.CharacterBody.UpdateFireTrail += (On.RoR2.CharacterBody.orig_UpdateFireTrail orig, CharacterBody self) =>
 			{
 				bool blazing = self.HasBuff(RoR2Content.Buffs.AffixRed);
-				bool disableFireTrail = false;
-				AffixRedStunTracker ars = null;
+				bool disableAffix = false;
+				EliteStunTracker stunTracker = null;
 
 				if (blazing)
 				{
-					ars = self.gameObject.GetComponent<AffixRedStunTracker>();
-					if (!ars)
+					stunTracker = self.gameObject.GetComponent<EliteStunTracker>();
+					if (!stunTracker)
                     {
-						self.gameObject.AddComponent<AffixRedStunTracker>();
+						stunTracker = self.gameObject.AddComponent<EliteStunTracker>();
                     }
 
 					if (self.healthComponent && self.healthComponent.isInFrozenState)
 					{
-						disableFireTrail = true;
-						ars.SetStun();
+						disableAffix = true;
+						stunTracker.SetStun();
 					}
 					else
 					{
@@ -45,8 +45,8 @@ namespace EliteReworks.Tweaks.T1
 							Type state = ssoh.targetStateMachine.state.GetType();
 							if (state == typeof(EntityStates.StunState) || state == typeof(EntityStates.ShockState))
 							{
-								disableFireTrail = true;
-								ars.SetStun();
+								disableAffix = true;
+								stunTracker.SetStun();
 							}
 						}
 					}
@@ -57,7 +57,7 @@ namespace EliteReworks.Tweaks.T1
 
 				if (blazing && self.fireTrail)
 				{
-					if (disableFireTrail || !(ars && ars.PassiveActive()))
+					if (disableAffix || (stunTracker && !stunTracker.PassiveActive()))
 					{
 						UnityEngine.Object.Destroy(self.fireTrail.gameObject);
 						self.fireTrail = null;

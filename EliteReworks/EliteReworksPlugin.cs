@@ -17,7 +17,7 @@ namespace EliteReworks
 {
     [BepInDependency("com.bepis.r2api")]
     [BepInDependency("com.TPDespair.ZetAspects", BepInDependency.DependencyFlags.SoftDependency)]
-    [R2API.Utils.R2APISubmoduleDependency(nameof(PrefabAPI), nameof(RecalculateStatsAPI), nameof(DamageAPI), nameof(EliteAPI), nameof(ContentAddition))]
+    [R2API.Utils.R2APISubmoduleDependency(nameof(PrefabAPI), nameof(RecalculateStatsAPI), nameof(DamageAPI), nameof(ContentAddition))]//, nameof(EliteAPI)
     [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.5.0")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class EliteReworksPlugin : BaseUnityPlugin
@@ -30,6 +30,7 @@ namespace EliteReworks
         public static bool affixRedEnabled = true;
         public static bool affixHauntedEnabled = true;
         public static bool affixPoisonEnabled = true;
+        public static bool eliteEarthEnabled = true;
         public static bool eliteVoidEnabled = true;
 
         public static float eliteStunDisableDuration = 1.2f;
@@ -71,6 +72,10 @@ namespace EliteReworks
             {
                 AffixPoison.Setup();
             }
+            if (eliteEarthEnabled)
+            {
+                EliteEarth.Setup();
+            }
             if (eliteVoidEnabled)
             {
                 EliteVoid.Setup();
@@ -81,8 +86,6 @@ namespace EliteReworks
             On.RoR2.GlobalEventManager.OnHitAll += OnHitAll.TriggerOnHitAllEffects;
             On.RoR2.HealthComponent.TakeDamage += TakeDamage.HealthComponent_TakeDamage;
             On.RoR2.CharacterBody.RecalculateStats += RecalculateStats.CharacterBody_RecalculateStats;
-            On.RoR2.GlobalEventManager.OnHitEnemy += OnHitEnemy.GlobalEventManager_OnHitEnemy;
-            RecalculateStatsAPI.GetStatCoefficients += GetStatCoefficients.Hook;
 
             //RoR2Application.onLoad += ModifyStats;
             //ModifyStats();
@@ -122,6 +125,7 @@ namespace EliteReworks
 
             affixHauntedEnabled = base.Config.Bind<bool>(new ConfigDefinition("T2 - Celestine", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
 
+            eliteEarthEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC1 - T1 - Mending", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
             eliteVoidEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC1 - Voidtouched", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
         }
     }

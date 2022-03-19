@@ -96,7 +96,7 @@ namespace EliteReworks.Tweaks.T2
 			buff.canStack = true;
 			buff.isDebuff = true;
 			buff.name = "EliteReworksMalachiteBuildup";
-			buff.iconSprite = LegacyResourcesAPI.Load<Sprite>("Textures/BuffIcons/texBuffHealingDisabledIcon");
+			buff.iconSprite = LegacyResourcesAPI.Load<BuffDef>("BuffDefs/HealingDisabled").iconSprite;
 			R2API.ContentAddition.AddBuffDef((buff));
 			MalachiteBuildup = buff;
 
