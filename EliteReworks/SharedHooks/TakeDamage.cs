@@ -59,7 +59,11 @@ namespace EliteReworks.SharedHooks
                     {
                         if (attackerBody.HasBuff(DLC1Content.Buffs.EliteVoid))
                         {
-                            self.body.AddTimedBuff(RoR2Content.Buffs.NullifyStack.buffIndex, 8f * damageInfo.procCoefficient);
+                            if (Util.CheckRoll(100f * damageInfo.procCoefficient))
+                            {
+                                float sqrtProc = Mathf.Sqrt(Mathf.Min(1f, damageInfo.procCoefficient));
+                                self.body.AddTimedBuff(RoR2Content.Buffs.NullifyStack.buffIndex, 8f * sqrtProc);
+                            }
                         }
                     }
                 }

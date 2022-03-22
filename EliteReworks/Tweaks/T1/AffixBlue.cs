@@ -18,6 +18,9 @@ namespace EliteReworks.Tweaks.T1
 		public static GameObject triggerEffectPrefab;
 		public static GameObject triggerEffectBossPrefab;
 
+		public static bool enablePassiveLightning = true;
+		public static bool enableOnHitRework = true;
+
 		public static void Setup()
 		{
 			AffixBlue.triggerEffectPrefab = BuildLightningTriggerEffect();
@@ -27,15 +30,18 @@ namespace EliteReworks.Tweaks.T1
 			AffixBluePassiveLightning.lightningProjectilePrefab = AffixBlue.lightningProjectilePrefab;
 
 			//Remove vanilla on-hit effect
-			IL.RoR2.GlobalEventManager.OnHitAll += (il) =>
+			if (enableOnHitRework)
 			{
-				ILCursor c = new ILCursor(il);
-				c.GotoNext(
-					 x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixBlue")
-					);
-				c.Remove();
-				c.Emit<EliteReworksPlugin>(OpCodes.Ldsfld, nameof(EliteReworksPlugin.EmptyBuff));
-			};
+				IL.RoR2.GlobalEventManager.OnHitAll += (il) =>
+				{
+					ILCursor c = new ILCursor(il);
+					c.GotoNext(
+						 x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixBlue")
+						);
+					c.Remove();
+					c.Emit<EliteReworksPlugin>(OpCodes.Ldsfld, nameof(EliteReworksPlugin.EmptyBuff));
+				};
+			}
 		}
 
         private static GameObject BuildLightningProjectile()

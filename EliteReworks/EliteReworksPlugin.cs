@@ -18,7 +18,7 @@ namespace EliteReworks
     [BepInDependency("com.bepis.r2api")]
     [BepInDependency("com.TPDespair.ZetAspects", BepInDependency.DependencyFlags.SoftDependency)]
     [R2API.Utils.R2APISubmoduleDependency(nameof(PrefabAPI), nameof(RecalculateStatsAPI), nameof(DamageAPI), nameof(ContentAddition))]//, nameof(EliteAPI)
-    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.5.0")]
+    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.5.1")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class EliteReworksPlugin : BaseUnityPlugin
     {
@@ -55,10 +55,10 @@ namespace EliteReworks
             if (affixBlueEnabled)
             {
                 AffixBlue.Setup();
-            }
-            if (affixBlueRemoveShield)
-            {
-                AffixBlue.RemoveShields();
+                if (affixBlueRemoveShield)
+                {
+                    AffixBlue.RemoveShields();
+                }
             }
             if (affixRedEnabled)
             {
@@ -111,8 +111,10 @@ namespace EliteReworks
 
             EliteVoid.damageBonus = base.Config.Bind<float>(new ConfigDefinition("General", "Voidtouched Damage"), 1.5f, new ConfigDescription("Voidtouched Damage multipliers. (Vanilla is 0.7)")).Value;
 
-            affixBlueRemoveShield = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "Remove Shield"), true, new ConfigDescription("Remove shields from Overloading Enemies.")).Value;
             affixBlueEnabled = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
+            affixBlueRemoveShield = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "Remove Shield"), true, new ConfigDescription("Remove shields from Overloading Enemies.")).Value;
+            AffixBlue.enableOnHitRework = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "Rework On-Hit Effect"), true, new ConfigDescription("Replaces Overloading stickybombs with a spread of projectiles.")).Value;
+            AffixBlue.enablePassiveLightning = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "Passive Lightning"), true, new ConfigDescription("Overloading elites periodically shoot out lightning nearby.")).Value;
             AffixBluePassiveLightning.uncapOnHitLightning = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "Uncap On-Hit Lightning"), false, new ConfigDescription("Remove the fire rate cap on on-hit lightning bombs (laggy).")).Value;
 
             affixWhiteEnabled = base.Config.Bind<bool>(new ConfigDefinition("T1 - Glacial", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;

@@ -109,7 +109,7 @@ namespace EliteReworks.Tweaks.T1.Components
                         scaledDamage *= EliteReworksPlugin.eliteBossDamageMult;
                     }
 
-                    this.FireMeatballs(ownerBody.gameObject, ownerBody.isChampion, scaledDamage, ownerBody.RollCrit(),
+                    if (AffixBlue.enablePassiveLightning) this.FireMeatballs(ownerBody.gameObject, ownerBody.isChampion, scaledDamage, ownerBody.RollCrit(),
                                     Vector3.up, ownerBody.corePosition + Vector3.up, ownerBody.transform.forward,
                                     meatballCount, 20f, 400f, 20f);
                 }

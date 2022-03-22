@@ -31,7 +31,7 @@ namespace EliteReworks.SharedHooks
                                 damageInfo.position, radius, slowDuration,
                                 AffixWhite.explosionEffectPrefab, AffixWhite.hitEffectPrefab, false, true);
                         }
-                        if (EliteReworksPlugin.affixBlueEnabled && attackerBody.HasBuff(RoR2Content.Buffs.AffixBlue))
+                        if (EliteReworksPlugin.affixBlueEnabled && AffixBlue.enableOnHitRework && attackerBody.HasBuff(RoR2Content.Buffs.AffixBlue))
                         {
                             AffixBluePassiveLightning ab = attackerBody.GetComponent<AffixBluePassiveLightning>();
                             if (ab)
