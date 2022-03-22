@@ -9,6 +9,7 @@ namespace EliteReworks.Tweaks.DLC1
 {
     public class EliteVoid
     {
+        public static float damageBonus = 1.5f;
         public static void Setup()
         {
             //Remove vanilla on-hit effect
@@ -29,7 +30,7 @@ namespace EliteReworks.Tweaks.DLC1
             {
                 if (sender.HasBuff(DLC1Content.Buffs.EliteVoid))
                 {
-                    args.damageMultAdd += 0.3f;
+                    args.damageMultAdd += 0.3f + (EliteVoid.damageBonus - 1f);
                 }
             };
         }
