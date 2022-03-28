@@ -9,7 +9,7 @@ namespace EliteReworks
 {
     public static class EliteReworksUtils
     {
-        public static void DebuffSphere(BuffIndex buff, TeamIndex team, Vector3 position, float radius, float debuffDuration, GameObject effect, GameObject hitEffect, bool ignoreImmunity, bool falloff = false)
+        public static void DebuffSphere(BuffIndex buff, TeamIndex team, Vector3 position, float radius, float debuffDuration, GameObject effect, GameObject hitEffect, bool ignoreImmunity, bool falloff, NetworkSoundEventDef buffSound)
         {
             if (!NetworkServer.active)
             {
@@ -50,13 +50,22 @@ namespace EliteReworks
                                         effectiveness *= 0.25f;
                                     }
                                 }
+                                bool alreadyHasBuff = healthComponent.body.HasBuff(buff);
                                 healthComponent.body.AddTimedBuff(buff, effectiveness * debuffDuration);
-                                if (hitEffect != null)
+                                if (!alreadyHasBuff)
                                 {
-                                    EffectManager.SpawnEffect(hitEffect, new EffectData
+                                    if (hitEffect != null)
                                     {
-                                        origin = healthComponent.body.corePosition
-                                    }, true);
+                                        EffectManager.SpawnEffect(hitEffect, new EffectData
+                                        {
+                                            origin = healthComponent.body.corePosition
+                                        }, true);
+                                    }
+                                    if (buffSound != null)
+                                    {
+                                        Debug.Log("Playing NetworkSound");
+                                        EffectManager.SimpleSoundEffect(buffSound.index, healthComponent.body.corePosition, true);
+                                    }
                                 }
                             }
                         }

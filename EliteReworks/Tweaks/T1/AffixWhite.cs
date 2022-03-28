@@ -16,18 +16,29 @@ namespace EliteReworks.Tweaks.T1
     {
         public static BuffDef slow80alt;
 
-        public static float baseRadius = 4f;
+        public static float baseRadius = 5f;
         public static float baseSlowDuration = 0.5f;
         public static float procSlowDuration = 2f;
 
         public static GameObject explosionEffectPrefab;
-        public static GameObject hitEffectPrefab;
+        public static NetworkSoundEventDef slowProcSound;
 
         public static void Setup()
         {
             explosionEffectPrefab = CreateExplosionEffect();
-            hitEffectPrefab = CreateHitEffect();
             slow80alt = CreateAltSlowBuff();
+            slowProcSound = CreateSlowProcSound();
+
+            //Remove vanilla on-hit effect so that all on-hits are handled via the OnHitAll hook
+            IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+            {
+                ILCursor c = new ILCursor(il);
+                c.GotoNext(
+                     x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixWhite")
+                    );
+                c.Remove();
+                c.Emit<EliteReworksPlugin>(OpCodes.Ldsfld, nameof(EliteReworksPlugin.EmptyBuff));
+            };
 
             RecalculateStatsAPI.GetStatCoefficients += (sender, args) =>
             {
@@ -52,7 +63,7 @@ namespace EliteReworks.Tweaks.T1
             };
         }
 
-        public static BuffDef CreateAltSlowBuff()
+        private static BuffDef CreateAltSlowBuff()
         {
             BuffDef buff = ScriptableObject.CreateInstance<BuffDef>();
             buff.buffColor = new Color(165f/255f, 222f/255f, 237f/255f);
@@ -64,18 +75,7 @@ namespace EliteReworks.Tweaks.T1
             return buff;
         }
 
-        public static GameObject CreateHitEffect()
-        {
-            GameObject effect = LegacyResourcesAPI.Load<GameObject>("prefabs/effects/muzzleflashes/MuzzleflashMageIceLarge").InstantiateClone("MoffeinEliteReworksGlacialHit", false);
-            UnityEngine.Object.Destroy(effect.GetComponent<ShakeEmitter>());
-            EffectComponent ec = effect.GetComponent<EffectComponent>();
-            ec.soundName = "Play_mage_m2_iceSpear_shoot";
-            ec.applyScale = false;
-            R2API.ContentAddition.AddEffect(effect);
-            return effect;
-        }
-
-        public static GameObject CreateExplosionEffect()
+        private static GameObject CreateExplosionEffect()
         {
             //prefabs/effects/impacteffects/AffixWhiteExplosion
             //prefabs/effects/muzzleflashes/MuzzleflashMageIceLarge
@@ -107,6 +107,16 @@ namespace EliteReworks.Tweaks.T1
 
             R2API.ContentAddition.AddEffect(effect);
             return effect;
+        }
+
+        private static NetworkSoundEventDef CreateSlowProcSound()
+        {
+            NetworkSoundEventDef toReturn = ScriptableObject.CreateInstance<NetworkSoundEventDef>();
+            toReturn.eventName = "Play_mage_m2_iceSpear_shoot";
+            (toReturn as UnityEngine.Object).name = "EliteReworksGlacialSlowNetworkSound";
+            ContentAddition.AddNetworkSoundEventDef(toReturn);
+
+            return toReturn;
         }
     }
 }

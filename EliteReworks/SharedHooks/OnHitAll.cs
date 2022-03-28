@@ -29,7 +29,7 @@ namespace EliteReworks.SharedHooks
                             float slowDuration = AffixWhite.baseSlowDuration + AffixWhite.procSlowDuration * Mathf.Min(damageInfo.procCoefficient, 1f);
                             EliteReworksUtils.DebuffSphere(EliteReworksPlugin.zetAspectsLoaded ? AffixWhite.slow80alt.buffIndex : RoR2Content.Buffs.Slow80.buffIndex, attackerBody.teamComponent.teamIndex,
                                 damageInfo.position, radius, slowDuration,
-                                AffixWhite.explosionEffectPrefab, AffixWhite.hitEffectPrefab, false, true);
+                                AffixWhite.explosionEffectPrefab, null, false, true, AffixWhite.slowProcSound);
                         }
                         if (EliteReworksPlugin.affixBlueEnabled && AffixBlue.enableOnHitRework && attackerBody.HasBuff(RoR2Content.Buffs.AffixBlue))
                         {
