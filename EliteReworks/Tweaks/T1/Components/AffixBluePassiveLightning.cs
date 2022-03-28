@@ -100,7 +100,7 @@ namespace EliteReworks.Tweaks.T1.Components
                 if (lightningStopwatch >= baseLightningTimer)
                 {
                     lightningStopwatch = 0f;
-                    int meatballCount = baseMeatballCount + (int)(ownerBody.radius * baseMeatballCount / 3f);
+                    int meatballCount = baseMeatballCount; //+ (int)(ownerBody.radius * baseMeatballCount / 3f);
 
                     //float scaledDamage = ownerBody.damage * damageCoefficient;
                     float scaledDamage = (baseDamage + Mathf.Max(0f, ownerBody.level - 1f) * baseDamage * 0.2f);
@@ -111,7 +111,7 @@ namespace EliteReworks.Tweaks.T1.Components
 
                     if (AffixBlue.enablePassiveLightning) this.FireMeatballs(ownerBody.gameObject, ownerBody.isChampion, scaledDamage, ownerBody.RollCrit(),
                                     Vector3.up, ownerBody.corePosition + Vector3.up, ownerBody.transform.forward,
-                                    meatballCount, 20f, 400f, 20f);
+                                    meatballCount, 20f, 400f, ownerBody.isChampion? 25f : 20f, false);
                 }
             }
             else
@@ -126,7 +126,8 @@ namespace EliteReworks.Tweaks.T1.Components
             Vector3 impactNormal, Vector3 impactPosition, Vector3 forward,
             int meatballCount, float meatballAngle, float meatballForce, float velocity, bool randomize = false)
         {
-            EffectManager.SpawnEffect(isChampion ? AffixBlue.triggerEffectBossPrefab : AffixBlue.triggerEffectPrefab, new EffectData { origin = impactPosition - Vector3.up, scale = 1.5f }, true);
+            EffectManager.SimpleSoundEffect((isChampion ? AffixBlue.triggerBossSound : AffixBlue.triggerSound).index, impactPosition, true);
+
             float num = 360f / (float)meatballCount;
             float randomOffset = UnityEngine.Random.Range(0f, 360f);
             Vector3 normalized = Vector3.ProjectOnPlane(forward, impactNormal).normalized;
@@ -152,7 +153,7 @@ namespace EliteReworks.Tweaks.T1.Components
                     point = Vector3.RotateTowards(impactNormal, normalized, angle * 0.0174532924f, float.PositiveInfinity);
                 }
                 Vector3 forward2 = Quaternion.AngleAxis(randomOffset + num * (float)i, impactNormal) * point;
-                ProjectileManager.instance.FireProjectile(lightningProjectilePrefab, impactPosition, RoR2.Util.QuaternionSafeLookRotation(forward2),
+                ProjectileManager.instance.FireProjectile((isChampion ? AffixBlue.lightningBossProjectilePrefab : AffixBlue.lightningProjectilePrefab), impactPosition, RoR2.Util.QuaternionSafeLookRotation(forward2),
                     attacker, damage, meatballForce, crit, DamageColorIndex.Default, null, velocity);
             }
         }

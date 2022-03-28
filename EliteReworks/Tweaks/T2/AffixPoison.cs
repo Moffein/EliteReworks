@@ -18,7 +18,7 @@ namespace EliteReworks.Tweaks.T2
 		public static float spikeHPPercent = 0.5f;
 
 		public static BuffDef MalachiteBuildup;
-		public static float malachiteBuildupTime = 4f;
+		public static float malachiteBuildupTime = 3f;
 		public static int malachiteBuildupMaxStacks = 5;
 		public static float malachiteBuildupHealReduction;
 
