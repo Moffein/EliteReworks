@@ -72,6 +72,10 @@ namespace EliteReworks.Tweaks.T1
 			pie.blastAttackerFiltering = AttackerFiltering.NeverHitSelf;
 			pie.falloffModel= BlastAttack.FalloffModel.SweetSpot;
 
+			pie.impactEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteLightning/LightningStakeNova.prefab").WaitForCompletion().InstantiateClone("MoffeinEliteReworkOverloadinLightningProjectileImpact", false);
+			EffectComponent ec = pie.impactEffect.GetComponent<EffectComponent>();
+			ec.soundName = "Play_item_proc_chain_lightning";
+			R2API.ContentAddition.AddEffect(pie.impactEffect);
 
 			R2API.ContentAddition.AddProjectile(projectile);
 			return projectile;
@@ -105,26 +109,6 @@ namespace EliteReworks.Tweaks.T1
 
 			R2API.ContentAddition.AddProjectile(projectile);
 			return projectile;
-		}
-
-		private static GameObject BuildLightningTriggerEffect()
-		{
-			GameObject effect = PrefabAPI.InstantiateClone(LegacyResourcesAPI.Load<GameObject>("prefabs/effects/lightningstakenova"), "MoffeinEliteReworksOverloadinLightningTriggerEffect", false);
-			EffectComponent ec = effect.GetComponent<EffectComponent>();
-			ec.applyScale = true;
-			ec.soundName = "Play_mage_m2_impact";
-			R2API.ContentAddition.AddEffect(effect);
-			return effect;
-		}
-
-		private static GameObject BuildLightningTriggerEffectBoss()
-		{
-			GameObject effect = PrefabAPI.InstantiateClone(LegacyResourcesAPI.Load<GameObject>("prefabs/effects/lightningstakenova"), "MoffeinEliteReworksOverloadinLightningTriggerBossEffect", false);
-			EffectComponent ec = effect.GetComponent<EffectComponent>();
-			ec.applyScale = true;
-			ec.soundName = "Play_titanboss_shift_shoot";
-			R2API.ContentAddition.AddEffect(effect);
-			return effect;
 		}
 
 		private static NetworkSoundEventDef BuildTriggerSound()
