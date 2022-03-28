@@ -30,6 +30,19 @@ namespace EliteReworks.SharedHooks
                             EliteReworksUtils.DebuffSphere(EliteReworksPlugin.zetAspectsLoaded ? AffixWhite.slow80alt.buffIndex : RoR2Content.Buffs.Slow80.buffIndex, attackerBody.teamComponent.teamIndex,
                                 damageInfo.position, radius, slowDuration,
                                 AffixWhite.explosionEffectPrefab, null, false, true, AffixWhite.slowProcSound);
+
+                            //Use this to view hitbox with HitboxViewer
+                            /*new BlastAttack
+                            {
+                                teamIndex = attackerBody.teamComponent.teamIndex,
+                                radius = AffixWhite.baseRadius,
+                                baseDamage = 1f,
+                                attacker = attackerBody.gameObject,
+                                inflictor = attackerBody.gameObject,
+                                position = damageInfo.position,
+                                falloffModel = BlastAttack.FalloffModel.None,
+                                damageType = DamageType.NonLethal
+                            }.Fire();*/
                         }
                         if (EliteReworksPlugin.affixBlueEnabled && AffixBlue.enableOnHitRework && attackerBody.HasBuff(RoR2Content.Buffs.AffixBlue))
                         {

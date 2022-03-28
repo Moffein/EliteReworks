@@ -16,7 +16,7 @@ namespace EliteReworks.Tweaks.T1
     {
         public static BuffDef slow80alt;
 
-        public static float baseRadius = 5f;
+        public static float baseRadius = 4.5f;
         public static float baseSlowDuration = 0.5f;
         public static float procSlowDuration = 2f;
 
