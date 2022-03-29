@@ -17,6 +17,10 @@ namespace EliteReworks.Tweaks.T1
 		public static GameObject lightningProjectilePrefab;
 		public static GameObject lightningBossProjectilePrefab;
 
+		public static GameObject lightningEffectPrefab;
+
+		public static GameObject lightningBombV2Prefab;
+
 		public static NetworkSoundEventDef triggerSound;
 		public static NetworkSoundEventDef triggerBossSound;
 
@@ -25,9 +29,16 @@ namespace EliteReworks.Tweaks.T1
 
 		public static void Setup()
 		{
+			lightningEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteLightning/LightningStakeNova.prefab").WaitForCompletion().InstantiateClone("MoffeinEliteReworkOverloadinLightningVFX", false);
+			EffectComponent ec = lightningEffectPrefab.GetComponent<EffectComponent>();
+			ec.soundName = "Play_EliteReworks_Lightning";
+			R2API.ContentAddition.AddEffect(lightningEffectPrefab);
 
 			AffixBlue.lightningProjectilePrefab = BuildLightningProjectile();
 			AffixBlue.lightningBossProjectilePrefab = BuildLightningBossProjectile();
+
+			AffixBlue.lightningBombV2Prefab = BuildLightningBombV2();
+
 			AffixBluePassiveLightning.lightningProjectilePrefab = AffixBlue.lightningProjectilePrefab;
 
 			AffixBlue.triggerSound = BuildTriggerSound();
@@ -46,6 +57,11 @@ namespace EliteReworks.Tweaks.T1
 					c.Emit<EliteReworksPlugin>(OpCodes.Ldsfld, nameof(EliteReworksPlugin.EmptyBuff));
 				};
 			}
+
+			if (EliteReworksPlugin.affixBlueRemoveShield)
+            {
+				RemoveShields();
+            }
 		}
 
 		private static GameObject BuildLightningProjectile()
@@ -70,12 +86,9 @@ namespace EliteReworks.Tweaks.T1
 			//pie.impactEffect = BuildLightningEffect();
 			pie.destroyOnEnemy = false;
 			pie.blastAttackerFiltering = AttackerFiltering.NeverHitSelf;
-			pie.falloffModel= BlastAttack.FalloffModel.SweetSpot;
+			pie.falloffModel = BlastAttack.FalloffModel.None;
 
-			pie.impactEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteLightning/LightningStakeNova.prefab").WaitForCompletion().InstantiateClone("MoffeinEliteReworkOverloadinLightningProjectileImpact", false);
-			EffectComponent ec = pie.impactEffect.GetComponent<EffectComponent>();
-			ec.soundName = "Play_EliteReworks_Lightning";
-			R2API.ContentAddition.AddEffect(pie.impactEffect);
+			pie.impactEffect = AffixBlue.lightningEffectPrefab;
 
 			R2API.ContentAddition.AddProjectile(projectile);
 			return projectile;
@@ -103,7 +116,7 @@ namespace EliteReworks.Tweaks.T1
 			//pie.impactEffect = BuildLightningEffect();
 			pie.destroyOnEnemy = false;
 			pie.blastAttackerFiltering = AttackerFiltering.NeverHitSelf;
-			pie.falloffModel = BlastAttack.FalloffModel.SweetSpot;
+			pie.falloffModel = BlastAttack.FalloffModel.None;
 			pie.fireChildren = false;
 
 
@@ -114,7 +127,7 @@ namespace EliteReworks.Tweaks.T1
 		private static NetworkSoundEventDef BuildTriggerSound()
 		{
 			NetworkSoundEventDef toReturn = ScriptableObject.CreateInstance<NetworkSoundEventDef>();
-			toReturn.eventName = "Play_item_proc_chain_lightning";
+			toReturn.eventName = "Play_mage_m1_cast_lightning";// "Play_item_proc_chain_lightning";
 			(toReturn as UnityEngine.Object).name = "EliteReworksOverloadingNetworkSound";
 			ContentAddition.AddNetworkSoundEventDef(toReturn);
 
@@ -131,7 +144,18 @@ namespace EliteReworks.Tweaks.T1
 			return toReturn;
 		}
 
-		public static void RemoveShields()
+		private static GameObject BuildLightningBombV2()
+        {
+			GameObject toReturn = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/LightningStake").InstantiateClone("MoffeinEliteReworksOverloadingStakeV2",true);
+			ProjectileImpactExplosion pie = toReturn.GetComponent<ProjectileImpactExplosion>();
+			pie.blastRadius = 7f;
+			pie.impactEffect = AffixBlue.lightningEffectPrefab;
+			ContentAddition.AddProjectile(toReturn);
+
+			return toReturn;
+        }
+
+		private static void RemoveShields()
         {
 			//Remove Shields
 			IL.RoR2.CharacterBody.RecalculateStats += (il) =>

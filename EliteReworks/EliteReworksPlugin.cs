@@ -56,10 +56,6 @@ namespace EliteReworks
             if (affixBlueEnabled)
             {
                 AffixBlue.Setup();
-                if (affixBlueRemoveShield)
-                {
-                    AffixBlue.RemoveShields();
-                }
             }
             if (affixRedEnabled)
             {
