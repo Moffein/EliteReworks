@@ -74,7 +74,7 @@ namespace EliteReworks.Tweaks.T1
 
 			pie.impactEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteLightning/LightningStakeNova.prefab").WaitForCompletion().InstantiateClone("MoffeinEliteReworkOverloadinLightningProjectileImpact", false);
 			EffectComponent ec = pie.impactEffect.GetComponent<EffectComponent>();
-			ec.soundName = "Play_item_proc_chain_lightning";
+			ec.soundName = "Play_EliteReworks_Lightning";
 			R2API.ContentAddition.AddEffect(pie.impactEffect);
 
 			R2API.ContentAddition.AddProjectile(projectile);
@@ -114,7 +114,7 @@ namespace EliteReworks.Tweaks.T1
 		private static NetworkSoundEventDef BuildTriggerSound()
 		{
 			NetworkSoundEventDef toReturn = ScriptableObject.CreateInstance<NetworkSoundEventDef>();
-			toReturn.eventName = "Play_mage_m2_impact";//"Play_item_proc_chain_lightning"; //Might be too quiet
+			toReturn.eventName = "Play_item_proc_chain_lightning";
 			(toReturn as UnityEngine.Object).name = "EliteReworksOverloadingNetworkSound";
 			ContentAddition.AddNetworkSoundEventDef(toReturn);
 

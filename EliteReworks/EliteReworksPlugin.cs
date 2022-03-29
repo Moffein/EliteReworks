@@ -12,12 +12,13 @@ using EliteReworks.Tweaks.T1.Components;
 using System.Collections;
 using System;
 using EliteReworks.Tweaks.DLC1;
+using System.Reflection;
 
 namespace EliteReworks
 {
     [BepInDependency("com.bepis.r2api")]
     [BepInDependency("com.TPDespair.ZetAspects", BepInDependency.DependencyFlags.SoftDependency)]
-    [R2API.Utils.R2APISubmoduleDependency(nameof(PrefabAPI), nameof(RecalculateStatsAPI), nameof(DamageAPI), nameof(ContentAddition))]//, nameof(EliteAPI)
+    [R2API.Utils.R2APISubmoduleDependency(nameof(PrefabAPI), nameof(RecalculateStatsAPI), nameof(DamageAPI), nameof(ContentAddition), nameof(SoundAPI))]//, nameof(EliteAPI)
     [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.6.0")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class EliteReworksPlugin : BaseUnityPlugin
@@ -88,6 +89,14 @@ namespace EliteReworks
             On.RoR2.CharacterBody.RecalculateStats += RecalculateStats.CharacterBody_RecalculateStats;
 
             ModifyEliteTiers.Setup();
+
+
+            using (var bankStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("EliteReworks.EliteReworks.bnk"))
+            {
+                var bytes = new byte[bankStream.Length];
+                bankStream.Read(bytes, 0, bytes.Length);
+                R2API.SoundAPI.SoundBanks.Add(bytes);
+            }
         }
 
         public void ReadConfig()

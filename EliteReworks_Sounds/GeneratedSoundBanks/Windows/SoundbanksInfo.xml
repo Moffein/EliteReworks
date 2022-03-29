@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="12" SoundbankVersion="135">
+	<RootPaths>
+		<ProjectRoot>C:\Users\Node\RoR2 Mods\EliteReworks\EliteReworks_Sounds\</ProjectRoot>
+		<SourceFilesRoot>C:\Users\Node\RoR2 Mods\EliteReworks\EliteReworks_Sounds\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>C:\Users\Node\RoR2 Mods\EliteReworks\EliteReworks_Sounds\GeneratedSoundBanks\Windows\</SoundBanksRoot>
+		<ExternalSourcesInputFile></ExternalSourcesInputFile>
+		<ExternalSourcesOutputRoot>C:\Users\Node\RoR2 Mods\EliteReworks\EliteReworks_Sounds\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
+	</RootPaths>
+	<DialogueEvents/>
+	<StreamedFiles/>
+	<MediaFilesNotInAnyBank/>
+	<SoundBanks>
+		<SoundBank Id="1355168291" Language="SFX" Hash="1891520505">
+			<ObjectPath>Init</ObjectPath>
+			<ShortName>Init</ShortName>
+			<Path>Init.bnk</Path>
+		</SoundBank>
+		<SoundBank Id="3925755697" Language="SFX" Hash="4276805005">
+			<ObjectPath>\SoundBanks\Default Work Unit\EliteReworks</ObjectPath>
+			<ShortName>EliteReworks</ShortName>
+			<Path>EliteReworks.bnk</Path>
+			<IncludedEvents>
+				<Event Id="724206297" Name="Play_EliteReworks_Lightning" ObjectPath="\Events\Default Work Unit\Play_EliteReworks_Lightning">
+					<IncludedMemoryFiles>
+						<File Id="656811466" Language="SFX">
+							<ShortName>wChainLightning.wav</ShortName>
+							<Path>SFX\wChainLightning_3F75BDB9.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+			</IncludedEvents>
+			<GameParameters>
+				<GameParameter Id="3673881719" Name="Volume_SFX" ObjectPath="\Game Parameters\Default Work Unit\Volume_SFX"/>
+			</GameParameters>
+		</SoundBank>
+	</SoundBanks>
+</SoundBanksInfo>

@@ -5,6 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="EliteReworks.bnk" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="EliteReworks.bnk" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>libs\BepInEx\0Harmony.dll</HintPath>
     </Reference>
