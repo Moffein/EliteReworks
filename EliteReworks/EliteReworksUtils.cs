@@ -47,7 +47,7 @@ namespace EliteReworks
                                     float distSqr = (position - hurtBox.collider.ClosestPoint(position)).sqrMagnitude;
                                     if (distSqr > radiusHalfwaySqr)  //Reduce effectiveness when over half the radius away
                                     {
-                                        effectiveness *= 0.25f;
+                                        effectiveness *= 0.5f;  //0.25 is vanilla sweetspot
                                     }
                                 }
                                 bool alreadyHasBuff = healthComponent.body.HasBuff(buff);
@@ -63,7 +63,6 @@ namespace EliteReworks
                                     }
                                     if (buffSound != null)
                                     {
-                                        Debug.Log("Playing NetworkSound");
                                         EffectManager.SimpleSoundEffect(buffSound.index, healthComponent.body.corePosition, true);
                                     }
                                 }
