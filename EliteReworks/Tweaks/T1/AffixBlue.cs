@@ -18,6 +18,7 @@ namespace EliteReworks.Tweaks.T1
 		public static GameObject lightningBossProjectilePrefab;
 
 		public static GameObject lightningEffectPrefab;
+		public static GameObject lightningEffectQuietPrefab;
 
 		public static GameObject lightningBombV2Prefab;
 
@@ -33,6 +34,12 @@ namespace EliteReworks.Tweaks.T1
 			EffectComponent ec = lightningEffectPrefab.GetComponent<EffectComponent>();
 			ec.soundName = "Play_EliteReworks_Lightning";
 			R2API.ContentAddition.AddEffect(lightningEffectPrefab);
+
+
+			lightningEffectQuietPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteLightning/LightningStakeNova.prefab").WaitForCompletion().InstantiateClone("MoffeinEliteReworkOverloadinLightningQuietVFX", false);
+			EffectComponent ec2 = lightningEffectQuietPrefab.GetComponent<EffectComponent>();
+			ec2.soundName = "Play_item_proc_chain_lightning";
+			R2API.ContentAddition.AddEffect(lightningEffectQuietPrefab);
 
 			AffixBlue.lightningProjectilePrefab = BuildLightningProjectile();
 			AffixBlue.lightningBossProjectilePrefab = BuildLightningBossProjectile();
@@ -88,7 +95,7 @@ namespace EliteReworks.Tweaks.T1
 			pie.blastAttackerFiltering = AttackerFiltering.NeverHitSelf;
 			pie.falloffModel = BlastAttack.FalloffModel.None;
 
-			pie.impactEffect = AffixBlue.lightningEffectPrefab;
+			pie.impactEffect = AffixBlue.lightningEffectQuietPrefab;
 
 			R2API.ContentAddition.AddProjectile(projectile);
 			return projectile;
@@ -127,7 +134,7 @@ namespace EliteReworks.Tweaks.T1
 		private static NetworkSoundEventDef BuildTriggerSound()
 		{
 			NetworkSoundEventDef toReturn = ScriptableObject.CreateInstance<NetworkSoundEventDef>();
-			toReturn.eventName = "Play_mage_m1_cast_lightning";// "Play_item_proc_chain_lightning";
+			toReturn.eventName = "Play_EliteReworks_Lightning";//"Play_mage_m1_cast_lightning";// "Play_item_proc_chain_lightning";
 			(toReturn as UnityEngine.Object).name = "EliteReworksOverloadingNetworkSound";
 			ContentAddition.AddNetworkSoundEventDef(toReturn);
 
@@ -149,7 +156,8 @@ namespace EliteReworks.Tweaks.T1
 			GameObject toReturn = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/LightningStake").InstantiateClone("MoffeinEliteReworksOverloadingStakeV2",true);
 			ProjectileImpactExplosion pie = toReturn.GetComponent<ProjectileImpactExplosion>();
 			pie.blastRadius = 7f;
-			pie.impactEffect = AffixBlue.lightningEffectPrefab;
+			pie.falloffModel = BlastAttack.FalloffModel.None;
+			pie.impactEffect = AffixBlue.lightningEffectQuietPrefab;
 			ContentAddition.AddProjectile(toReturn);
 
 			return toReturn;
