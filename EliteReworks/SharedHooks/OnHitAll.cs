@@ -46,24 +46,29 @@ namespace EliteReworks.SharedHooks
                         }
                         if (EliteReworksPlugin.affixBlueEnabled && AffixBlue.enableOnHitRework && attackerBody.HasBuff(RoR2Content.Buffs.AffixBlue))
                         {
-                            /*AffixBluePassiveLightning ab = attackerBody.GetComponent<AffixBluePassiveLightning>();
-                            if (ab)
+                            if (AffixBluePassiveLightning.scatterBombs)
                             {
-                                int meatballCount = Math.Min(Math.Max(1, Mathf.RoundToInt(AffixBlue.baseMeatballCount * damageInfo.procCoefficient)), AffixBluePassiveLightning.baseBodyMeatballStock);
-                                if (ab.OnHitReady(meatballCount))
+                                AffixBluePassiveLightning ab = attackerBody.GetComponent<AffixBluePassiveLightning>();
+                                if (ab)
                                 {
-                                    ab.TriggerOnHit(meatballCount);
-                                    ab.FireMeatballs(damageInfo.attacker, attackerBody.isChampion, damageInfo.damage * AffixBlue.lightningDamageCoefficient, damageInfo.crit,
-                                            Vector3.up, damageInfo.position + Vector3.up, attackerBody.transform.forward,
-                                            meatballCount, 20f, 400f, 20f, true);
+                                    int meatballCount = Math.Min(Math.Max(1, Mathf.RoundToInt(AffixBlue.baseMeatballCount * damageInfo.procCoefficient)), AffixBluePassiveLightning.baseBodyMeatballStock);
+                                    if (ab.OnHitReady(meatballCount))
+                                    {
+                                        ab.TriggerOnHit(meatballCount);
+                                        ab.FireMeatballs(damageInfo.attacker, attackerBody.isChampion, damageInfo.damage * AffixBlue.lightningDamageCoefficient, damageInfo.crit,
+                                                Vector3.up, damageInfo.position + Vector3.up, attackerBody.transform.forward,
+                                                meatballCount, 20f, 400f, 20f, true, true);
+                                    }
                                 }
-                            }*/
-
-                            float damageCoefficient = 0.5f;
-                            float damage = Util.OnHitProcDamage(damageInfo.damage, attackerBody.damage, damageCoefficient);
-                            float force = 0f;
-                            Vector3 position = damageInfo.position;
-                            ProjectileManager.instance.FireProjectile(AffixBlue.lightningBombV2Prefab, position, Quaternion.identity, damageInfo.attacker, damage, force, damageInfo.crit, DamageColorIndex.Item, null, -1f);
+                            }
+                            else
+                            {
+                                float damageCoefficient = AffixBlue.lightningDamageCoefficient;
+                                float damage = Util.OnHitProcDamage(damageInfo.damage, attackerBody.damage, damageCoefficient);
+                                float force = 0f;
+                                Vector3 position = damageInfo.position;
+                                ProjectileManager.instance.FireProjectile(AffixBlue.lightningBombV2Prefab, position, Quaternion.identity, damageInfo.attacker, damage, force, damageInfo.crit, DamageColorIndex.Item, null, -1f);
+                            }
                         }
                     }
                 }

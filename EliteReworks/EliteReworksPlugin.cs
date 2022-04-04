@@ -118,9 +118,10 @@ namespace EliteReworks
 
             affixBlueEnabled = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
             affixBlueRemoveShield = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "Remove Shield"), true, new ConfigDescription("Remove shields from Overloading Enemies.")).Value;
-            AffixBlue.enableOnHitRework = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "Rework On-Hit Effect"), true, new ConfigDescription("Replaces Overloading stickybombs with a spread of projectiles.")).Value;
+            AffixBlue.enableOnHitRework = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "On-Hit Rework"), true, new ConfigDescription("Increases the blast radius of Overloading stickybombs.")).Value;
             AffixBlue.enablePassiveLightning = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "Passive Lightning"), true, new ConfigDescription("Overloading elites periodically shoot out lightning nearby.")).Value;
-            AffixBluePassiveLightning.uncapOnHitLightning = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "Uncap On-Hit Lightning"), false, new ConfigDescription("Remove the fire rate cap on on-hit lightning bombs (laggy).")).Value;
+            AffixBluePassiveLightning.scatterBombs = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "On-Hit Scatterbombs"), false, new ConfigDescription("Requires On-Hit Rework. Replaces Overloading stickybombs with a spread of projectiles.")).Value;
+            AffixBluePassiveLightning.uncapOnHitLightning = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "On-Hit Scatterbombs - Uncap On-Hit Lightning"), false, new ConfigDescription("Remove the fire rate cap on on-hit scatterbombs (laggy).")).Value;
 
             affixWhiteEnabled = base.Config.Bind<bool>(new ConfigDefinition("T1 - Glacial", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
 

@@ -15,8 +15,9 @@ namespace EliteReworks.Tweaks.T1.Components
         public static GameObject lightningProjectilePrefab;
         public static float baseLightningTimer = 6f;
         public static int baseMeatballCount = 5;
-        public static float baseDamage = 40f;
+        public static float baseDamage = 36f;
 
+        public static bool scatterBombs = false;
         public static bool uncapOnHitLightning = false;
         public static int baseBodyMeatballStock = 20;
         public static float totalBodyMeatballRechargeInterval = 1.6f;
@@ -58,7 +59,8 @@ namespace EliteReworks.Tweaks.T1.Components
         public void FixedUpdate()
         {
             if (!NetworkServer.active) return;
-
+            
+            //This is only used if Scatter Bombs is enabled.
             if (bodyMeatballStock < baseBodyMeatballStock)
             {
                 bodyMeatballRechargeStopwatch += Time.fixedDeltaTime;
@@ -111,7 +113,7 @@ namespace EliteReworks.Tweaks.T1.Components
 
                     if (AffixBlue.enablePassiveLightning) this.FireMeatballs(ownerBody.gameObject, ownerBody.isChampion, scaledDamage, ownerBody.RollCrit(),
                                     Vector3.up, ownerBody.corePosition + Vector3.up, ownerBody.transform.forward,
-                                    meatballCount, 20f, 400f, ownerBody.isChampion? 25f : 20f, false);
+                                    meatballCount, 20f, 400f, ownerBody.isChampion? 25f : 20f, false, false);
                 }
             }
             else
@@ -124,8 +126,9 @@ namespace EliteReworks.Tweaks.T1.Components
         //Copypasted from Magma Worm
         public void FireMeatballs(GameObject attacker, bool isChampion, float damage, bool crit,
             Vector3 impactNormal, Vector3 impactPosition, Vector3 forward,
-            int meatballCount, float meatballAngle, float meatballForce, float velocity, bool randomize = false)
+            int meatballCount, float meatballAngle, float meatballForce, float velocity, bool randomize, bool scatterBomb)
         {
+            scatterBomb = scatterBomb && AffixBluePassiveLightning.scatterBombs;
             EffectManager.SimpleSoundEffect((isChampion ? AffixBlue.triggerBossSound : AffixBlue.triggerSound).index, impactPosition, true);
 
             float num = 360f / (float)meatballCount;
@@ -153,7 +156,16 @@ namespace EliteReworks.Tweaks.T1.Components
                     point = Vector3.RotateTowards(impactNormal, normalized, angle * 0.0174532924f, float.PositiveInfinity);
                 }
                 Vector3 forward2 = Quaternion.AngleAxis(randomOffset + num * (float)i, impactNormal) * point;
-                ProjectileManager.instance.FireProjectile((isChampion ? AffixBlue.lightningBossProjectilePrefab : AffixBlue.lightningProjectilePrefab), impactPosition, RoR2.Util.QuaternionSafeLookRotation(forward2),
+                GameObject projectile = null;
+                if (scatterBomb)
+                {
+                    projectile = AffixBlue.scatterProjectilePrefab;
+                }
+                else
+                {
+                    projectile = (isChampion ? AffixBlue.lightningBossProjectilePrefab : AffixBlue.lightningProjectilePrefab);
+                }
+                ProjectileManager.instance.FireProjectile(projectile, impactPosition, RoR2.Util.QuaternionSafeLookRotation(forward2),
                     attacker, damage, meatballForce, crit, DamageColorIndex.Default, null, velocity);
             }
         }

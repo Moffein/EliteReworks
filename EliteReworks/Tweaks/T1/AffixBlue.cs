@@ -12,7 +12,7 @@ namespace EliteReworks.Tweaks.T1
     public static class AffixBlue
     {
 		public static int baseMeatballCount = 5;
-		public static float lightningDamageCoefficient = 0.7f;
+		public static float lightningDamageCoefficient = 0.5f;
 
 		public static GameObject lightningProjectilePrefab;
 		public static GameObject lightningBossProjectilePrefab;
@@ -22,6 +22,7 @@ namespace EliteReworks.Tweaks.T1
 		public static GameObject lightningEffectOnHitPrefab;
 
 		public static GameObject lightningBombV2Prefab;
+		public static GameObject scatterProjectilePrefab;
 
 		public static NetworkSoundEventDef triggerSound;
 		public static NetworkSoundEventDef triggerBossSound;
@@ -50,7 +51,14 @@ namespace EliteReworks.Tweaks.T1
 			AffixBlue.lightningProjectilePrefab = BuildLightningProjectile();
 			AffixBlue.lightningBossProjectilePrefab = BuildLightningBossProjectile();
 
-			AffixBlue.lightningBombV2Prefab = BuildLightningBombV2();
+			if (AffixBluePassiveLightning.scatterBombs)
+            {
+				AffixBlue.scatterProjectilePrefab = BuildScatterProjectile();
+			}
+			else
+			{
+				AffixBlue.lightningBombV2Prefab = BuildLightningBombV2();
+			}
 
 			AffixBluePassiveLightning.lightningProjectilePrefab = AffixBlue.lightningProjectilePrefab;
 
@@ -100,6 +108,33 @@ namespace EliteReworks.Tweaks.T1
 			pie.falloffModel = BlastAttack.FalloffModel.None;
 
 			pie.impactEffect = AffixBlue.lightningEffectQuietPrefab;
+
+			R2API.ContentAddition.AddProjectile(projectile);
+			return projectile;
+		}
+		private static GameObject BuildScatterProjectile()
+		{
+			GameObject projectile = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/ElectricWormSeekerProjectile").InstantiateClone("MoffeinEliteReworkOverloadinScatterProjectile", true);
+
+			ProjectileController pc = projectile.GetComponent<ProjectileController>();
+			pc.procCoefficient = 0f;
+
+			AkEvent[] ae = projectile.GetComponentsInChildren<AkEvent>();
+			foreach (AkEvent a in ae)
+			{
+				UnityEngine.Object.Destroy(a);
+			}
+
+			UnityEngine.Object.Destroy(projectile.GetComponent<AkGameObj>());
+
+			ProjectileImpactExplosion pie = projectile.GetComponent<ProjectileImpactExplosion>();
+			pie.blastProcCoefficient = 0f;
+			pie.blastRadius = 4f;
+			pie.destroyOnEnemy = false;
+			pie.blastAttackerFiltering = AttackerFiltering.NeverHitSelf;
+			pie.falloffModel = BlastAttack.FalloffModel.None;
+
+			pie.impactEffect = AffixBlue.lightningEffectOnHitPrefab;
 
 			R2API.ContentAddition.AddProjectile(projectile);
 			return projectile;
