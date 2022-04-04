@@ -19,6 +19,7 @@ namespace EliteReworks.Tweaks.T1
 
 		public static GameObject lightningEffectPrefab;
 		public static GameObject lightningEffectQuietPrefab;
+		public static GameObject lightningEffectOnHitPrefab;
 
 		public static GameObject lightningBombV2Prefab;
 
@@ -40,6 +41,11 @@ namespace EliteReworks.Tweaks.T1
 			EffectComponent ec2 = lightningEffectQuietPrefab.GetComponent<EffectComponent>();
 			ec2.soundName = "Play_item_proc_chain_lightning";
 			R2API.ContentAddition.AddEffect(lightningEffectQuietPrefab);
+
+			lightningEffectOnHitPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteLightning/LightningStakeNova.prefab").WaitForCompletion().InstantiateClone("MoffeinEliteReworkOverloadinLightningOnHitVFX", false);
+			EffectComponent ec3 = lightningEffectOnHitPrefab.GetComponent<EffectComponent>();
+			ec3.soundName = "Play_mage_m1_impact_lightning";
+			R2API.ContentAddition.AddEffect(lightningEffectOnHitPrefab);
 
 			AffixBlue.lightningProjectilePrefab = BuildLightningProjectile();
 			AffixBlue.lightningBossProjectilePrefab = BuildLightningBossProjectile();
@@ -89,8 +95,6 @@ namespace EliteReworks.Tweaks.T1
 			ProjectileImpactExplosion pie = projectile.GetComponent<ProjectileImpactExplosion>();
 			pie.blastProcCoefficient = 0f;
 			pie.blastRadius = 5f;
-			//pie.explosionEffect = BuildLightningEffect();
-			//pie.impactEffect = BuildLightningEffect();
 			pie.destroyOnEnemy = false;
 			pie.blastAttackerFiltering = AttackerFiltering.NeverHitSelf;
 			pie.falloffModel = BlastAttack.FalloffModel.None;
@@ -157,7 +161,7 @@ namespace EliteReworks.Tweaks.T1
 			ProjectileImpactExplosion pie = toReturn.GetComponent<ProjectileImpactExplosion>();
 			pie.blastRadius = 7f;
 			pie.falloffModel = BlastAttack.FalloffModel.None;
-			pie.impactEffect = AffixBlue.lightningEffectQuietPrefab;
+			pie.impactEffect = AffixBlue.lightningEffectOnHitPrefab;
 			ContentAddition.AddProjectile(toReturn);
 
 			return toReturn;
