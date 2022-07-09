@@ -15,6 +15,8 @@ namespace EliteReworks.Tweaks.T2
         public static BuffDef ghostsActiveBuff; //Indicates that a Celestine has active ghosts.'
         public static BuffDef armorReductionBuff;   //Applied on-hit.
 
+        public static bool replaceOnHitEffect = true;
+
         public static void Setup()
         {
             reviveBuff = CreateReviveBuff();
@@ -105,18 +107,28 @@ namespace EliteReworks.Tweaks.T2
                                 if (squareDist < radiusSquare)
                                 {
                                     AffixHauntedReviveAura ahr = tc.body.GetComponent<AffixHauntedReviveAura>();
-                                    if (ahr && ahr.wardActive && ahr.attachedGhosts.Count < AffixHauntedReviveAura.maxAttachedGhosts)
+                                    if (ahr && ahr.wardActive && ahr.attachedGhosts.Count < ahr.GetMaxGhosts())
                                     {
-                                        CharacterBody ghostBody = Util.TryToCreateGhost(sourceBody, tc.body, 30);
+                                        CharacterBody ghostBody = Util.TryToCreateGhost(sourceBody, tc.body, 60 + (tc.body.isChampion ? 30 : 0));
                                         if (ghostBody)
                                         {
                                             if (ghostBody.master && ghostBody.master.inventory)
                                             {
-                                                ghostBody.master.inventory.RemoveItem(RoR2Content.Items.BoostDamage, ghostBody.master.inventory.GetItemCount(RoR2Content.Items.BoostDamage));
+                                                int boostDamageCount = ghostBody.master.inventory.GetItemCount(RoR2Content.Items.BoostDamage);
+                                                if (boostDamageCount > 0)
+                                                {
+                                                    ghostBody.master.inventory.RemoveItem(RoR2Content.Items.BoostDamage, ghostBody.master.inventory.GetItemCount(RoR2Content.Items.BoostDamage));
+                                                }
+                                                ghostBody.master.inventory.GiveItem(RoR2Content.Items.BoostDamage, 3);
                                                 ghostBody.master.inventory.SetEquipmentIndex(EquipmentIndex.None);
                                             }
                                             ghostBody.AddBuff(reviveBuff);
-                                            ahr.attachedGhosts.Add(ghostBody);
+
+                                            HauntTargetInfo hti = new HauntTargetInfo
+                                            {
+                                                body = ghostBody
+                                            };
+                                            ahr.attachedGhosts.Add(hti);
                                         }
                                         break;
                                     }
@@ -192,6 +204,8 @@ namespace EliteReworks.Tweaks.T2
 
         private static void ChangeOnHitEffect()
         {
+            if (!replaceOnHitEffect) return;
+
             //Remove vanilla effect
             IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
             {

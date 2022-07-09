@@ -1,7 +1,9 @@
 ﻿using RoR2;
+using RoR2.Orbs;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
 namespace EliteReworks.Tweaks.T2.Components
@@ -13,9 +15,13 @@ namespace EliteReworks.Tweaks.T2.Components
         public static float wardRadius = 30f;
         public static float refreshTime = 0.4f;
 
+        public static float ghostPingTime = 5f;
+        private float ghostPingStopwatch;
+
         public static int maxAttachedGhosts = 4;
-        public List<CharacterBody> attachedGhosts;
-        public List<CharacterBody> attachedAliveMonsters;
+        public static int championBonusAttachedGhosts = 2;
+        public List<HauntTargetInfo> attachedGhosts;
+        public List<HauntTargetInfo> attachedAliveMonsters;
 
         private float stopwatch;
         private CharacterBody ownerBody;
@@ -25,13 +31,19 @@ namespace EliteReworks.Tweaks.T2.Components
 
         private float stunDisableTimer = 0f;
 
+        public int GetMaxGhosts()
+        {
+            return maxAttachedGhosts + ((ownerBody && ownerBody.isChampion) ? championBonusAttachedGhosts : 0);
+        }
+
         public void Awake()
         {
             wardActive = false;
             stopwatch = 0f;
+            ghostPingStopwatch = 0f;
 
-            attachedGhosts = new List<CharacterBody>();
-            attachedAliveMonsters = new List<CharacterBody>();
+            attachedGhosts = new List<HauntTargetInfo>();
+            attachedAliveMonsters = new List<HauntTargetInfo>();
 
             ownerBody = base.gameObject.GetComponent<CharacterBody>();
             if (!ownerBody)
@@ -86,7 +98,7 @@ namespace EliteReworks.Tweaks.T2.Components
                     if (stopwatch > refreshTime)
                     {
                         stopwatch -= refreshTime;
-                        if (attachedGhosts.Count + attachedAliveMonsters.Count < maxAttachedGhosts)
+                        if (attachedGhosts.Count + attachedAliveMonsters.Count < GetMaxGhosts())
                         {
                             FindAliveMonsters();
                         }
@@ -117,6 +129,13 @@ namespace EliteReworks.Tweaks.T2.Components
                         ownerBody.RemoveBuff(AffixHaunted.ghostsActiveBuff);
                     }
                 }
+
+                ghostPingStopwatch += Time.fixedDeltaTime;
+                if (ghostPingStopwatch > AffixHauntedReviveAura.ghostPingTime)
+                {
+                    ghostPingStopwatch -= AffixHauntedReviveAura.ghostPingTime;
+                    PingGhosts();
+                }
             }
         }
 
@@ -124,20 +143,20 @@ namespace EliteReworks.Tweaks.T2.Components
         {
             if (attachedGhosts.Count > 0)
             {
-                List<CharacterBody> toRemove = new List<CharacterBody>();
-                foreach (CharacterBody cb in attachedGhosts)
+                List<HauntTargetInfo> toRemove = new List<HauntTargetInfo>();
+                foreach (HauntTargetInfo ht in attachedGhosts)
                 {
-                    if (!(cb.healthComponent && cb.healthComponent.alive))
+                    if (!(ht.body && ht.body.healthComponent && ht.body.healthComponent.alive))
                     {
-                        toRemove.Add(cb);
+                        toRemove.Add(ht);
                     }
                 }
 
                 if (toRemove.Count > 0)
                 {
-                    foreach (CharacterBody cb in toRemove)
+                    foreach (HauntTargetInfo ht in toRemove)
                     {
-                        attachedGhosts.Remove(cb);
+                        attachedGhosts.Remove(ht);
                     }
                 }
             }
@@ -145,7 +164,7 @@ namespace EliteReworks.Tweaks.T2.Components
 
         private void UpdateAliveMonsters()
         {
-            int maxAlive = maxAttachedGhosts - attachedGhosts.Count;
+            int maxAlive = GetMaxGhosts() - attachedGhosts.Count;
             int aliveCount = 1;
 
             if (attachedAliveMonsters.Count > 0)
@@ -153,20 +172,20 @@ namespace EliteReworks.Tweaks.T2.Components
                 float radiusSquare = detachRadius * detachRadius;
                 float squareDist;
 
-                List<CharacterBody> toRemove = new List<CharacterBody>();
-                foreach (CharacterBody cb in attachedAliveMonsters)
+                List<HauntTargetInfo> toRemove = new List<HauntTargetInfo>();
+                foreach (HauntTargetInfo ht in attachedAliveMonsters)
                 {
                     bool remove = true;
-                    if (cb)
+                    if (ht.body)
                     {
                         remove = false;
-                        if (!(cb.healthComponent && cb.healthComponent.alive) || aliveCount > maxAlive)
+                        if (!(ht.body.healthComponent && ht.body.healthComponent.alive) || aliveCount > maxAlive)
                         {
                             remove = true;
                         }
                         else
                         {
-                            squareDist = (ownerBody.corePosition - cb.corePosition).sqrMagnitude;
+                            squareDist = (ownerBody.corePosition - ht.body.corePosition).sqrMagnitude;
                             if (squareDist > radiusSquare)
                             {
                                 remove = true;
@@ -176,7 +195,7 @@ namespace EliteReworks.Tweaks.T2.Components
 
                     if (remove)
                     {
-                        toRemove.Add(cb);
+                        toRemove.Add(ht);
                     }
                     else
                     {
@@ -186,13 +205,16 @@ namespace EliteReworks.Tweaks.T2.Components
 
                 if (toRemove.Count > 0)
                 {
-                    foreach (CharacterBody cb in toRemove)
+                    foreach (HauntTargetInfo ht in toRemove)
                     {
-                        if (cb.HasBuff(AffixHaunted.reviveBuff))
+                        if (ht.body)
                         {
-                            cb.RemoveBuff(AffixHaunted.reviveBuff);
+                            if (ht.body.HasBuff(AffixHaunted.reviveBuff))
+                            {
+                                ht.body.RemoveBuff(AffixHaunted.reviveBuff);
+                            }
                         }
-                        attachedAliveMonsters.Remove(cb);
+                        attachedAliveMonsters.Remove(ht);
                     }
                 }
             }
@@ -203,7 +225,7 @@ namespace EliteReworks.Tweaks.T2.Components
             if (teamComponent)
             {
                 Vector3 position = ownerBody.corePosition;
-                int slotsRemaining = maxAttachedGhosts - (attachedGhosts.Count + attachedAliveMonsters.Count);
+                int slotsRemaining = GetMaxGhosts() - (attachedGhosts.Count + attachedAliveMonsters.Count);
                 if (slotsRemaining > 0)
                 {
                     float radiusSquare = wardRadius * wardRadius;
@@ -224,7 +246,13 @@ namespace EliteReworks.Tweaks.T2.Components
                                 if (squareDist <= radiusSquare)
                                 {
                                     tc.body.AddBuff(AffixHaunted.reviveBuff);
-                                    attachedAliveMonsters.Add(tc.body);
+
+                                    HauntTargetInfo hti = new HauntTargetInfo
+                                    {
+                                        body = tc.body,
+                                    };
+
+                                    attachedAliveMonsters.Add(hti);
 
                                     slotsRemaining--;
                                     if (slotsRemaining <= 0)
@@ -241,11 +269,11 @@ namespace EliteReworks.Tweaks.T2.Components
 
         private void ClearAliveMonsters()
         {
-            foreach (CharacterBody cb in attachedAliveMonsters)
+            foreach (HauntTargetInfo ht in attachedAliveMonsters)
             {
-                if (cb && cb.HasBuff(AffixHaunted.reviveBuff) && cb.healthComponent && cb.healthComponent.alive)
+                if (ht.body && ht.body.HasBuff(AffixHaunted.reviveBuff) && ht.body.healthComponent && ht.body.healthComponent.alive)
                 {
-                    cb.RemoveBuff(AffixHaunted.reviveBuff);
+                    ht.body.RemoveBuff(AffixHaunted.reviveBuff);
                 }
             }
             attachedAliveMonsters.Clear();
@@ -253,17 +281,19 @@ namespace EliteReworks.Tweaks.T2.Components
 
         private void DestroyGhosts()
         {
-            if (attachedGhosts.Count > 0)
+            foreach (HauntTargetInfo ht in attachedGhosts)
             {
-                foreach (CharacterBody cb in attachedGhosts)
+                if (ht.body && ht.body.healthComponent)
                 {
-                    if (cb.healthComponent)
+                    ht.body.healthComponent.health = -100f;
+                    /*if (ht.body.master)
                     {
-                        cb.healthComponent.health = -100f;
-                    }
+                        MasterSuicideOnTimer msot = ht.body.master.gameObject.AddComponent<MasterSuicideOnTimer>();
+                        msot.lifeTimer = 0.1f;
+                    }*/
                 }
-                attachedGhosts.Clear();
             }
+            attachedGhosts.Clear();
         }
 
         private void OnDestroy()
@@ -271,5 +301,63 @@ namespace EliteReworks.Tweaks.T2.Components
             DestroyGhosts();
             ClearAliveMonsters();
         }
+
+        //Hacky way to show ghost trails since Tethers dont work well with ghosts due to hurtboxes being disabled.
+        //Have to go from victim to owner since orbs require hurtboxes to be active to target properly, as well as HauntOrbs having a built-in thing where they give targets the Celestine buff.
+        private void PingGhosts()
+        {
+            if (ownerBody && ownerBody.mainHurtBox)
+            {
+                int indexInGroup = 0;
+                foreach (HauntTargetInfo ht in attachedGhosts)
+                {
+                    if (ht.body)
+                    {
+                        HauntOrb squidOrb = new HauntOrb();
+                        /*squidOrb.forceScalar = 0f;
+                        squidOrb.damageValue = 0f;
+                        squidOrb.isCrit = false;
+                        squidOrb.teamIndex = teamComponent ? teamComponent.teamIndex : TeamIndex.None;
+                        squidOrb.attacker = base.gameObject;
+                        squidOrb.procCoefficient = 0f;
+                        squidOrb.damageType = DamageType.NonLethal | DamageType.Silent;*/
+                        squidOrb.origin = ht.body.corePosition;
+                        squidOrb.target = ownerBody.mainHurtBox;
+                        squidOrb.timeToArrive = 1f + indexInGroup * 0.1f;
+                        squidOrb.scale = 1f;
+                        OrbManager.instance.AddOrb(squidOrb);
+                    }
+                    indexInGroup++;
+                }
+
+                foreach (HauntTargetInfo ht in attachedAliveMonsters)
+                {
+                    if (ht.body && ht.body.mainHurtBox)
+                    {
+                        HauntOrb squidOrb = new HauntOrb();
+                        /*squidOrb.forceScalar = 0f;
+                        squidOrb.damageValue = 0f;
+                        squidOrb.isCrit = false;
+                        squidOrb.teamIndex = teamComponent ? teamComponent.teamIndex : TeamIndex.None;
+                        squidOrb.attacker = base.gameObject;
+                        squidOrb.procCoefficient = 0f;
+                        squidOrb.damageType = DamageType.NonLethal | DamageType.Silent;*/
+                        squidOrb.origin = ht.body.corePosition;
+                        squidOrb.target = ownerBody.mainHurtBox;
+                        squidOrb.timeToArrive = 1f + indexInGroup * 0.1f;
+                        squidOrb.scale = 1f;
+                        OrbManager.instance.AddOrb(squidOrb);
+                    }
+                    indexInGroup++;
+                }
+            }
+        }
+    }
+
+
+    public class HauntTargetInfo
+    {
+        public CharacterBody body = null;
+        //Was going to have Tether info here but had problems with getting it to work.
     }
 }
