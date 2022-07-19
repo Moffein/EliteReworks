@@ -94,7 +94,8 @@ namespace EliteReworks.Tweaks.T2
 			BuffDef buff = ScriptableObject.CreateInstance<BuffDef>();
 			buff.buffColor = new Color(0.3f, 0.3f, 0.3f);
 			buff.canStack = true;
-			buff.isDebuff = true;
+			buff.isDebuff = false;
+			buff.isCooldown = true;
 			buff.name = "EliteReworksMalachiteBuildup";
 			buff.iconSprite = LegacyResourcesAPI.Load<BuffDef>("BuffDefs/HealingDisabled").iconSprite;
 			R2API.ContentAddition.AddBuffDef((buff));
