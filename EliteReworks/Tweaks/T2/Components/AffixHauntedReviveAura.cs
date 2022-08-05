@@ -15,7 +15,7 @@ namespace EliteReworks.Tweaks.T2.Components
         public static float wardRadius = 30f;
         public static float refreshTime = 0.4f;
 
-        public static float ghostPingTime = 5f;
+        public static float ghostPingTime = 2.5f;
         private float ghostPingStopwatch;
 
         public static int maxAttachedGhosts = 4;

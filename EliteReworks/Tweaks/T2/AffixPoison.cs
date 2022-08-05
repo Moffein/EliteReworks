@@ -15,7 +15,7 @@ namespace EliteReworks.Tweaks.T2
 		public static GameObject spikePrefab;
 		public static GameObject spikeOrbProjectile;
 		public static float basePoisonTimer = 6f;
-		public static float spikeHPPercent = 0.5f;
+		public static float spikeHPPercent = 0.4f;
 
 		public static BuffDef MalachiteBuildup;
 		public static float malachiteBuildupTime = 3f;
