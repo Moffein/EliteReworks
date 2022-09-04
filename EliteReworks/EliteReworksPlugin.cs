@@ -19,7 +19,7 @@ namespace EliteReworks
     [BepInDependency("com.bepis.r2api")]
     [BepInDependency("com.TPDespair.ZetAspects", BepInDependency.DependencyFlags.SoftDependency)]
     [R2API.Utils.R2APISubmoduleDependency(nameof(PrefabAPI), nameof(RecalculateStatsAPI), nameof(DamageAPI), nameof(ContentAddition), nameof(SoundAPI))]//, nameof(EliteAPI)
-    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.7.2")]
+    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.7.4")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class EliteReworksPlugin : BaseUnityPlugin
     {
@@ -113,6 +113,7 @@ namespace EliteReworks
             ModifyEliteTiers.t2Cost = base.Config.Bind<float>(new ConfigDefinition("General", "T2 Cost"), 36f, new ConfigDescription("T2 Director Cost multiplier. (Vanilla is 36)")).Value;
             ModifyEliteTiers.t2Health = base.Config.Bind<float>(new ConfigDefinition("General", "T2 HP"), 12f, new ConfigDescription("T2 Health multiplier. (Vanilla is 18)")).Value;
             ModifyEliteTiers.t2Damage = base.Config.Bind<float>(new ConfigDefinition("General", "T2 Damage"), 3.5f, new ConfigDescription("T2 Damage multipliers. (Vanilla is 6)")).Value;
+            ModifyEliteTiers.t2MinStages = base.Config.Bind<int>(new ConfigDefinition("General", "T2 Min Stages"), 5, new ConfigDescription("Minimum stage completions before T2 elites start spawning. (Vanilla is 5)")).Value;
 
             EliteVoid.damageBonus = base.Config.Bind<float>(new ConfigDefinition("General", "Voidtouched Damage"), 1.5f, new ConfigDescription("Voidtouched Damage multipliers. (Vanilla is 0.7)")).Value;
 

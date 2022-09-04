@@ -22,6 +22,7 @@ namespace EliteReworks.Tweaks
         public static float t2Cost = 36f;
         public static float t2Health = 12f;
         public static float t2Damage = 3.5f;
+        public static int t2MinStages = 5;
 
         public static void Setup()
         {
@@ -55,6 +56,7 @@ namespace EliteReworks.Tweaks
                             }
                             else if (elites.Contains(RoR2Content.Elites.Poison))
                             {
+                                etd.isAvailable = ((SpawnCard.EliteRules rules) => Run.instance.stageClearCount > t2MinStages && rules == SpawnCard.EliteRules.Default);    //checks Run.instance.loopCount in Vanilla
                                 etd.costMultiplier = t2Cost;
                                 foreach (EliteDef ed in etd.eliteTypes)
                                 {
