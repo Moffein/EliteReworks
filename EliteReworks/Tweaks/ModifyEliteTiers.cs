@@ -56,7 +56,7 @@ namespace EliteReworks.Tweaks
                             }
                             else if (elites.Contains(RoR2Content.Elites.Poison))
                             {
-                                etd.isAvailable = ((SpawnCard.EliteRules rules) => Run.instance.stageClearCount > t2MinStages && rules == SpawnCard.EliteRules.Default);    //checks Run.instance.loopCount in Vanilla
+                                etd.isAvailable = ((SpawnCard.EliteRules rules) => Run.instance.stageClearCount >= t2MinStages && rules == SpawnCard.EliteRules.Default);    //checks Run.instance.loopCount in Vanilla
                                 etd.costMultiplier = t2Cost;
                                 foreach (EliteDef ed in etd.eliteTypes)
                                 {
