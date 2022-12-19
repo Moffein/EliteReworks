@@ -19,7 +19,7 @@ namespace EliteReworks
     [BepInDependency("com.bepis.r2api")]
     [BepInDependency("com.TPDespair.ZetAspects", BepInDependency.DependencyFlags.SoftDependency)]
     [R2API.Utils.R2APISubmoduleDependency(nameof(PrefabAPI), nameof(RecalculateStatsAPI), nameof(DamageAPI), nameof(ContentAddition), nameof(SoundAPI))]//, nameof(EliteAPI)
-    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.7.5")]
+    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.8.0")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class EliteReworksPlugin : BaseUnityPlugin
     {
@@ -135,6 +135,7 @@ namespace EliteReworks
 
             eliteEarthEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC1 - T1 - Mending", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
             eliteVoidEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC1 - Voidtouched", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
+            EliteVoid.tweakNullify = base.Config.Bind<bool>(new ConfigDefinition("DLC1 - Voidtouched", "Tweak Nullify"), true, new ConfigDescription("Nullify only takes 2 stacks to root. Requires Voidtouched changes to be eanbled.")).Value;
         }
     }
 }

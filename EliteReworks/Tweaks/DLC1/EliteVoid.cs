@@ -4,12 +4,14 @@ using R2API;
 using RoR2;
 using System;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace EliteReworks.Tweaks.DLC1
 {
     public class EliteVoid
     {
         public static float damageBonus = 1.5f;
+        public static bool tweakNullify = true;
         public static void Setup()
         {
             //Remove vanilla on-hit effect
@@ -33,6 +35,26 @@ namespace EliteReworks.Tweaks.DLC1
                     args.damageMultAdd += 0.3f + (EliteVoid.damageBonus - 1f);
                 }
             };
+            
+            if (tweakNullify)
+            {
+                On.RoR2.CharacterBody.AddTimedBuff_BuffDef_float += (orig, self, buffDef, duration) =>
+                {
+                    orig(self, buffDef, duration);
+                    if (NetworkServer.active)
+                    {
+                        if (buffDef == RoR2Content.Buffs.NullifyStack && !self.HasBuff(RoR2Content.Buffs.Nullified))
+                        {
+                            int nullifyCount = self.GetBuffCount(buffDef);
+                            if (nullifyCount >= 2)
+                            {
+                                self.ClearTimedBuffs(buffDef);
+                                self.AddTimedBuff(RoR2Content.Buffs.Nullified, 3f);
+                            }
+                        }
+                    }
+                };
+            }
         }
     }
 }
