@@ -23,7 +23,9 @@ namespace EliteReworks.SharedHooks
             {
                 isPoison = true;
                 damageInfo.crit = false;
-                damageInfo.damage = self.combinedHealth * AffixPoison.spikeHPPercent;
+
+                damageInfo.damage = Mathf.Min(self.combinedHealth * AffixPoison.spikeHPPercent, damageInfo.damage);
+
                 damageInfo.procCoefficient = 0f;
                 damageInfo.damageType = DamageType.NonLethal;
             }
