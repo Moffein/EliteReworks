@@ -36,12 +36,24 @@ namespace EliteReworks.Tweaks.T2
                 }
             };
 
+            On.EntityStates.Gup.BaseSplitDeath.OnEnter += FixGhostGupSplit;
+
             if (EliteReworksPlugin.affixHauntedEnabled)
             {
                 DisableBubble();
                 On.RoR2.GlobalEventManager.OnCharacterDeath += ReviveAsGhost;
                 StealBuffVFX();
                 ChangeOnHitEffect();
+            }
+        }
+
+        private static void FixGhostGupSplit(On.EntityStates.Gup.BaseSplitDeath.orig_OnEnter orig, EntityStates.Gup.BaseSplitDeath self)
+        {
+            orig(self);
+            if (NetworkServer.active && self.characterBody && self.characterBody.HasBuff(AffixHaunted.reviveBuff))
+            {
+                self.hasDied = true;
+                self.DestroyBodyAsapServer();
             }
         }
 
@@ -93,46 +105,39 @@ namespace EliteReworks.Tweaks.T2
             {
                 TeamIndex ti = sourceBody.teamComponent.teamIndex;
                 System.Collections.ObjectModel.ReadOnlyCollection<TeamComponent> teamMembers = TeamComponent.GetTeamMembers(ti);
-                if (teamMembers != null)
+                if (teamMembers == null) return;
+                foreach (TeamComponent tc in teamMembers)
                 {
-                    foreach (TeamComponent tc in teamMembers)
+                    if (tc.body && !tc.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.Masterless) && tc.body.HasBuff(RoR2Content.Buffs.AffixHaunted) && tc.body.healthComponent && tc.body.healthComponent.alive)
                     {
-                        if (tc.body
-                            && (tc.body.bodyFlags & CharacterBody.BodyFlags.Masterless) != CharacterBody.BodyFlags.Masterless
-                            && tc.body.healthComponent && tc.body.healthComponent.alive)
+                        squareDist = (position - tc.body.corePosition).sqrMagnitude;
+                        if (squareDist <= radiusSquare)
                         {
-                            if (tc.body.HasBuff(RoR2Content.Buffs.AffixHaunted))
+                            AffixHauntedReviveAura ahr = tc.body.GetComponent<AffixHauntedReviveAura>();
+                            if (ahr && ahr.wardActive && ahr.attachedGhosts.Count < ahr.GetMaxGhosts())
                             {
-                                squareDist = (position - tc.body.corePosition).sqrMagnitude;
-                                if (squareDist < radiusSquare)
+                                CharacterBody ghostBody = Util.TryToCreateGhost(sourceBody, tc.body, 60 + (tc.body.isChampion ? 30 : 0));
+                                if (ghostBody)
                                 {
-                                    AffixHauntedReviveAura ahr = tc.body.GetComponent<AffixHauntedReviveAura>();
-                                    if (ahr && ahr.wardActive && ahr.attachedGhosts.Count < ahr.GetMaxGhosts())
+                                    if (ghostBody.master && ghostBody.master.inventory)
                                     {
-                                        CharacterBody ghostBody = Util.TryToCreateGhost(sourceBody, tc.body, 60 + (tc.body.isChampion ? 30 : 0));
-                                        if (ghostBody)
+                                        int boostDamageCount = ghostBody.master.inventory.GetItemCount(RoR2Content.Items.BoostDamage);
+                                        if (boostDamageCount > 0)
                                         {
-                                            if (ghostBody.master && ghostBody.master.inventory)
-                                            {
-                                                int boostDamageCount = ghostBody.master.inventory.GetItemCount(RoR2Content.Items.BoostDamage);
-                                                if (boostDamageCount > 0)
-                                                {
-                                                    ghostBody.master.inventory.RemoveItem(RoR2Content.Items.BoostDamage, ghostBody.master.inventory.GetItemCount(RoR2Content.Items.BoostDamage));
-                                                }
-                                                ghostBody.master.inventory.GiveItem(RoR2Content.Items.BoostDamage, 3);
-                                                ghostBody.master.inventory.SetEquipmentIndex(EquipmentIndex.None);
-                                            }
-                                            ghostBody.AddBuff(reviveBuff);
-
-                                            HauntTargetInfo hti = new HauntTargetInfo
-                                            {
-                                                body = ghostBody
-                                            };
-                                            ahr.attachedGhosts.Add(hti);
+                                            ghostBody.master.inventory.RemoveItem(RoR2Content.Items.BoostDamage, ghostBody.master.inventory.GetItemCount(RoR2Content.Items.BoostDamage));
                                         }
-                                        break;
+                                        ghostBody.master.inventory.GiveItem(RoR2Content.Items.BoostDamage, 3);
+                                        ghostBody.master.inventory.SetEquipmentIndex(EquipmentIndex.None);
                                     }
+                                    ghostBody.AddBuff(reviveBuff);
+
+                                    HauntTargetInfo hti = new HauntTargetInfo
+                                    {
+                                        body = ghostBody
+                                    };
+                                    ahr.attachedGhosts.Add(hti);
                                 }
+                                break;
                             }
                         }
                     }
