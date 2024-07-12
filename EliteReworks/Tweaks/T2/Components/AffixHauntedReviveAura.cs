@@ -313,19 +313,12 @@ namespace EliteReworks.Tweaks.T2.Components
                 {
                     if (ht.body)
                     {
-                        HauntOrb squidOrb = new HauntOrb();
-                        /*squidOrb.forceScalar = 0f;
-                        squidOrb.damageValue = 0f;
-                        squidOrb.isCrit = false;
-                        squidOrb.teamIndex = teamComponent ? teamComponent.teamIndex : TeamIndex.None;
-                        squidOrb.attacker = base.gameObject;
-                        squidOrb.procCoefficient = 0f;
-                        squidOrb.damageType = DamageType.NonLethal | DamageType.Silent;*/
-                        squidOrb.origin = ht.body.corePosition;
-                        squidOrb.target = ownerBody.mainHurtBox;
-                        squidOrb.timeToArrive = 1f + indexInGroup * 0.1f;
-                        squidOrb.scale = 1f;
-                        OrbManager.instance.AddOrb(squidOrb);
+                        EliteReworksCelestineOrb celestineOrb = new EliteReworksCelestineOrb();
+                        celestineOrb.origin = ht.body.corePosition;
+                        celestineOrb.target = ownerBody.mainHurtBox;
+                        celestineOrb.timeToArrive = 1f + indexInGroup * 0.1f;
+                        celestineOrb.scale = 1f;
+                        OrbManager.instance.AddOrb(celestineOrb);
                     }
                     indexInGroup++;
                 }
@@ -334,19 +327,12 @@ namespace EliteReworks.Tweaks.T2.Components
                 {
                     if (ht.body && ht.body.mainHurtBox)
                     {
-                        HauntOrb squidOrb = new HauntOrb();
-                        /*squidOrb.forceScalar = 0f;
-                        squidOrb.damageValue = 0f;
-                        squidOrb.isCrit = false;
-                        squidOrb.teamIndex = teamComponent ? teamComponent.teamIndex : TeamIndex.None;
-                        squidOrb.attacker = base.gameObject;
-                        squidOrb.procCoefficient = 0f;
-                        squidOrb.damageType = DamageType.NonLethal | DamageType.Silent;*/
-                        squidOrb.origin = ht.body.corePosition;
-                        squidOrb.target = ownerBody.mainHurtBox;
-                        squidOrb.timeToArrive = 1f + indexInGroup * 0.1f;
-                        squidOrb.scale = 1f;
-                        OrbManager.instance.AddOrb(squidOrb);
+                        EliteReworksCelestineOrb celestineOrb = new EliteReworksCelestineOrb();
+                        celestineOrb.origin = ht.body.corePosition;
+                        celestineOrb.target = ownerBody.mainHurtBox;
+                        celestineOrb.timeToArrive = 1f + indexInGroup * 0.1f;
+                        celestineOrb.scale = 1f;
+                        OrbManager.instance.AddOrb(celestineOrb);
                     }
                     indexInGroup++;
                 }
@@ -359,5 +345,27 @@ namespace EliteReworks.Tweaks.T2.Components
     {
         public CharacterBody body = null;
         //Was going to have Tether info here but had problems with getting it to work.
+    }
+
+    public class EliteReworksCelestineOrb : RoR2.Orbs.Orb
+    {
+        public static GameObject orbEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Junk/EliteHaunted/HauntOrbEffect.prefab").WaitForCompletion();
+
+        public override void Begin()
+        {
+            base.duration = this.timeToArrive + UnityEngine.Random.Range(0f, 0.4f);
+            EffectData effectData = new EffectData
+            {
+                scale = this.scale,
+                origin = this.origin,
+                genericFloat = base.duration
+            };
+            effectData.SetHurtBoxReference(this.target);
+            EffectManager.SpawnEffect(orbEffect, effectData, true);
+        }
+
+        public float timeToArrive;
+
+        public float scale;
     }
 }

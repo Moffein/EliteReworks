@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Tweaks\DLC1\Components\**" />
+    <EmbeddedResource Remove="Tweaks\DLC1\Components\**" />
+    <None Remove="Tweaks\DLC1\Components\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="EliteReworks.bnk" />
   </ItemGroup>
 
@@ -319,10 +325,6 @@
     <Reference Include="Zio">
       <HintPath>libs\Zio.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Tweaks\DLC1\Components\" />
   </ItemGroup>
 
 </Project>

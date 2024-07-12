@@ -4,6 +4,7 @@ using EliteReworks.Tweaks.T1.Components;
 using EliteReworks.Tweaks.T2.Components;
 using UnityEngine.Networking;
 using EliteReworks.Tweaks;
+using System;
 
 namespace EliteReworks.SharedHooks
 {
@@ -59,6 +60,6 @@ namespace EliteReworks.SharedHooks
 					hasStunTracker = true;
 				}
 			}
-		}
-	}
+        }
+    }
 }

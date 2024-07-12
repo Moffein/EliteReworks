@@ -126,7 +126,7 @@ namespace EliteReworks.Tweaks.T2
                                         {
                                             ghostBody.master.inventory.RemoveItem(RoR2Content.Items.BoostDamage, ghostBody.master.inventory.GetItemCount(RoR2Content.Items.BoostDamage));
                                         }
-                                        ghostBody.master.inventory.GiveItem(RoR2Content.Items.BoostDamage, 3);
+                                        ghostBody.master.inventory.GiveItem(RoR2Content.Items.BoostDamage, 5);
                                         ghostBody.master.inventory.SetEquipmentIndex(EquipmentIndex.None);
                                     }
                                     ghostBody.AddBuff(reviveBuff);
