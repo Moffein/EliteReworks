@@ -6,6 +6,7 @@ using EliteReworks.Tweaks.T1.Components;
 using R2API;
 using RoR2.Projectile;
 using UnityEngine.AddressableAssets;
+using System;
 
 namespace EliteReworks.Tweaks.T1
 {
@@ -81,7 +82,11 @@ namespace EliteReworks.Tweaks.T1
 
 			if (EliteReworksPlugin.affixBlueRemoveShield)
             {
-				RemoveShields();
+                IL.RoR2.CharacterBody.RecalculateStats += RemoveShields;
+            }
+			else if (EliteReworksPlugin.affixBlueReduceShield)
+            {
+				IL.RoR2.CharacterBody.RecalculateStats += ReduceShields;
             }
 		}
 
@@ -202,18 +207,34 @@ namespace EliteReworks.Tweaks.T1
 			return toReturn;
         }
 
-		private static void RemoveShields()
+        private static void RemoveShields(ILContext il)
         {
-			//Remove Shields
-			IL.RoR2.CharacterBody.RecalculateStats += (il) =>
+            ILCursor c = new ILCursor(il);
+            c.GotoNext(
+                 x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixBlue")
+                );
+            c.Remove();
+            c.Emit<EliteReworksPlugin>(OpCodes.Ldsfld, nameof(EliteReworksPlugin.EmptyBuff));
+        }
+
+        private static void ReduceShields(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            c.GotoNext(
+                 x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixBlue")
+                );
+			c.GotoNext(x => x.MatchLdcR4(0.5f));
+			c.Remove();
+			c.Emit(OpCodes.Ldc_R4, 0.25f);
+
+			c.GotoNext(
+				x => x.MatchCall(typeof(RoR2.CharacterBody), "get_maxHealth"),
+				x => x.MatchAdd());
+			c.Index++;
+			c.EmitDelegate<Func<float, float>>(shieldToAdd =>
 			{
-				ILCursor c = new ILCursor(il);
-				c.GotoNext(
-					 x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixBlue")
-					);
-				c.Remove();
-				c.Emit<EliteReworksPlugin>(OpCodes.Ldsfld, nameof(EliteReworksPlugin.EmptyBuff));
-			};
-		}
-	}
+				return shieldToAdd * 0.3333333333f;
+			});
+        }
+    }
 }

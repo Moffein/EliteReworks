@@ -19,7 +19,7 @@ namespace EliteReworks
     [BepInDependency("com.bepis.r2api")]
     [BepInDependency("com.TPDespair.ZetAspects", BepInDependency.DependencyFlags.SoftDependency)]
     [R2API.Utils.R2APISubmoduleDependency(nameof(PrefabAPI), nameof(RecalculateStatsAPI), nameof(DamageAPI), nameof(ContentAddition), nameof(SoundAPI))]//, nameof(EliteAPI)
-    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.9.3")]
+    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.9.4")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class EliteReworksPlugin : BaseUnityPlugin
     {
@@ -27,6 +27,7 @@ namespace EliteReworks
         public static bool modifyStats = true;
         public static bool affixBlueEnabled = true;
         public static bool affixBlueRemoveShield = true;
+        public static bool affixBlueReduceShield = false;
         public static bool affixWhiteEnabled = true;
         public static bool affixRedEnabled = true;
         public static bool affixHauntedEnabled = true;
@@ -119,6 +120,7 @@ namespace EliteReworks
 
             affixBlueEnabled = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
             affixBlueRemoveShield = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "Remove Shield"), true, new ConfigDescription("Remove shields from Overloading Enemies.")).Value;
+            affixBlueReduceShield = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "Reduce Shield"), false, new ConfigDescription("Reduces shields of Overloading Enemies. Requires Remove Shield option to be disabled.")).Value;
             AffixBlue.enableOnHitRework = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "On-Hit Rework"), true, new ConfigDescription("Increases the blast radius of Overloading stickybombs.")).Value;
             AffixBlue.enablePassiveLightning = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "Passive Lightning"), true, new ConfigDescription("Overloading elites periodically shoot out lightning nearby.")).Value;
             AffixBluePassiveLightning.scatterBombs = base.Config.Bind<bool>(new ConfigDefinition("T1 - Overloading", "On-Hit Scatterbombs"), false, new ConfigDescription("Requires On-Hit Rework. Replaces Overloading stickybombs with a spread of projectiles.")).Value;
