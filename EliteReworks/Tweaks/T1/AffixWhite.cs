@@ -30,7 +30,7 @@ namespace EliteReworks.Tweaks.T1
             slowProcSound = CreateSlowProcSound();
 
             //Remove vanilla on-hit effect so that all on-hits are handled via the OnHitAll hook
-            IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
             {
                 ILCursor c = new ILCursor(il);
                 c.GotoNext(

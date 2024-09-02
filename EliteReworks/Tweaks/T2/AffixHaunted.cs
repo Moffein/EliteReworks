@@ -212,7 +212,7 @@ namespace EliteReworks.Tweaks.T2
             if (!replaceOnHitEffect) return;
 
             //Remove vanilla effect
-            IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
             {
                 ILCursor c = new ILCursor(il);
                 c.GotoNext(
@@ -222,7 +222,7 @@ namespace EliteReworks.Tweaks.T2
                 c.Emit<EliteReworksPlugin>(OpCodes.Ldsfld, nameof(EliteReworksPlugin.EmptyBuff));
             };
 
-            On.RoR2.GlobalEventManager.OnHitEnemy += (orig, self, damageInfo, victim) =>
+            On.RoR2.GlobalEventManager.ProcessHitEnemy += (orig, self, damageInfo, victim) =>
             {
                 orig(self, damageInfo, victim);
                 if (NetworkServer.active && !damageInfo.rejected && damageInfo.procCoefficient > 0f && damageInfo.attacker && victim)

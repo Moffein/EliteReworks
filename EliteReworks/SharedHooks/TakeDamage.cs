@@ -9,7 +9,7 @@ namespace EliteReworks.SharedHooks
 {
     public static class TakeDamage
     {
-        public static void HealthComponent_TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
+        public static void HealthComponent_TakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
         {
             bool isPoison = false;
 

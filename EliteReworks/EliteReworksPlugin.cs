@@ -16,10 +16,14 @@ using System.Reflection;
 
 namespace EliteReworks
 {
-    [BepInDependency("com.bepis.r2api")]
+    [BepInDependency(R2API.R2API.PluginGUID)]
+    [BepInDependency(R2API.PrefabAPI.PluginGUID)]
+    [BepInDependency(R2API.RecalculateStatsAPI.PluginGUID)]
+    [BepInDependency(R2API.SoundAPI.PluginGUID)]
+    [BepInDependency(R2API.DamageAPI.PluginGUID)]
+    [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID)]
     [BepInDependency("com.TPDespair.ZetAspects", BepInDependency.DependencyFlags.SoftDependency)]
-    [R2API.Utils.R2APISubmoduleDependency(nameof(PrefabAPI), nameof(RecalculateStatsAPI), nameof(DamageAPI), nameof(ContentAddition), nameof(SoundAPI))]//, nameof(EliteAPI)
-    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.9.4")]
+    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.10.0")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class EliteReworksPlugin : BaseUnityPlugin
     {
@@ -82,7 +86,7 @@ namespace EliteReworks
             //These all have things to check if config features are enabled
             On.RoR2.CharacterBody.AddBuff_BuffIndex += AddBuff.AddEliteComponents;
             On.RoR2.GlobalEventManager.OnHitAll += OnHitAll.TriggerOnHitAllEffects;
-            On.RoR2.HealthComponent.TakeDamage += TakeDamage.HealthComponent_TakeDamage;
+            On.RoR2.HealthComponent.TakeDamageProcess += TakeDamage.HealthComponent_TakeDamage;
             On.RoR2.CharacterBody.RecalculateStats += RecalculateStats.CharacterBody_RecalculateStats;
 
             ModifyEliteTiers.Setup();

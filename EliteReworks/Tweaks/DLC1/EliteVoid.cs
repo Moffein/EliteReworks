@@ -15,7 +15,7 @@ namespace EliteReworks.Tweaks.DLC1
         public static void Setup()
         {
             //Remove vanilla on-hit effect
-            IL.RoR2.GlobalEventManager.OnHitEnemy += (il) =>
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
             {
                 ILCursor c = new ILCursor(il);
                 c.GotoNext(
