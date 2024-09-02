@@ -13,6 +13,7 @@ using System.Collections;
 using System;
 using EliteReworks.Tweaks.DLC1;
 using System.Reflection;
+using EliteReworks.Tweaks.DLC2;
 
 namespace EliteReworks
 {
@@ -40,6 +41,7 @@ namespace EliteReworks
         public static bool eliteEarthEnabled = true;
         public static bool eliteVoidEnabled = true;
 
+        public static bool affixGildedEnabled = true;
         public static bool affixBeadEnabled = true;
 
         public static float eliteStunDisableDuration = 1.2f;
@@ -89,6 +91,7 @@ namespace EliteReworks
             {
                 AffixBead.Setup();
             }
+            if (affixGildedEnabled) AffixGilded.Setup();
 
             //These all have things to check if config features are enabled
             On.RoR2.CharacterBody.AddBuff_BuffIndex += AddBuff.AddEliteComponents;

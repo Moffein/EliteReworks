@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
-namespace EliteReworks.Tweaks.T2.Components
+namespace EliteReworks.Tweaks.DLC2.Components
 {
     public class AffixBeadCleanseComponent : MonoBehaviour
     {
@@ -20,7 +20,7 @@ namespace EliteReworks.Tweaks.T2.Components
         public void Awake()
         {
             stopwatch = 0f;
-            buffWard = base.GetComponent<BuffWard>();
+            buffWard = GetComponent<BuffWard>();
         }
 
         public void FixedUpdate()
@@ -40,7 +40,7 @@ namespace EliteReworks.Tweaks.T2.Components
             if (!buffWard || !buffWard.teamFilter) return;
 
             float radiusSqr = buffWard.radius * buffWard.radius;
-            Vector3 currentPosition = base.transform.position;
+            Vector3 currentPosition = transform.position;
             IEnumerable<TeamComponent> recipients = TeamComponent.GetTeamMembers(buffWard.teamFilter.teamIndex);
 
             foreach (TeamComponent teamComponent in recipients)

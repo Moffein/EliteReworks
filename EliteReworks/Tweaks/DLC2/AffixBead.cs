@@ -1,4 +1,4 @@
-﻿using EliteReworks.Tweaks.T2.Components;
+﻿using EliteReworks.Tweaks.DLC2.Components;
 using R2API;
 using RoR2;
 using System;
@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
-namespace EliteReworks.Tweaks.T2
+namespace EliteReworks.Tweaks.DLC2
 {
     public static class AffixBead
     {
@@ -30,7 +30,7 @@ namespace EliteReworks.Tweaks.T2
             wardReworkPrefab = prefab;
         }
 
-        private static void AffixBeadBehavior_Update(On.RoR2.AffixBeadBehavior.orig_Update orig, RoR2.AffixBeadBehavior self)
+        private static void AffixBeadBehavior_Update(On.RoR2.AffixBeadBehavior.orig_Update orig, AffixBeadBehavior self)
         {
             bool isStunned = false;
             if (NetworkServer.active)
@@ -57,8 +57,8 @@ namespace EliteReworks.Tweaks.T2
                         }
                     }
                 }
-                isStunned = (stunTracker && !stunTracker.PassiveActive())
-                    || (self.body && self.body.healthComponent && !self.body.healthComponent.alive);
+                isStunned = stunTracker && !stunTracker.PassiveActive()
+                    || self.body && self.body.healthComponent && !self.body.healthComponent.alive;
                 if (isStunned && self.affixBeadWard)
                 {
                     UnityEngine.Object.Destroy(self.affixBeadWard);
@@ -67,7 +67,7 @@ namespace EliteReworks.Tweaks.T2
             if (!isStunned) orig(self);
         }
 
-        private static void AffixBeadBehavior_OnEnable(On.RoR2.AffixBeadBehavior.orig_OnEnable orig, RoR2.AffixBeadBehavior self)
+        private static void AffixBeadBehavior_OnEnable(On.RoR2.AffixBeadBehavior.orig_OnEnable orig, AffixBeadBehavior self)
         {
             orig(self);
             if (wardReworkPrefab) self.affixBeadWardReference = wardReworkPrefab;
