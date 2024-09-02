@@ -13,7 +13,7 @@ namespace EliteReworks.SharedHooks
     public static class OnHitAll
     {
         //Combine everything in to 1 class to reduce GetComponent calls
-        public static void TriggerOnHitAllEffects(On.RoR2.GlobalEventManager.orig_OnHitAll orig, GlobalEventManager self, DamageInfo damageInfo, GameObject hitObject)
+        public static void TriggerOnHitAllEffects(On.RoR2.GlobalEventManager.orig_OnHitAllProcess orig, GlobalEventManager self, DamageInfo damageInfo, GameObject hitObject)
         {
             orig(self, damageInfo, hitObject);
             if (NetworkServer.active && !damageInfo.rejected && damageInfo.procCoefficient > 0f)

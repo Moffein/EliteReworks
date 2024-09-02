@@ -69,7 +69,7 @@ namespace EliteReworks.Tweaks.T1
 			//Remove vanilla on-hit effect
 			if (enableOnHitRework)
 			{
-				IL.RoR2.GlobalEventManager.OnHitAll += (il) =>
+				IL.RoR2.GlobalEventManager.OnHitAllProcess += (il) =>
 				{
 					ILCursor c = new ILCursor(il);
 					c.GotoNext(

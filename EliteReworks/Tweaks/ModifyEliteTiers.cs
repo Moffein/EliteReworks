@@ -26,6 +26,7 @@ namespace EliteReworks.Tweaks
 
         public static void Setup()
         {
+            return; //TODO: FIX LATER
             On.RoR2.CombatDirector.Init += (orig) =>
             {
                 orig();
