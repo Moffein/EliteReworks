@@ -8,6 +8,7 @@ using System;
 
 namespace EliteReworks.SharedHooks
 {
+	//TODO: REFACTOR
     public static class AddBuff
     {
 		public static void AddEliteComponents(On.RoR2.CharacterBody.orig_AddBuff_BuffIndex orig, CharacterBody self, BuffIndex buffIndex)

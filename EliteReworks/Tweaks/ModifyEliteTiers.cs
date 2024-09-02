@@ -4,6 +4,7 @@ using R2API;
 using static RoR2.CombatDirector;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.AddressableAssets;
 
 namespace EliteReworks.Tweaks
 {
@@ -19,60 +20,28 @@ namespace EliteReworks.Tweaks
         public static float t1HonorHealthEarth = 1.5f;
         public static float t1HonorDamage = 1.5f;
 
+        public static float tGildedCost = 6.75f;
+        public static float tGildedHealth = 4.5f;
+        public static float tGildedDamage = 2.3f;
+
         public static float t2Cost = 36f;
         public static float t2Health = 12f;
         public static float t2Damage = 3.5f;
+        public static float t2HealthTwisted = 12f;
+        public static float t2DamageTwisted = 3.5f;
         public static int t2MinStages = 5;
 
         public static void Setup()
         {
-            return; //TODO: FIX LATER
             On.RoR2.CombatDirector.Init += (orig) =>
             {
                 orig();
 
-                //Seems inefficient, but all the array sizes are small so there's not too much searching hopefully
-                foreach(EliteTierDef etd in CombatDirector.eliteTiers)
-                {
-                    if (etd != null)
-                    {
-                        if (etd.eliteTypes.Length > 0)
-                        {
-                            List<EliteDef> elites = etd.eliteTypes.ToList();
-                            if (elites.Contains(RoR2Content.Elites.Lightning))
-                            {
-                                etd.costMultiplier = t1Cost;
-                                foreach(EliteDef ed in etd.eliteTypes)
-                                {
-                                    if (ed != null) ApplyT1Scaling(ed);
-                                }
-                            }
-                            else if (elites.Contains(RoR2Content.Elites.LightningHonor))
-                            {
-                                etd.costMultiplier = t1HonorCost;
-                                foreach (EliteDef ed in etd.eliteTypes)
-                                {
-                                    if (ed != null) ApplyT1HonorScaling(ed);
-                                }
-                            }
-                            else if (elites.Contains(RoR2Content.Elites.Poison))
-                            {
-                                etd.isAvailable = ((SpawnCard.EliteRules rules) => Run.instance.stageClearCount >= t2MinStages && rules == SpawnCard.EliteRules.Default);    //checks Run.instance.loopCount in Vanilla
-                                etd.costMultiplier = t2Cost;
-                                foreach (EliteDef ed in etd.eliteTypes)
-                                {
-                                    if (ed != null) ApplyT2Scaling(ed);
-                                }
-                            }
-                        }
-                    }
-                }
-
                 //Dump Elite info
-                /*Debug.Log("\n\n\n\n\nEliteReworks: Modifying Elite Tiers");
-                for (int i = 0; i < CombatDirector.eliteTiers.Length; i++)
+                /*Debug.Log("\n\n\n\n\nEliteReworks: Dumping Elite Tiers");
+                for (int i = 0; i < EliteAPI.VanillaEliteTiers.Length; i++)
                 {
-                    EliteTierDef etd = CombatDirector.eliteTiers[i];
+                    EliteTierDef etd = EliteAPI.VanillaEliteTiers[i];
                     if (etd != null)
                     {
                         Debug.Log("[" + i + "] Tier Cost: " + etd.costMultiplier);
@@ -86,6 +55,53 @@ namespace EliteReworks.Tweaks
                         Debug.Log("\n");
                     }
                 }*/
+
+                if (EliteReworksPlugin.affixGildedFixTier)
+                {
+                    EliteTierDef tierToFix = EliteAPI.VanillaEliteTiers[3];
+
+                    List<EliteDef> toRemove = new List<EliteDef>()
+                    {
+                        RoR2Content.Elites.Fire,
+                        RoR2Content.Elites.Lightning,
+                        RoR2Content.Elites.Ice,
+                        DLC1Content.Elites.Earth
+                    };
+
+                    //Remove what shouldn't be there, in case other mods add to this tier.
+                    List<EliteDef> eliteList = tierToFix.eliteTypes.ToList();
+                    foreach (EliteDef elite in toRemove)
+                    {
+                        eliteList.Remove(elite);
+                    }
+                    tierToFix.eliteTypes = eliteList.ToArray();
+                }
+
+                EliteTierDef t1Tier = EliteAPI.VanillaEliteTiers[1];
+                t1Tier.costMultiplier = t1Cost;
+                foreach (EliteDef ed in t1Tier.eliteTypes)
+                {
+                    if (ed != null) ApplyT1Scaling(ed);
+                }
+
+                EliteTierDef t1HonorTier = EliteAPI.VanillaEliteTiers[2];
+                t1HonorTier.costMultiplier = t1HonorCost;
+                foreach (EliteDef ed in t1HonorTier.eliteTypes)
+                {
+                    if (ed != null) ApplyT1HonorScaling(ed);
+                }
+
+                EliteTierDef t2Tier = EliteAPI.VanillaEliteTiers[4];
+                t2Tier.costMultiplier = t2Cost;
+                foreach (EliteDef ed in t2Tier.eliteTypes)
+                {
+                    if (ed != null) ApplyT2Scaling(ed);
+                }
+
+                EliteTierDef gildedTier = EliteAPI.VanillaEliteTiers[3];
+                gildedTier.costMultiplier = tGildedCost;
+                DLC2Content.Elites.Aurelionite.damageBoostCoefficient = tGildedDamage;
+                DLC2Content.Elites.Aurelionite.healthBoostCoefficient = tGildedHealth;
             };
         }
 
@@ -113,6 +129,11 @@ namespace EliteReworks.Tweaks
         {
             ed.damageBoostCoefficient = t2Damage;
             ed.healthBoostCoefficient = t2Health;
+            if (ed == DLC2Content.Elites.Bead)
+            {
+                ed.healthBoostCoefficient = t2HealthTwisted;
+                ed.damageBoostCoefficient = t2DamageTwisted;
+            }
         }
     }
 }

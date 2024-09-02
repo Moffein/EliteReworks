@@ -14,6 +14,7 @@ using System;
 using EliteReworks.Tweaks.DLC1;
 using System.Reflection;
 using EliteReworks.Tweaks.DLC2;
+using JetBrains.Annotations;
 
 namespace EliteReworks
 {
@@ -22,6 +23,7 @@ namespace EliteReworks
     [BepInDependency(R2API.RecalculateStatsAPI.PluginGUID)]
     [BepInDependency(R2API.SoundAPI.PluginGUID)]
     [BepInDependency(R2API.DamageAPI.PluginGUID)]
+    [BepInDependency(R2API.EliteAPI.PluginGUID)]
     [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID)]
     [BepInDependency("com.TPDespair.ZetAspects", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.10.0")]
@@ -42,6 +44,8 @@ namespace EliteReworks
         public static bool eliteVoidEnabled = true;
 
         public static bool affixGildedEnabled = true;
+        public static bool affixGildedFixTier = true;
+
         public static bool affixBeadEnabled = true;
 
         public static float eliteStunDisableDuration = 1.2f;
@@ -127,7 +131,16 @@ namespace EliteReworks
 
             ModifyEliteTiers.t2Cost = base.Config.Bind<float>(new ConfigDefinition("General", "T2 Cost"), 36f, new ConfigDescription("T2 Director Cost multiplier. (Vanilla is 36)")).Value;
             ModifyEliteTiers.t2Health = base.Config.Bind<float>(new ConfigDefinition("General", "T2 HP"), 12f, new ConfigDescription("T2 Health multiplier. (Vanilla is 18)")).Value;
-            ModifyEliteTiers.t2Damage = base.Config.Bind<float>(new ConfigDefinition("General", "T2 Damage"), 3.5f, new ConfigDescription("T2 Damage multipliers. (Vanilla is 6)")).Value;
+            ModifyEliteTiers.t2Damage = base.Config.Bind<float>(new ConfigDefinition("General", "T2 Damage"), 3.5f, new ConfigDescription("T2 Damage multipliers. (Vanilla is 6)")).Value; ModifyEliteTiers.t2Health = base.Config.Bind<float>(new ConfigDefinition("General", "T2 HP"), 12f, new ConfigDescription("T2 Health multiplier. (Vanilla is 18)")).Value;
+
+            ModifyEliteTiers.t2HealthTwisted = base.Config.Bind<float>(new ConfigDefinition("General", "T2 HP - Twisted"), 12f, new ConfigDescription("Twisted Health multiplier. (Vanilla is 13)")).Value;
+            ModifyEliteTiers.t2DamageTwisted = base.Config.Bind<float>(new ConfigDefinition("General", "T2 Damage - Twisted"), 3.5f, new ConfigDescription("Twisted Damage multiplier. (Vanilla is 10)")).Value;
+            
+            affixGildedFixTier = base.Config.Bind<bool>(new ConfigDefinition("General", "Gilded - Fix Tier"), true, new ConfigDescription("Fix Gilded Tier to not include T1 elites.")).Value;
+            ModifyEliteTiers.tGildedCost = base.Config.Bind<float>(new ConfigDefinition("General", "Gilded Cost"), 6.75f, new ConfigDescription("Gilded Director Cost multiplier. (Vanilla is 3.5)")).Value;
+            ModifyEliteTiers.tGildedHealth = base.Config.Bind<float>(new ConfigDefinition("General", "Gilded HP"), 4.5f, new ConfigDescription("Gilded Health multiplier. (Vanilla is 6)")).Value;
+            ModifyEliteTiers.tGildedDamage = base.Config.Bind<float>(new ConfigDefinition("General", "Gilded Damage"), 2.3f, new ConfigDescription("Gilded Damage multipliers. (Vanilla is 3)")).Value;
+
             ModifyEliteTiers.t2MinStages = base.Config.Bind<int>(new ConfigDefinition("General", "T2 Min Stages"), 5, new ConfigDescription("Minimum stage completions before T2 elites start spawning. (Vanilla is 5)")).Value;
 
             EliteVoid.damageBonus = base.Config.Bind<float>(new ConfigDefinition("General", "Voidtouched Damage"), 1.5f, new ConfigDescription("Voidtouched Damage multipliers. (Vanilla is 0.7)")).Value;
@@ -149,11 +162,14 @@ namespace EliteReworks
             affixHauntedEnabled = base.Config.Bind<bool>(new ConfigDefinition("T2 - Celestine", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
             AffixHaunted.replaceOnHitEffect = base.Config.Bind<bool>(new ConfigDefinition("T2 - Celestine", "New On-Hit Effect"), true, new ConfigDescription("Replaces the Vanilla Slow-on-Hit with an armor reduction penalty.")).Value;
 
-            affixBeadEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC2 - T2 - Twisted", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
-
             eliteEarthEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC1 - T1 - Mending", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
             eliteVoidEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC1 - Voidtouched", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
             EliteVoid.tweakNullify = base.Config.Bind<bool>(new ConfigDefinition("DLC1 - Voidtouched", "Tweak Nullify"), true, new ConfigDescription("Nullify only takes 2 stacks to root. Requires Voidtouched changes to be eanbled.")).Value;
+
+            affixGildedEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC2 - Gilded", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
+            affixGildedEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC2 - Gilded", "Fix Tier"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
+            affixBeadEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC2 - T2 - Twisted", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
+
         }
     }
 }
