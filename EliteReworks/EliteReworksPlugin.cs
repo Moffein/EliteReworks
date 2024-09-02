@@ -36,9 +36,11 @@ namespace EliteReworks
         public static bool affixRedEnabled = true;
         public static bool affixHauntedEnabled = true;
         public static bool affixPoisonEnabled = true;
-        public static bool affixBeadEnabled = true;
+
         public static bool eliteEarthEnabled = true;
         public static bool eliteVoidEnabled = true;
+
+        public static bool affixBeadEnabled = true;
 
         public static float eliteStunDisableDuration = 1.2f;
         public static float eliteBossDamageMult = 1.6f;
@@ -144,7 +146,7 @@ namespace EliteReworks
             affixHauntedEnabled = base.Config.Bind<bool>(new ConfigDefinition("T2 - Celestine", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
             AffixHaunted.replaceOnHitEffect = base.Config.Bind<bool>(new ConfigDefinition("T2 - Celestine", "New On-Hit Effect"), true, new ConfigDescription("Replaces the Vanilla Slow-on-Hit with an armor reduction penalty.")).Value;
 
-            affixBeadEnabled = base.Config.Bind<bool>(new ConfigDefinition("T2 - Twisted", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
+            affixBeadEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC2 - T2 - Twisted", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
 
             eliteEarthEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC1 - T1 - Mending", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
             eliteVoidEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC1 - Voidtouched", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;

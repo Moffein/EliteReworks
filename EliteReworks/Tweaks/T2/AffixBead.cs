@@ -1,17 +1,33 @@
-﻿using RoR2;
+﻿using EliteReworks.Tweaks.T2.Components;
+using R2API;
+using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
 namespace EliteReworks.Tweaks.T2
 {
     public static class AffixBead
     {
+        public static GameObject wardReworkPrefab;
         public static void Setup()
         {
             On.RoR2.AffixBeadBehavior.OnEnable += AffixBeadBehavior_OnEnable;
             On.RoR2.AffixBeadBehavior.Update += AffixBeadBehavior_Update;
+            CreateWard();
+        }
+
+        private static void CreateWard()
+        {
+            GameObject prefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC2/Elites/EliteBead/AffixBeadWard.prefab").WaitForCompletion().InstantiateClone("MoffeinEliteReworksTwistedWard", true);
+            BuffWard buffWard = prefab.GetComponent<BuffWard>();
+            if (buffWard) buffWard.buffDef = null;
+            prefab.AddComponent<AffixBeadCleanseComponent>();
+
+            wardReworkPrefab = prefab;
         }
 
         private static void AffixBeadBehavior_Update(On.RoR2.AffixBeadBehavior.orig_Update orig, RoR2.AffixBeadBehavior self)
@@ -41,7 +57,8 @@ namespace EliteReworks.Tweaks.T2
                         }
                     }
                 }
-                isStunned = stunTracker && !stunTracker.PassiveActive();
+                isStunned = (stunTracker && !stunTracker.PassiveActive())
+                    || (self.body && self.body.healthComponent && !self.body.healthComponent.alive);
                 if (isStunned && self.affixBeadWard)
                 {
                     UnityEngine.Object.Destroy(self.affixBeadWard);
@@ -53,8 +70,7 @@ namespace EliteReworks.Tweaks.T2
         private static void AffixBeadBehavior_OnEnable(On.RoR2.AffixBeadBehavior.orig_OnEnable orig, RoR2.AffixBeadBehavior self)
         {
             orig(self);
-            //todo: just replace affixBeadWard
-
+            if (wardReworkPrefab) self.affixBeadWardReference = wardReworkPrefab;
             EliteStunTracker est = self.GetComponent<EliteStunTracker>();
             if (!est) est = self.gameObject.AddComponent<EliteStunTracker>();
         }
