@@ -91,11 +91,13 @@ namespace EliteReworks.Tweaks.DLC2
             if (!sender.HasBuff(DLC2Content.Buffs.AurelioniteBlessing)) return;
             float bonusArmor = 60f;
 
-            if (sender.master)
+            if (sender.master && Run.instance)
             {
                 //orig is just flat 0.1 * money
                 //this one gives more reduction earlygame, but the general reduction remains consistent
-                bonusArmor += 25f * ((float)sender.master.money / (float)Run.instance.GetDifficultyScaledCost(25));
+                float difficultyCoefficient = Run.instance.difficultyCoefficient;
+                if (Stage.instance) difficultyCoefficient = Stage.instance.entryDifficultyCoefficient;
+                bonusArmor += 25f * ((float)sender.master.money / (float)Run.instance.GetDifficultyScaledCost(25, difficultyCoefficient));
             }
 
             args.armorAdd += bonusArmor;
