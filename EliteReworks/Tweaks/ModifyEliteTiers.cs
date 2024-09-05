@@ -92,6 +92,10 @@ namespace EliteReworks.Tweaks
                 }
 
                 EliteTierDef t2Tier = EliteAPI.VanillaEliteTiers[4];
+                if (t2MinStages != 5) t2Tier.isAvailable = (eliteRules) =>
+                {
+                    return Run.instance && Run.instance.stageClearCount > t2MinStages;
+                };
                 t2Tier.costMultiplier = t2Cost;
                 foreach (EliteDef ed in t2Tier.eliteTypes)
                 {
