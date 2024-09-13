@@ -32,8 +32,10 @@ namespace EliteReworks.Tweaks.DLC2
             c.GotoNext(MoveType.After, x => x.MatchLdsfld(typeof(DLC2Content.Buffs), "AurelioniteBlessing"));
             c.Emit(OpCodes.Ldarg_0);    //self
             c.Emit(OpCodes.Ldloc_1);    //attackerBody
-            c.EmitDelegate<Func<BuffDef, HealthComponent, CharacterBody, BuffDef>>((buffDef, self, attackerBody) =>
+            c.Emit(OpCodes.Ldarg_1);    //damageInfo
+            c.EmitDelegate<Func<BuffDef, HealthComponent, CharacterBody, DamageInfo, BuffDef>>((buffDef, self, attackerBody, damageInfo) =>
             {
+                if (damageInfo.procCoefficient <= 0f) return null;
                 bool victimIsPlayer = self.body && self.body.isPlayerControlled;
                 bool attackerIsPlayer = attackerBody && attackerBody.isPlayerControlled;
                 return (victimIsPlayer || attackerIsPlayer) ? buffDef : null;
