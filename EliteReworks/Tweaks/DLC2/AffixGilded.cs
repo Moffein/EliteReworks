@@ -99,7 +99,7 @@ namespace EliteReworks.Tweaks.DLC2
                 //this one gives more reduction earlygame, but the general reduction remains consistent
                 float difficultyCoefficient = Run.instance.difficultyCoefficient;
                 if (Stage.instance) difficultyCoefficient = Stage.instance.entryDifficultyCoefficient;
-                bonusArmor += 25f * ((float)sender.master.money / (float)Run.instance.GetDifficultyScaledCost(25, difficultyCoefficient));
+                bonusArmor += 50f * ((float)sender.master.money / (float)Run.instance.GetDifficultyScaledCost(25, difficultyCoefficient));
             }
 
             args.armorAdd += bonusArmor;
