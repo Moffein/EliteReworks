@@ -26,7 +26,7 @@ namespace EliteReworks
     [BepInDependency(R2API.EliteAPI.PluginGUID)]
     [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID)]
     [BepInDependency("com.TPDespair.ZetAspects", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.12.0")]
+    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.11.1")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class EliteReworksPlugin : BaseUnityPlugin
     {
@@ -132,10 +132,10 @@ namespace EliteReworks
 
             ModifyEliteTiers.t2Cost = base.Config.Bind<float>(new ConfigDefinition("General", "T2 Cost"), 36f, new ConfigDescription("T2 Director Cost multiplier. (Vanilla is 36)")).Value;
             ModifyEliteTiers.t2Health = base.Config.Bind<float>(new ConfigDefinition("General", "T2 HP"), 12f, new ConfigDescription("T2 Health multiplier. (Vanilla is 18)")).Value;
-            ModifyEliteTiers.t2Damage = base.Config.Bind<float>(new ConfigDefinition("General", "T2 Damage"), 3.5f, new ConfigDescription("T2 Damage multipliers. (Vanilla is 6)")).Value; ModifyEliteTiers.t2Health = base.Config.Bind<float>(new ConfigDefinition("General", "T2 HP"), 12f, new ConfigDescription("T2 Health multiplier. (Vanilla is 18)")).Value;
+            ModifyEliteTiers.t2Damage = base.Config.Bind<float>(new ConfigDefinition("General", "T2 Damage"), 4f, new ConfigDescription("T2 Damage multipliers. (Vanilla is 6)")).Value; ModifyEliteTiers.t2Health = base.Config.Bind<float>(new ConfigDefinition("General", "T2 HP"), 12f, new ConfigDescription("T2 Health multiplier. (Vanilla is 18)")).Value;
 
             ModifyEliteTiers.t2HealthTwisted = base.Config.Bind<float>(new ConfigDefinition("General", "T2 HP - Twisted"), 12f, new ConfigDescription("Twisted Health multiplier. (Vanilla is 13)")).Value;
-            ModifyEliteTiers.t2DamageTwisted = base.Config.Bind<float>(new ConfigDefinition("General", "T2 Damage - Twisted"), 3.5f, new ConfigDescription("Twisted Damage multiplier. (Vanilla is 10)")).Value;
+            ModifyEliteTiers.t2DamageTwisted = base.Config.Bind<float>(new ConfigDefinition("General", "T2 Damage - Twisted"), 4f, new ConfigDescription("Twisted Damage multiplier. (Vanilla is 10)")).Value;
             
             affixGildedFixTier = base.Config.Bind<bool>(new ConfigDefinition("General", "Gilded - Fix Tier"), true, new ConfigDescription("Fix Gilded Tier to not include T1 elites.")).Value;
             ModifyEliteTiers.tGildedCost = base.Config.Bind<float>(new ConfigDefinition("General", "Gilded Cost"), 6.75f, new ConfigDescription("Gilded Director Cost multiplier. (Vanilla is 3.5)")).Value;

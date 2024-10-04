@@ -9,7 +9,7 @@ namespace EliteReworks.Tweaks.DLC2.Components
     public class AffixBeadCleanseComponent : MonoBehaviour
     {
         public static GameObject cleanseEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Cleanse/CleanseEffect.prefab").WaitForCompletion();
-        public static float cleansePulseTimer = 2f;
+        public static float cleansePulseTimer = 0.5f;
 
         private float stopwatch;
         private float radius;
