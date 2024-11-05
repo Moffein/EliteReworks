@@ -11,6 +11,9 @@ namespace EliteReworks.Tweaks
 {
     public static class ModifyEliteTiers
     {
+        public static EliteDef GildedT1HonorDef;
+        public static bool gildedHonor = true;
+
         public static float t1Cost = 4.5f;
         public static float t1Health = 3f;
         public static float t1HealthEarth = 3f;
@@ -21,9 +24,11 @@ namespace EliteReworks.Tweaks
         public static float t1HonorHealthEarth = 1.5f;
         public static float t1HonorDamage = 1.5f;
 
-        public static float tGildedCost = 6.75f;
         public static float tGildedHealth = 4.5f;
         public static float tGildedDamage = 2.3f;
+
+        public static float tGildedHonorHealth = 3.8f;
+        public static float tGildedHonorDamage = 2.3f;
 
         public static float t2Cost = 36f;
         public static float t2Health = 12f;
@@ -32,14 +37,13 @@ namespace EliteReworks.Tweaks
         public static float t2DamageTwisted = 3.5f;
         public static int t2MinStages = 5;
 
-        private static EliteDef GildedT1HonorDef;
         public static void Setup()
         {
             EliteDef gildedDefOriginal = Addressables.LoadAssetAsync<EliteDef>("RoR2/DLC2/Elites/EliteAurelionite/edAurelionite.asset").WaitForCompletion();
             EliteDef gildedHonor = ScriptableObject.CreateInstance<EliteDef>();
             gildedHonor.color = gildedDefOriginal.color;
-            gildedHonor.damageBoostCoefficient = t1HonorDamage;
-            gildedHonor.healthBoostCoefficient = t1HonorHealth;
+            gildedHonor.damageBoostCoefficient = tGildedHonorDamage;
+            gildedHonor.healthBoostCoefficient = tGildedHonorHealth;
             gildedHonor.modifierToken = gildedDefOriginal.modifierToken;
             gildedHonor.name = gildedDefOriginal.name + "Honor";
             (gildedHonor as ScriptableObject).name = gildedHonor.name;
@@ -74,68 +78,31 @@ namespace EliteReworks.Tweaks
                 }
             }*/
 
-            //Remove extra elites from Gilded Tier
-            if (EliteReworksPlugin.affixGildedFixTier)
-            {
-                EliteTierDef tierToFix = EliteAPI.VanillaEliteTiers[3];
-
-                List<EliteDef> toRemove = new List<EliteDef>()
-                    {
-                        RoR2Content.Elites.Fire,
-                        RoR2Content.Elites.Lightning,
-                        RoR2Content.Elites.Ice,
-                        DLC1Content.Elites.Earth
-                    };
-
-                //Remove what shouldn't be there, in case other mods add to this tier.
-                List<EliteDef> eliteList = tierToFix.eliteTypes.ToList();
-                foreach (EliteDef elite in toRemove)
-                {
-                    eliteList.Remove(elite);
-                }
-                tierToFix.eliteTypes = eliteList.ToArray();
-            }
-
             EliteTierDef t1Tier = EliteAPI.VanillaEliteTiers[1];
             t1Tier.costMultiplier = t1Cost;
             foreach (EliteDef ed in t1Tier.eliteTypes)
             {
-                if (ed != null) ApplyT1Scaling(ed);
+                ApplyT1Scaling(ed);
             }
 
             EliteTierDef t1HonorTier = EliteAPI.VanillaEliteTiers[2];
             t1HonorTier.costMultiplier = t1HonorCost;
+            if (gildedHonor && GildedT1HonorDef)
+            {
+                var honorList = t1HonorTier.eliteTypes.ToList();
+                honorList.Add(GildedT1HonorDef);
+                t1HonorTier.eliteTypes = honorList.ToArray();
+            }
             foreach (EliteDef ed in t1HonorTier.eliteTypes)
             {
-                if (ed != null) ApplyT1HonorScaling(ed);
+                ApplyT1HonorScaling(ed);
             }
 
-            if (EliteReworksPlugin.affixGildedT1)
+            EliteTierDef t1GildedTier = EliteAPI.VanillaEliteTiers[3];
+            t1GildedTier.costMultiplier = t1Cost;
+            foreach (EliteDef ed in t1GildedTier.eliteTypes)
             {
-                //Nuke Gilded tier, move them to T1
-                EliteTierDef gildedTier = EliteAPI.VanillaEliteTiers[3];
-                gildedTier.isAvailable = orig => false;
-
-                DLC2Content.Elites.Aurelionite.damageBoostCoefficient = t1Damage;
-                DLC2Content.Elites.Aurelionite.healthBoostCoefficient = t1Health;
-                var t1Elites = t1Tier.eliteTypes.ToList();
-                t1Elites.Add(DLC2Content.Elites.Aurelionite);
-                t1Tier.eliteTypes = t1Elites.ToArray();
-
-                if (GildedT1HonorDef != null)
-                {
-                    var t1ElitesHonor = t1HonorTier.eliteTypes.ToList();
-                    t1ElitesHonor.Add(GildedT1HonorDef);
-                    t1HonorTier.eliteTypes = t1ElitesHonor.ToArray();
-                }
-            }
-            else if (EliteReworksPlugin.affixGildedEnabled)
-            {
-                //Just fix the Gilded multipliers
-                EliteTierDef gildedTier = EliteAPI.VanillaEliteTiers[3];
-                gildedTier.costMultiplier = tGildedCost;
-                DLC2Content.Elites.Aurelionite.damageBoostCoefficient = tGildedDamage;
-                DLC2Content.Elites.Aurelionite.healthBoostCoefficient = tGildedHealth;
+                ApplyT1Scaling(ed);
             }
 
             EliteTierDef t2Tier = EliteAPI.VanillaEliteTiers[4];
@@ -158,6 +125,11 @@ namespace EliteReworks.Tweaks
             {
                 ed.healthBoostCoefficient = t1HealthEarth;
             }
+            else if (ed == DLC2Content.Elites.Aurelionite)
+            {
+                ed.healthBoostCoefficient = tGildedHealth;
+                ed.damageBoostCoefficient = tGildedDamage;
+            }
         }
 
         public static void ApplyT1HonorScaling(EliteDef ed)
@@ -167,6 +139,11 @@ namespace EliteReworks.Tweaks
             if (ed == DLC1Content.Elites.EarthHonor)
             {
                 ed.healthBoostCoefficient = t1HonorHealthEarth;
+            }
+            else if (ed == GildedT1HonorDef)
+            {
+                ed.healthBoostCoefficient = tGildedHonorHealth;
+                ed.damageBoostCoefficient = tGildedHonorDamage;
             }
         }
 

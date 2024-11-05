@@ -26,7 +26,7 @@ namespace EliteReworks
     [BepInDependency(R2API.EliteAPI.PluginGUID)]
     [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID)]
     [BepInDependency("com.TPDespair.ZetAspects", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.11.1")]
+    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.12.0")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class EliteReworksPlugin : BaseUnityPlugin
     {
@@ -44,8 +44,6 @@ namespace EliteReworks
         public static bool eliteVoidEnabled = true;
 
         public static bool affixGildedEnabled = true;
-        public static bool affixGildedFixTier = true;
-        public static bool affixGildedT1 = true;
 
         public static bool affixBeadEnabled = true;
 
@@ -129,6 +127,9 @@ namespace EliteReworks
             ModifyEliteTiers.t1HonorHealth = base.Config.Bind<float>(new ConfigDefinition("General", "T1 (Honor) HP"), 2.5f, new ConfigDescription("T1 Health multiplier while Honor is active. (Vanilla is 2.5)")).Value;
             ModifyEliteTiers.t1HonorHealthEarth = base.Config.Bind<float>(new ConfigDefinition("General", "T1 (Honor) HP - Mending"), 1.5f, new ConfigDescription("Mending Health multiplier while Honor is active. (Vanilla is 1.5)")).Value;
             ModifyEliteTiers.t1HonorDamage = base.Config.Bind<float>(new ConfigDefinition("General", "T1 (Honor) Damage"), 1.5f, new ConfigDescription("T1 Damage multipliers while Honor is active. (Vanilla is 1.5)")).Value;
+            ModifyEliteTiers.gildedHonor = base.Config.Bind<bool>(new ConfigDefinition("General", "T1 (Honor) Gilded"), true, new ConfigDescription("Adds Gilded to Honor.")).Value;
+            ModifyEliteTiers.tGildedHonorDamage = base.Config.Bind<float>(new ConfigDefinition("General", "T1 (Honor) Damage - Gilded"), 2.3f, new ConfigDescription("T1 Director Cost multiplier while Honor is active. (Vanilla is 3.5)")).Value;
+            ModifyEliteTiers.tGildedHonorHealth = base.Config.Bind<float>(new ConfigDefinition("General", "T1 (Honor) HP - Gilded"), 3.8f, new ConfigDescription("T1 Health multiplier while Honor is active. (Vanilla is 2.5)")).Value;
 
             ModifyEliteTiers.t2Cost = base.Config.Bind<float>(new ConfigDefinition("General", "T2 Cost"), 36f, new ConfigDescription("T2 Director Cost multiplier. (Vanilla is 36)")).Value;
             ModifyEliteTiers.t2Health = base.Config.Bind<float>(new ConfigDefinition("General", "T2 HP"), 12f, new ConfigDescription("T2 Health multiplier. (Vanilla is 18)")).Value;
@@ -137,10 +138,8 @@ namespace EliteReworks
             ModifyEliteTiers.t2HealthTwisted = base.Config.Bind<float>(new ConfigDefinition("General", "T2 HP - Twisted"), 12f, new ConfigDescription("Twisted Health multiplier. (Vanilla is 13)")).Value;
             ModifyEliteTiers.t2DamageTwisted = base.Config.Bind<float>(new ConfigDefinition("General", "T2 Damage - Twisted"), 4f, new ConfigDescription("Twisted Damage multiplier. (Vanilla is 10)")).Value;
             
-            affixGildedFixTier = base.Config.Bind<bool>(new ConfigDefinition("General", "Gilded - Fix Tier"), true, new ConfigDescription("Fix Gilded Tier to not include T1 elites.")).Value;
-            ModifyEliteTiers.tGildedCost = base.Config.Bind<float>(new ConfigDefinition("General", "Gilded Cost"), 6.75f, new ConfigDescription("Gilded Director Cost multiplier. (Vanilla is 3.5)")).Value;
-            ModifyEliteTiers.tGildedHealth = base.Config.Bind<float>(new ConfigDefinition("General", "Gilded HP"), 4.5f, new ConfigDescription("Gilded Health multiplier. (Vanilla is 6)")).Value;
-            ModifyEliteTiers.tGildedDamage = base.Config.Bind<float>(new ConfigDefinition("General", "Gilded Damage"), 2.3f, new ConfigDescription("Gilded Damage multipliers. (Vanilla is 3)")).Value;
+            ModifyEliteTiers.tGildedHealth = base.Config.Bind<float>(new ConfigDefinition("General", "T1 HP - Gilded"), 4.5f, new ConfigDescription("Gilded Health multiplier. (Vanilla is 6)")).Value;
+            ModifyEliteTiers.tGildedDamage = base.Config.Bind<float>(new ConfigDefinition("General", "T1 Damage - Gilded"), 2.3f, new ConfigDescription("Gilded Damage multipliers. (Vanilla is 3)")).Value;
             
             ModifyEliteTiers.t2MinStages = base.Config.Bind<int>(new ConfigDefinition("General", "T2 Min Stages"), 5, new ConfigDescription("Minimum stage completions before T2 elites start spawning. (Vanilla is 5)")).Value;
 
@@ -168,8 +167,6 @@ namespace EliteReworks
             EliteVoid.tweakNullify = base.Config.Bind<bool>(new ConfigDefinition("DLC1 - Voidtouched", "Tweak Nullify"), true, new ConfigDescription("Nullify only takes 2 stacks to root. Requires Voidtouched changes to be eanbled.")).Value;
 
             affixGildedEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC2 - Gilded", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
-            affixGildedFixTier = base.Config.Bind<bool>(new ConfigDefinition("DLC2 - Gilded", "Fix Tier"), true, new ConfigDescription("Removes other T1 elites from Gilded tier..")).Value;
-            affixGildedT1 = base.Config.Bind<bool>(new ConfigDefinition("General", "Gilded - Move to T1"), true, new ConfigDescription("Overrides all other Gilded settings and just makes them a T1 elite with T1 stats.")).Value;
 
             affixBeadEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC2 - T2 - Twisted", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
 
