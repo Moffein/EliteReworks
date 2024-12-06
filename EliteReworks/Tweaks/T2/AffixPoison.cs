@@ -36,60 +36,58 @@ namespace EliteReworks.Tweaks.T2
 			//Replace original code
 			On.RoR2.CharacterBody.UpdateAffixPoison += (On.RoR2.CharacterBody.orig_UpdateAffixPoison orig, RoR2.CharacterBody self, float deltaTime) =>
             {
-				if (self.HasBuff(RoR2Content.Buffs.AffixPoison))
-				{
-					if (self.healthComponent && self.healthComponent.isInFrozenState)
-					{
-						self.poisonballTimer = 0f;
-					}
-					else
-					{
-						SetStateOnHurt ssoh = self.gameObject.GetComponent<SetStateOnHurt>();
-						if (ssoh)
-						{
-							Type state = ssoh.targetStateMachine.state.GetType();
-							if (state == typeof(EntityStates.StunState) || state == typeof(EntityStates.ShockState))
-							{
-								self.poisonballTimer = 0f;
-							}
-						}
-					}
-
-					AffixPoisonDebuffAura apd = self.gameObject.GetComponent<AffixPoisonDebuffAura>();
-					if (!apd)
+				if (!self.HasBuff(RoR2Content.Buffs.AffixPoison)) return;
+                if (self.healthComponent && self.healthComponent.isInFrozenState)
+                {
+                    self.poisonballTimer = 0f;
+                }
+                else
+                {
+                    SetStateOnHurt ssoh = self.gameObject.GetComponent<SetStateOnHurt>();
+                    if (ssoh)
                     {
-						self.gameObject.AddComponent<AffixPoisonDebuffAura>();
+                        Type state = ssoh.targetStateMachine.state.GetType();
+                        if (state == typeof(EntityStates.StunState) || state == typeof(EntityStates.ShockState))
+                        {
+                            self.poisonballTimer = 0f;
+                        }
                     }
+                }
 
-					if (!apd.wardActive)
-					{
-						self.poisonballTimer = 0f;
-					}
-					else
-					{
-						self.poisonballTimer += deltaTime;
-						if (self.poisonballTimer >= basePoisonTimer)
-						{
-							int num = 3 + (int)self.radius;
-							self.poisonballTimer = 0f;
-							Vector3 up = Vector3.up;
-							float num2 = 360f / (float)num;
-							Vector3 normalized = Vector3.ProjectOnPlane(self.transform.forward, up).normalized;
-							Vector3 point = Vector3.RotateTowards(up, normalized, 0.436332315f, float.PositiveInfinity);
-							for (int i = 0; i < num; i++)
-							{
-								Vector3 forward = Quaternion.AngleAxis(num2 * (float)i, up) * point;
+                AffixPoisonDebuffAura apd = self.gameObject.GetComponent<AffixPoisonDebuffAura>();
+                if (!apd)
+                {
+                    apd = self.gameObject.AddComponent<AffixPoisonDebuffAura>();
+                }
 
-								float baseDamage = 60f;
-								float scaledDamage = (baseDamage + Mathf.Max(0f, self.level - 1f) * baseDamage * 0.2f);
-								if (self.isChampion) scaledDamage *= EliteReworks.EliteReworksPlugin.eliteBossDamageMult;
+                if (!apd.wardActive)
+                {
+                    self.poisonballTimer = 0f;
+                }
+                else
+                {
+                    self.poisonballTimer += deltaTime;
+                    if (self.poisonballTimer >= basePoisonTimer)
+                    {
+                        int num = 3 + (int)self.radius;
+                        self.poisonballTimer = 0f;
+                        Vector3 up = Vector3.up;
+                        float num2 = 360f / (float)num;
+                        Vector3 normalized = Vector3.ProjectOnPlane(self.transform.forward, up).normalized;
+                        Vector3 point = Vector3.RotateTowards(up, normalized, 0.436332315f, float.PositiveInfinity);
+                        for (int i = 0; i < num; i++)
+                        {
+                            Vector3 forward = Quaternion.AngleAxis(num2 * (float)i, up) * point;
 
-								ProjectileManager.instance.FireProjectile(spikeOrbProjectile, self.corePosition, RoR2.Util.QuaternionSafeLookRotation(forward), self.gameObject, scaledDamage, 0f, false, DamageColorIndex.Default, null, -1f);
-							}
-						}
-					}
-				}
-			};
+                            float baseDamage = 60f;
+                            float scaledDamage = (baseDamage + Mathf.Max(0f, self.level - 1f) * baseDamage * 0.2f);
+                            if (self.isChampion) scaledDamage *= EliteReworks.EliteReworksPlugin.eliteBossDamageMult;
+
+                            ProjectileManager.instance.FireProjectile(spikeOrbProjectile, self.corePosition, RoR2.Util.QuaternionSafeLookRotation(forward), self.gameObject, scaledDamage, 0f, false, DamageColorIndex.Default, null, -1f);
+                        }
+                    }
+                }
+            };
 
 			SetupDebuff();
         }
