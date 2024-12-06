@@ -106,10 +106,14 @@ namespace EliteReworks.Tweaks.T2
 
 			On.RoR2.HealthComponent.Heal += (orig, self, amount, procChainMask, isRegen) =>
 			{
-				int malachiteCount = Mathf.Min(self.body.GetBuffCount(MalachiteBuildup), malachiteBuildupMaxStacks);
-				if (malachiteCount > 0)
+				int malachiteCount = 0;
+				if (self.body)
                 {
-					amount *= 1f - malachiteBuildupHealReduction * malachiteCount;
+                    malachiteCount = Mathf.Min(self.body.GetBuffCount(MalachiteBuildup), malachiteBuildupMaxStacks);
+                    if (malachiteCount > 0)
+                    {
+                        amount *= 1f - malachiteBuildupHealReduction * malachiteCount;
+                    }
                 }
 				return orig(self, amount, procChainMask, isRegen);
 			};
