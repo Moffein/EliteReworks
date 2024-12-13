@@ -29,8 +29,6 @@ namespace EliteReworks.Tweaks.T2.Components
 
         public bool wardActive = false;
 
-        private float stunDisableTimer = 0f;
-
         public int GetMaxGhosts()
         {
             return maxAttachedGhosts + ((ownerBody && ownerBody.isChampion) ? championBonusAttachedGhosts : 0);
@@ -56,7 +54,6 @@ namespace EliteReworks.Tweaks.T2.Components
         public void FixedUpdate()
         {
 
-            wardActive = stunDisableTimer <= 0f;
             bool eliteActive = ownerBody && ownerBody.HasBuff(RoR2Content.Buffs.AffixHaunted) && ownerBody.healthComponent && ownerBody.healthComponent.alive;
             if (!eliteActive)
             {
@@ -70,29 +67,15 @@ namespace EliteReworks.Tweaks.T2.Components
 
             if (NetworkServer.active)
             {
-                if (eliteActive)
+                /*if (eliteActive)
                 {
                     if (ownerBody.healthComponent && ownerBody.healthComponent.isInFrozenState)
                     {
                         wardActive = false;
-                        stunDisableTimer = EliteReworksPlugin.eliteStunDisableDuration;
                     }
-                    else
-                    {
-                        SetStateOnHurt ssoh = base.gameObject.GetComponent<SetStateOnHurt>();
-                        if (ssoh)
-                        {
-                            Type state = ssoh.targetStateMachine.state.GetType();
-                            if (state == typeof(EntityStates.StunState) || state == typeof(EntityStates.ShockState))
-                            {
-                                wardActive = false;
-                                stunDisableTimer = EliteReworksPlugin.eliteStunDisableDuration;
-                            }
-                        }
-                    }
-                }
+                }*/
 
-                if (wardActive && stunDisableTimer <= 0f)
+                if (wardActive)
                 {
                     stopwatch += Time.fixedDeltaTime;
                     if (stopwatch > refreshTime)
@@ -109,10 +92,6 @@ namespace EliteReworks.Tweaks.T2.Components
                 else
                 {
                     ClearAliveMonsters();
-                }
-                if (stunDisableTimer > 0f)
-                {
-                    stunDisableTimer -= Time.fixedDeltaTime;
                 }
 
                 if (attachedGhosts.Count > 0)

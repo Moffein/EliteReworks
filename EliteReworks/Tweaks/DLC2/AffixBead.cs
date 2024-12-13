@@ -1,4 +1,5 @@
-﻿using EliteReworks.Tweaks.DLC2.Components;
+﻿using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using R2API;
 using RoR2;
 using System;
@@ -12,67 +13,38 @@ namespace EliteReworks.Tweaks.DLC2
 {
     public static class AffixBead
     {
-        public static GameObject wardReworkPrefab;
+        public static float baseDamage = 42f;
+
         public static void Setup()
         {
-            On.RoR2.AffixBeadBehavior.OnEnable += AffixBeadBehavior_OnEnable;
-            On.RoR2.AffixBeadBehavior.Update += AffixBeadBehavior_Update;
-            CreateWard();
+            IL.RoR2.AffixBeadAttachment.FireProjectile += AffixBeadAttachment_FireProjectile;
         }
 
-        private static void CreateWard()
+        private static void AffixBeadAttachment_FireProjectile(MonoMod.Cil.ILContext il)
         {
-            GameObject prefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC2/Elites/EliteBead/AffixBeadWard.prefab").WaitForCompletion().InstantiateClone("MoffeinEliteReworksTwistedWard", true);
-            BuffWard buffWard = prefab.GetComponent<BuffWard>();
-            if (buffWard) buffWard.buffDef = null;
-            prefab.AddComponent<AffixBeadCleanseComponent>();
+            ILCursor c = new ILCursor(il);
 
-            wardReworkPrefab = prefab;
-        }
-
-        private static void AffixBeadBehavior_Update(On.RoR2.AffixBeadBehavior.orig_Update orig, AffixBeadBehavior self)
-        {
-            bool isStunned = false;
-            if (NetworkServer.active)
+            if (c.TryGotoNext(MoveType.After, x => x.MatchCallvirt<CharacterBody>("get_damage")))
             {
-                EliteStunTracker stunTracker = self.GetComponent<EliteStunTracker>();
-                if (stunTracker && stunTracker.PassiveActive() && self.body)
+                c.Emit(OpCodes.Ldarg_0);    //Self
+                c.EmitDelegate<Func<float, AffixBeadAttachment, float>>((damage, self) =>
                 {
-                    if (self.body.healthComponent && self.body.healthComponent.isInFrozenState)
-                    {
-                        isStunned = true;
-                        stunTracker.SetStun();
-                    }
-                    else
-                    {
-                        SetStateOnHurt ssoh = self.gameObject.GetComponent<SetStateOnHurt>();
-                        if (ssoh)
-                        {
-                            Type state = ssoh.targetStateMachine.state.GetType();
-                            if (state == typeof(EntityStates.StunState) || state == typeof(EntityStates.ShockState))
-                            {
-                                isStunned = true;
-                                stunTracker.SetStun();
-                            }
-                        }
-                    }
-                }
-                isStunned = stunTracker && !stunTracker.PassiveActive()
-                    || self.body && self.body.healthComponent && !self.body.healthComponent.alive;
-                if (isStunned && self.affixBeadWard)
-                {
-                    UnityEngine.Object.Destroy(self.affixBeadWard);
-                }
-            }
-            if (!isStunned) orig(self);
-        }
+                    CharacterBody body = null;
+                    if (self.networkedBodyAttachment) body = self.networkedBodyAttachment.attachedBody;
 
-        private static void AffixBeadBehavior_OnEnable(On.RoR2.AffixBeadBehavior.orig_OnEnable orig, AffixBeadBehavior self)
-        {
-            orig(self);
-            if (wardReworkPrefab) self.affixBeadWardReference = wardReworkPrefab;
-            EliteStunTracker est = self.GetComponent<EliteStunTracker>();
-            if (!est) est = self.gameObject.AddComponent<EliteStunTracker>();
+                    if (body)
+                    {
+                        float levelFactor = 1f + 0.2f * (body.level - 1f);
+                        if (body.isChampion) levelFactor *= EliteReworks.EliteReworksPlugin.eliteBossDamageMult;
+                        damage = baseDamage * levelFactor * self.damageCoefficient;
+                    }
+                    return damage;
+                });
+            }
+            else
+            {
+                Debug.LogError("EliteReworks: AffixBead IL hook failed.");
+            }
         }
     }
 }

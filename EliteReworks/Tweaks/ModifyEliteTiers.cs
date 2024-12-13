@@ -11,9 +11,6 @@ namespace EliteReworks.Tweaks
 {
     public static class ModifyEliteTiers
     {
-        public static EliteDef GildedT1HonorDef;
-        public static bool gildedHonor = true;
-
         public static float t1Cost = 4.5f;
         public static float t1Health = 3f;
         public static float t1HealthEarth = 3f;
@@ -24,34 +21,19 @@ namespace EliteReworks.Tweaks
         public static float t1HonorHealthEarth = 1.5f;
         public static float t1HonorDamage = 1.5f;
 
-        public static float tGildedHealth = 4.5f;
-        public static float tGildedDamage = 2.3f;
+        public static float tGildedHealth = 4f;
+        public static float tGildedDamage = 2f;
 
-        public static float tGildedHonorHealth = 3.8f;
-        public static float tGildedHonorDamage = 2.3f;
+        public static float tGildedHonorHealth = 3.5f;
+        public static float tGildedHonorDamage = 2f;
 
         public static float t2Cost = 36f;
         public static float t2Health = 12f;
         public static float t2Damage = 3.5f;
-        public static float t2HealthTwisted = 12f;
-        public static float t2DamageTwisted = 3.5f;
         public static int t2MinStages = 5;
 
         public static void Setup()
         {
-            EliteDef gildedDefOriginal = Addressables.LoadAssetAsync<EliteDef>("RoR2/DLC2/Elites/EliteAurelionite/edAurelionite.asset").WaitForCompletion();
-            EliteDef gildedHonor = ScriptableObject.CreateInstance<EliteDef>();
-            gildedHonor.color = gildedDefOriginal.color;
-            gildedHonor.damageBoostCoefficient = tGildedHonorDamage;
-            gildedHonor.healthBoostCoefficient = tGildedHonorHealth;
-            gildedHonor.modifierToken = gildedDefOriginal.modifierToken;
-            gildedHonor.name = gildedDefOriginal.name + "Honor";
-            (gildedHonor as ScriptableObject).name = gildedHonor.name;
-            gildedHonor.shaderEliteRampIndex = gildedDefOriginal.shaderEliteRampIndex;
-            gildedHonor.eliteEquipmentDef = gildedDefOriginal.eliteEquipmentDef;
-            ContentAddition.AddEliteDef(gildedHonor);
-            GildedT1HonorDef = gildedHonor;
-
             On.RoR2.CombatDirector.Init += CombatDirector_Init;
         }
 
@@ -87,25 +69,26 @@ namespace EliteReworks.Tweaks
 
             EliteTierDef t1HonorTier = EliteAPI.VanillaEliteTiers[2];
             t1HonorTier.costMultiplier = t1HonorCost;
-            if (gildedHonor && GildedT1HonorDef)
-            {
-                var honorList = t1HonorTier.eliteTypes.ToList();
-                honorList.Add(GildedT1HonorDef);
-                t1HonorTier.eliteTypes = honorList.ToArray();
-            }
             foreach (EliteDef ed in t1HonorTier.eliteTypes)
             {
                 ApplyT1HonorScaling(ed);
             }
 
-            EliteTierDef t1GildedTier = EliteAPI.VanillaEliteTiers[3];
+            EliteTierDef t1GildedHonorTier = EliteAPI.VanillaEliteTiers[3];
+            t1HonorTier.costMultiplier = t1HonorCost;
+            foreach (EliteDef ed in t1HonorTier.eliteTypes)
+            {
+                ApplyT1HonorScaling(ed);
+            }
+
+            EliteTierDef t1GildedTier = EliteAPI.VanillaEliteTiers[4];
             t1GildedTier.costMultiplier = t1Cost;
             foreach (EliteDef ed in t1GildedTier.eliteTypes)
             {
                 ApplyT1Scaling(ed);
             }
 
-            EliteTierDef t2Tier = EliteAPI.VanillaEliteTiers[4];
+            EliteTierDef t2Tier = EliteAPI.VanillaEliteTiers[5];
             if (t2MinStages != 5) t2Tier.isAvailable = (eliteRules) =>
             {
                 return Run.instance && Run.instance.stageClearCount >= t2MinStages;
@@ -140,7 +123,7 @@ namespace EliteReworks.Tweaks
             {
                 ed.healthBoostCoefficient = t1HonorHealthEarth;
             }
-            else if (ed == GildedT1HonorDef)
+            else if (ed == DLC2Content.Elites.AurelioniteHonor)
             {
                 ed.healthBoostCoefficient = tGildedHonorHealth;
                 ed.damageBoostCoefficient = tGildedHonorDamage;
@@ -151,11 +134,6 @@ namespace EliteReworks.Tweaks
         {
             ed.damageBoostCoefficient = t2Damage;
             ed.healthBoostCoefficient = t2Health;
-            if (ed == DLC2Content.Elites.Bead)
-            {
-                ed.healthBoostCoefficient = t2HealthTwisted;
-                ed.damageBoostCoefficient = t2DamageTwisted;
-            }
         }
     }
 }
