@@ -27,7 +27,7 @@ namespace EliteReworks.SharedHooks
                 damageInfo.damage = Mathf.Min(self.combinedHealth * AffixPoison.spikeHPPercent, damageInfo.damage);
 
                 damageInfo.procCoefficient = 0f;
-                damageInfo.damageType = DamageType.NonLethal;
+                damageInfo.damageType |= DamageType.NonLethal;
             }
 
             if (EliteReworksPlugin.affixRedEnabled && damageInfo.inflictor && damageInfo.inflictor.name == "FireTrail(Clone)")
