@@ -64,6 +64,10 @@ namespace EliteReworks.Tweaks.T2.Components
                     ClearAliveMonsters();
                 }
             }
+            else
+            {
+                wardActive = true;
+            }
 
             if (NetworkServer.active)
             {
@@ -78,7 +82,7 @@ namespace EliteReworks.Tweaks.T2.Components
                 if (wardActive)
                 {
                     stopwatch += Time.fixedDeltaTime;
-                    if (stopwatch > refreshTime)
+                    if (stopwatch >= refreshTime)
                     {
                         stopwatch -= refreshTime;
                         if (attachedGhosts.Count + attachedAliveMonsters.Count < GetMaxGhosts())
