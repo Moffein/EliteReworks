@@ -26,7 +26,7 @@ namespace EliteReworks
     [BepInDependency(R2API.EliteAPI.PluginGUID)]
     [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID)]
     [BepInDependency("com.TPDespair.ZetAspects", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.13.2")]
+    [BepInPlugin("com.Moffein.EliteReworks", "Elite Reworks", "1.14.0")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class EliteReworksPlugin : BaseUnityPlugin
     {
@@ -166,6 +166,7 @@ namespace EliteReworks
             EliteVoid.tweakNullify = base.Config.Bind<bool>(new ConfigDefinition("DLC1 - Voidtouched", "Tweak Nullify"), true, new ConfigDescription("Nullify only takes 2 stacks to root. Requires Voidtouched changes to be eanbled.")).Value;
 
             affixGildedEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC2 - Gilded", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
+            AffixGilded.directSiphon = base.Config.Bind<bool>(new ConfigDefinition("DLC2 - Gilded", "Direct Gold Siphon"), true, new ConfigDescription("Gilded Elites directly steal gold without spawning gold chunk objects.")).Value;
 
             affixBeadEnabled = base.Config.Bind<bool>(new ConfigDefinition("DLC2 - T2 - Twisted", "Enable Changes"), true, new ConfigDescription("Enable changes to this elite type.")).Value;
 
