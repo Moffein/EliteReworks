@@ -170,40 +170,57 @@ namespace EliteReworks.Tweaks.T2
         {
             IL.RoR2.CharacterBody.UpdateAllTemporaryVisualEffects += (il) =>
             {
+                bool error = true;
                 ILCursor c = new ILCursor(il);
-                c.GotoNext(
+                if (c.TryGotoNext(
                       x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "Cripple")
-                     );
-                c.Index += 2;
-                c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate<Func<bool, CharacterBody, bool>>((hasBuff, self) =>
+                     ))
                 {
-                    return hasBuff || self.HasBuff(armorReductionBuff);
-                });
+                    c.Index += 2;
+                    c.Emit(OpCodes.Ldarg_0);
+                    c.EmitDelegate<Func<bool, CharacterBody, bool>>((hasBuff, self) =>
+                    {
+                        return hasBuff || self.HasBuff(armorReductionBuff);
+                    });
 
-                c.GotoNext(
-                     x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "Warbanner")
-                    );
-                c.Index += 2;
-                c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate<Func<bool, CharacterBody, bool>>((hasBuff, self) =>
+                    if (c.TryGotoNext(
+                         x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "Warbanner")
+                        ))
+                    {
+                        c.Index += 2;
+                        c.Emit(OpCodes.Ldarg_0);
+                        c.EmitDelegate<Func<bool, CharacterBody, bool>>((hasBuff, self) =>
+                        {
+                            return hasBuff || self.HasBuff(ghostsActiveBuff);
+                        });
+                        error = false;
+                    }
+                }
+
+                if (error)
                 {
-                    return hasBuff || self.HasBuff(ghostsActiveBuff);
-                });
+                    Debug.LogError("EliteReworks: AffixHaunted StealBuffVfx UpdateAllTemporaryVisualEffects IL hook failed.");
+                }
             };
 
             IL.RoR2.CharacterModel.UpdateOverlays += (il) =>
             {
                 ILCursor c = new ILCursor(il);
-                c.GotoNext(
+                if (c.TryGotoNext(
                      x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "FullCrit")
-                    );
-                c.Index += 2;
-                c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate<Func<bool, CharacterModel, bool>>((hasBuff, self) =>
+                    ))
                 {
-                    return hasBuff || (self.body.HasBuff(reviveBuff));
-                });
+                    c.Index += 2;
+                    c.Emit(OpCodes.Ldarg_0);
+                    c.EmitDelegate<Func<bool, CharacterModel, bool>>((hasBuff, self) =>
+                    {
+                        return hasBuff || (self.body.HasBuff(reviveBuff));
+                    });
+                }
+                else
+                {
+                    Debug.LogError("EliteReworks: AffixHaunted StealBuffVfx UpdateOverlays IL hook failed.");
+                }
             };
         }
 
@@ -212,35 +229,43 @@ namespace EliteReworks.Tweaks.T2
             if (!replaceOnHitEffect) return;
 
             //Remove vanilla effect
-            IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
-            {
-                ILCursor c = new ILCursor(il);
-                c.GotoNext(
-                     x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixHaunted")
-                    );
-                c.Remove();
-                c.Emit<EliteReworksPlugin>(OpCodes.Ldsfld, nameof(EliteReworksPlugin.EmptyBuff));
-            };
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += HauntedChangeOnHitEffect;
+            On.RoR2.GlobalEventManager.ProcessHitEnemy += GlobalEventManager_ProcessHitEnemy;
+        }
 
-            On.RoR2.GlobalEventManager.ProcessHitEnemy += (orig, self, damageInfo, victim) =>
+        private static void GlobalEventManager_ProcessHitEnemy(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
+        {
+            orig(self, damageInfo, victim);
+            if (NetworkServer.active && !damageInfo.rejected && damageInfo.procCoefficient > 0f && damageInfo.attacker && victim)
             {
-                orig(self, damageInfo, victim);
-                if (NetworkServer.active && !damageInfo.rejected && damageInfo.procCoefficient > 0f && damageInfo.attacker && victim)
+                CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
+                if (attackerBody)
                 {
-                    CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                    if (attackerBody)
+                    CharacterBody victimBody = victim.GetComponent<CharacterBody>();
+                    if (victimBody)
                     {
-                        CharacterBody victimBody = victim.GetComponent<CharacterBody>();
-                        if (victimBody)
+                        if (attackerBody.HasBuff(RoR2Content.Buffs.AffixHaunted))
                         {
-                            if (attackerBody.HasBuff(RoR2Content.Buffs.AffixHaunted))
-                            {
-                                victimBody.AddTimedBuff(AffixHaunted.armorReductionBuff, 3f);
-                            }
+                            victimBody.AddTimedBuff(AffixHaunted.armorReductionBuff, 3f);
                         }
                     }
                 }
-            };
+            }
+        }
+
+        private static void HauntedChangeOnHitEffect(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(MoveType.After,
+                 x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixHaunted")
+                ))
+            {
+                c.EmitDelegate<Func<BuffDef, BuffDef>>(orig => null);
+            }
+            else
+            {
+                Debug.LogError("EliteReworks: HauntedChangeOnHitEffect IL hook failed.");
+            }
         }
     }
 }

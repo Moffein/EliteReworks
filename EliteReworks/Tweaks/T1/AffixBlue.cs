@@ -69,15 +69,7 @@ namespace EliteReworks.Tweaks.T1
 			//Remove vanilla on-hit effect
 			if (enableOnHitRework)
 			{
-				IL.RoR2.GlobalEventManager.OnHitAllProcess += (il) =>
-				{
-					ILCursor c = new ILCursor(il);
-					c.GotoNext(
-						 x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixBlue")
-						);
-					c.Remove();
-					c.Emit<EliteReworksPlugin>(OpCodes.Ldsfld, nameof(EliteReworksPlugin.EmptyBuff));
-				};
+                IL.RoR2.GlobalEventManager.OnHitAllProcess += RemoveVanillaOverloadingOnHit;
 			}
 
 			if (EliteReworksPlugin.affixBlueRemoveShield)
@@ -90,7 +82,22 @@ namespace EliteReworks.Tweaks.T1
             }
 		}
 
-		private static GameObject BuildLightningProjectile()
+        private static void RemoveVanillaOverloadingOnHit(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+			if (c.TryGotoNext(MoveType.After,
+                 x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixBlue")
+				))
+			{
+				c.EmitDelegate<Func<BuffDef, BuffDef>>(orig => null);
+			}
+			else
+			{
+				Debug.LogError("EliteReworks: AffixBlue RemoveVanillaOverloadingOnHit IL hook failed.");
+			}
+        }
+
+        private static GameObject BuildLightningProjectile()
 		{
 			GameObject projectile = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/ElectricWormSeekerProjectile").InstantiateClone("MoffeinEliteReworkOverloadinLightningProjectile", true);
 
@@ -210,31 +217,44 @@ namespace EliteReworks.Tweaks.T1
         private static void RemoveShields(ILContext il)
         {
             ILCursor c = new ILCursor(il);
-            c.GotoNext(
+			if (c.TryGotoNext(MoveType.After,
                  x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixBlue")
-                );
-            c.Remove();
-            c.Emit<EliteReworksPlugin>(OpCodes.Ldsfld, nameof(EliteReworksPlugin.EmptyBuff));
+				))
+			{
+				c.EmitDelegate<Func<BuffDef, BuffDef>>(orig => null);
+			}
+			else
+			{
+				Debug.LogError("EliteReworks: AffixBlue RemoveShields IL hook failed.");
+			}
         }
 
         private static void ReduceShields(ILContext il)
         {
+			bool error = true;
             ILCursor c = new ILCursor(il);
-            c.GotoNext(
+			if (c.TryGotoNext(
                  x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixBlue")
-                );
-			c.GotoNext(x => x.MatchLdcR4(0.5f));
-			c.Remove();
-			c.Emit(OpCodes.Ldc_R4, 0.25f);
+				) &&
+                c.TryGotoNext(MoveType.After, x => x.MatchLdcR4(0.5f)))
+            {
+				//Lower health reduction
+				c.EmitDelegate<Func<float, float>>(orig => orig * 0.5f);
 
-			c.GotoNext(
-				x => x.MatchCall(typeof(RoR2.CharacterBody), "get_maxHealth"),
-				x => x.MatchAdd());
-			c.Index++;
-			c.EmitDelegate<Func<float, float>>(shieldToAdd =>
-			{
-				return shieldToAdd * 0.3333333333f;
-			});
+				if (c.TryGotoNext(
+                x => x.MatchCall(typeof(RoR2.CharacterBody), "get_maxHealth"),
+                x => x.MatchAdd()))
+                {
+                    c.Index++;
+                    c.EmitDelegate<Func<float, float>>(shieldToAdd =>
+                    {
+                        return shieldToAdd * 0.3333333333f;
+                    });
+					error = false;
+                }
+            }
+
+			if (error) Debug.LogError("EliteReworks: AffixBlue ReduceShields IL hook failed.");
         }
     }
 }

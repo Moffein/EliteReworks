@@ -30,37 +30,52 @@ namespace EliteReworks.Tweaks.T1
             slowProcSound = CreateSlowProcSound();
 
             //Remove vanilla on-hit effect so that all on-hits are handled via the OnHitAll hook
-            IL.RoR2.GlobalEventManager.ProcessHitEnemy += (il) =>
-            {
-                ILCursor c = new ILCursor(il);
-                c.GotoNext(
-                     x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixWhite")
-                    );
-                c.Remove();
-                c.Emit<EliteReworksPlugin>(OpCodes.Ldsfld, nameof(EliteReworksPlugin.EmptyBuff));
-            };
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += RemoveGlacialOnHitEffect;
+            RecalculateStatsAPI.GetStatCoefficients += Slow80AltStats;
+            IL.RoR2.CharacterModel.UpdateOverlays += Slow80AltOverlay;
+        }
 
-            RecalculateStatsAPI.GetStatCoefficients += (sender, args) =>
+        private static void Slow80AltStats(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
+        {
+            if (sender.HasBuff(AffixWhite.slow80alt) && !sender.HasBuff(RoR2Content.Buffs.Slow80))
             {
-                if (sender.HasBuff(AffixWhite.slow80alt) && !sender.HasBuff(RoR2Content.Buffs.Slow80))
-                {
-                    args.moveSpeedReductionMultAdd += 0.8f;
-                }
-            };
+                args.moveSpeedReductionMultAdd += 0.8f;
+            }
+        }
 
-            IL.RoR2.CharacterModel.UpdateOverlays += (il) =>
+        private static void Slow80AltOverlay(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(
+                 x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "Slow80")
+                ))
             {
-                ILCursor c = new ILCursor(il);
-                c.GotoNext(
-                     x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "Slow80")
-                    );
                 c.Index += 2;
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate<Func<bool, CharacterModel, bool>>((hasBuff, self) =>
                 {
                     return hasBuff || (self.body.HasBuff(slow80alt));
                 });
-            };
+            }
+            else
+            {
+                Debug.LogError("EliteReworks: Slow80AltOverlay IL hook failed.");
+            }
+        }
+
+        private static void RemoveGlacialOnHitEffect(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(MoveType.After,
+                 x => x.MatchLdsfld(typeof(RoR2Content.Buffs), "AffixWhite")
+                ))
+            {
+                c.EmitDelegate<Func<BuffDef, BuffDef>>(orig => null);
+            }
+            else
+            {
+                Debug.LogError("EliteReworks: RemoveGlacialOnHitEffect IL hook failed.");
+            }
         }
 
         private static BuffDef CreateAltSlowBuff()
